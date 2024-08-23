@@ -7,7 +7,7 @@ import com.tacz.guns.api.modifier.IAttachmentModifier;
 import com.tacz.guns.api.modifier.JsonProperty;
 import com.tacz.guns.resource.CommonGunPackLoader;
 import com.tacz.guns.resource.modifier.AttachmentPropertyManager;
-import com.tacz.guns.resource.pojo.data.attachment.ModifiedValue;
+import com.tacz.guns.resource.pojo.data.attachment.Modifier;
 import com.tacz.guns.resource.pojo.data.gun.ExplosionData;
 import com.tacz.guns.resource.pojo.data.gun.GunData;
 import net.minecraft.ChatFormatting;
@@ -35,7 +35,7 @@ public class ExplosionModifier implements IAttachmentModifier<ExplosionModifier.
     public CacheValue<ExplosionData> initCache(ItemStack gunItem, GunData gunData) {
         ExplosionData explosionData = gunData.getBulletData().getExplosionData();
         if (explosionData == null) {
-            explosionData = new ExplosionData(false, 0.5f, 2, false, 30);
+            explosionData = new ExplosionData(false, 0.5f, 2, false, 30, false);
         }
         return new CacheValue<>(explosionData);
     }
@@ -45,16 +45,18 @@ public class ExplosionModifier implements IAttachmentModifier<ExplosionModifier.
         ExplosionData cacheValue = cache.getValue();
 
         List<Boolean> explodeValues = Lists.newArrayList();
-        List<ModifiedValue> radiusValues = Lists.newArrayList();
-        List<ModifiedValue> damageValues = Lists.newArrayList();
+        List<Modifier> radiusValues = Lists.newArrayList();
+        List<Modifier> damageValues = Lists.newArrayList();
         List<Boolean> knockbackValues = Lists.newArrayList();
-        List<ModifiedValue> delayValues = Lists.newArrayList();
+        List<Boolean> destroyBlockValues = Lists.newArrayList();
+        List<Modifier> delayValues = Lists.newArrayList();
 
         modifiedValues.forEach(v -> {
             explodeValues.add(v.explode);
             radiusValues.add(v.radius);
             damageValues.add(v.damage);
             knockbackValues.add(v.knockback);
+            destroyBlockValues.add(v.destroyBlock);
             delayValues.add(v.delay);
         });
 
@@ -66,8 +68,9 @@ public class ExplosionModifier implements IAttachmentModifier<ExplosionModifier.
         float radius = (float) AttachmentPropertyManager.eval(radiusValues, cacheValue.getRadius());
         float damage = (float) AttachmentPropertyManager.eval(damageValues, cacheValue.getDamage());
         boolean knockback = AttachmentPropertyManager.eval(knockbackValues, false);
+        boolean destroyBlock = AttachmentPropertyManager.eval(destroyBlockValues, false);
         int delay = (int) AttachmentPropertyManager.eval(delayValues, cacheValue.getDelay());
-        ExplosionData explosionData = new ExplosionData(true, radius, damage, knockback, delay);
+        ExplosionData explosionData = new ExplosionData(true, radius, damage, knockback, delay, destroyBlock);
         cache.setValue(explosionData);
     }
 
@@ -104,15 +107,18 @@ public class ExplosionModifier implements IAttachmentModifier<ExplosionModifier.
         private boolean explode = false;
 
         @SerializedName("radius")
-        private ModifiedValue radius = new ModifiedValue();
+        private Modifier radius = new Modifier();
 
         @SerializedName("damage")
-        private ModifiedValue damage = new ModifiedValue();
+        private Modifier damage = new Modifier();
 
         @SerializedName("knockback")
         private boolean knockback = false;
 
+        @SerializedName("destroy_block")
+        private boolean destroyBlock = false;
+
         @SerializedName("delay")
-        private ModifiedValue delay = new ModifiedValue();
+        private Modifier delay = new Modifier();
     }
 }

@@ -8,9 +8,8 @@ import com.tacz.guns.api.event.common.AttachmentPropertyEvent;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.modifier.IAttachmentModifier;
 import com.tacz.guns.resource.modifier.custom.*;
-import com.tacz.guns.resource.pojo.data.attachment.ModifiedValue;
+import com.tacz.guns.resource.pojo.data.attachment.Modifier;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
@@ -44,6 +43,8 @@ public class AttachmentPropertyManager {
         MODIFIERS.put(RecoilModifier.ID, new RecoilModifier());
         MODIFIERS.put(RpmModifier.ID, new RpmModifier());
         MODIFIERS.put(SilenceModifier.ID, new SilenceModifier());
+        MODIFIERS.put(WeightModifier.ID, new WeightModifier());
+        MODIFIERS.put(ExtraMovementModifier.ID, new ExtraMovementModifier());
     }
 
     public static Map<String, IAttachmentModifier<?, ?>> getModifiers() {
@@ -62,22 +63,23 @@ public class AttachmentPropertyManager {
         });
     }
 
-    public static double eval(ModifiedValue modified, double defaultValue) {
-        return eval(Collections.singletonList(modified), defaultValue);
+    public static double eval(Modifier modifier, double defaultValue) {
+        return eval(Collections.singletonList(modifier), defaultValue);
     }
 
-    public static double eval(List<ModifiedValue> modified, double defaultValue) {
+    public static double eval(List<Modifier> modifiers, double defaultValue) {
         double addend = defaultValue;
         double percent = 1;
         double multiplier = 1;
-        for (ModifiedValue modifiedValue : modified) {
-            addend += modifiedValue.getAddend();
-            percent += Mth.clamp(modifiedValue.getPercent(), 0, 1);
-            multiplier *= modifiedValue.getMultiplier();
+        for (Modifier modifier : modifiers) {
+            addend += modifier.getAddend();
+            percent += modifier.getPercent();
+            multiplier *= Math.max(modifier.getMultiplier(), 0f);
         }
+        percent = Math.max(percent, 0f);
         double value = addend * percent * multiplier;
-        for (ModifiedValue modifiedValue : modified) {
-            String function = modifiedValue.getFunction();
+        for (Modifier modifier : modifiers) {
+            String function = modifier.getFunction();
             if (StringUtils.isEmpty(function)) {
                 continue;
             }
@@ -96,7 +98,7 @@ public class AttachmentPropertyManager {
         }
     }
 
-    private static double functionEval(double value, double defaultValue, String script) {
+    public static double functionEval(double value, double defaultValue, String script) {
         script = script.toLowerCase(Locale.ENGLISH);
         LUAJ_ENGINE.put("x", value);
         LUAJ_ENGINE.put("r", defaultValue);

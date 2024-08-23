@@ -65,6 +65,9 @@ public class GunData {
     @SerializedName("burst_data")
     private BurstData burstData = new BurstData();
 
+    @SerializedName("crawl_recoil_multiplier")
+    private float crawlRecoilMultiplier = 0.5f;
+
     @SerializedName("recoil")
     private GunRecoil recoil = new GunRecoil();
 
@@ -74,7 +77,7 @@ public class GunData {
     @SerializedName("inaccuracy")
     private Map<InaccuracyType, Float> inaccuracy = null;
 
-    @SerializedName("move_speed")
+    @SerializedName("movement_speed")
     private MoveSpeed moveSpeed = new MoveSpeed();
 
     @SerializedName("melee")
@@ -85,6 +88,12 @@ public class GunData {
 
     @SerializedName("exclusive_attachments")
     private Map<ResourceLocation, AttachmentData> exclusiveAttachments = Maps.newHashMap();
+
+    @SerializedName("weight")
+    private float weight = 0f;
+
+    @SerializedName("builtin_attachments")
+    private Map<AttachmentType, ResourceLocation> builtInAttachments = Maps.newHashMap();
 
     public ResourceLocation getAmmoId() {
         return ammoId;
@@ -156,12 +165,20 @@ public class GunData {
         return burstData;
     }
 
+    public float getWeight() {
+        return weight;
+    }
+
     @Nullable
     public GunFireModeAdjustData getFireModeAdjustData(FireMode fireMode) {
         if (fireModeAdjust != null && fireModeAdjust.containsKey(fireMode)) {
             return fireModeAdjust.get(fireMode);
         }
         return null;
+    }
+
+    public float getCrawlRecoilMultiplier() {
+        return crawlRecoilMultiplier;
     }
 
     public GunRecoil getRecoil() {
@@ -199,6 +216,10 @@ public class GunData {
     @Nullable
     public List<AttachmentType> getAllowAttachments() {
         return allowAttachments;
+    }
+
+    public Map<AttachmentType, ResourceLocation> getBuiltInAttachments() {
+        return builtInAttachments;
     }
 
     public Map<ResourceLocation, AttachmentData> getExclusiveAttachments() {

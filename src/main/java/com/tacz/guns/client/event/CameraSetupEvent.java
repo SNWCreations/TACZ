@@ -11,6 +11,7 @@ import com.tacz.guns.api.entity.IGunOperator;
 import com.tacz.guns.api.event.common.GunFireEvent;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.attachment.AttachmentType;
+import com.tacz.guns.api.modifier.ParameterizedCachePair;
 import com.tacz.guns.client.model.BedrockGunModel;
 import com.tacz.guns.client.resource.index.ClientAttachmentIndex;
 import com.tacz.guns.client.resource.index.ClientGunIndex;
@@ -160,6 +161,9 @@ public class CameraSetupEvent {
                 return;
             }
             ResourceLocation scopeItemId = iGun.getAttachmentId(stack, AttachmentType.SCOPE);
+            if (scopeItemId.equals(DefaultAssets.EMPTY_ATTACHMENT_ID)) {
+                scopeItemId = iGun.getBuiltInAttachmentId(stack, AttachmentType.SCOPE);
+            }
             if (DefaultAssets.isEmptyAttachmentId(scopeItemId)) {
                 float fov = ITEM_MODEL_FOV_DYNAMICS.update((float) event.getFOV());
                 event.setFOV(fov);
@@ -204,18 +208,18 @@ public class CameraSetupEvent {
             ClientGunIndex gunIndex = gunIndexOptional.get();
             GunData gunData = gunIndex.getGunData();
             // 获取所有配件对摄像机后坐力的修改
-            Pair<Float, Float> attachmentRecoilModifier = cacheProperty.getCache(RecoilModifier.ID);
+            ParameterizedCachePair<Float, Float> attachmentRecoilModifier = cacheProperty.getCache(RecoilModifier.ID);
             IClientPlayerGunOperator clientPlayerGunOperator = IClientPlayerGunOperator.fromLocalPlayer(player);
             float partialTicks = Minecraft.getInstance().getFrameTime();
             float aimingProgress = clientPlayerGunOperator.getClientAimingProgress(partialTicks);
             float zoom = iGun.getAimingZoom(mainHandItem);
             float aimingRecoilModifier = 1 - aimingProgress + aimingProgress / (float) Math.sqrt(zoom);
-            // 如果是趴下，那么后坐力减半
+            // 如果是趴下，那么后坐力按 data 设计减少（默认为降低一半）
             if (!player.isSwimming() && player.getPose() == Pose.SWIMMING) {
-                aimingRecoilModifier = aimingRecoilModifier * 0.5f;
+                aimingRecoilModifier = aimingRecoilModifier * gunData.getCrawlRecoilMultiplier();
             }
-            pitchSplineFunction = gunData.getRecoil().genPitchSplineFunction(modifierNumber(attachmentRecoilModifier.left()) * aimingRecoilModifier);
-            yawSplineFunction = gunData.getRecoil().genYawSplineFunction(modifierNumber(attachmentRecoilModifier.right()) * aimingRecoilModifier);
+            pitchSplineFunction = gunData.getRecoil().genPitchSplineFunction((float) attachmentRecoilModifier.left().eval(aimingRecoilModifier));
+            yawSplineFunction = gunData.getRecoil().genYawSplineFunction((float) attachmentRecoilModifier.right().eval(aimingRecoilModifier));
             shootTimeStamp = System.currentTimeMillis();
             xRotO = 0;
             yRotO = 0;
@@ -239,9 +243,5 @@ public class CameraSetupEvent {
             player.setYRot(player.getYRot() - (float) (value - yRotO));
             yRotO = value;
         }
-    }
-
-    private static float modifierNumber(float modifier) {
-        return Math.max(0, 1 + modifier);
     }
 }
