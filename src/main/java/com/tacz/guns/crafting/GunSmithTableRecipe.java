@@ -62,7 +62,7 @@ public class GunSmithTableRecipe implements Recipe<Inventory> {
 
     @Override
     public RecipeType<?> getType() {
-        return ModRecipe.GUN_SMITH_TABLE_CRAFTING;
+        return ModRecipe.GUN_SMITH_TABLE_CRAFTING.get();
     }
 
     public ItemStack getOutput() {
