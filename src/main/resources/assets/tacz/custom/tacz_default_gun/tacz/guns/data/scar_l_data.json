@@ -32,18 +32,25 @@
   "reload": {
     "type": "magazine",
     "feed": {
-      "empty": 2.05,
-      "tactical": 1.2
+      "empty": 1.83,
+      "tactical": 1.13
     },
     "cooldown": {
-      "empty": 2.53,
-      "tactical": 2.03
+      "empty": 2.3,
+      "tactical": 1.9
     }
   },
   "draw_time": 0.43,
   "put_away_time": 0.43,
   "aim_time": 0.17,
   "sprint_time": 0.16,
+  "weight": 3.5,
+  "movement_speed": {
+    "base": 0.0,
+    "aim": -0.15,
+    "reload": -0.1
+  },
+  "crawl_recoil_multiplier": 0.5,
   "fire_mode": [
     "auto",
     "burst",

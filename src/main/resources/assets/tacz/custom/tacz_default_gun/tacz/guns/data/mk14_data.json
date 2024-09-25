@@ -27,7 +27,14 @@
     "knockback": 0,
     "friction": 0.01,
     "ignite": false,
-    "pierce": 3
+    "pierce": 3,
+    "explosion": {
+      "explode": false,
+      "damage": 28,
+      "radius": 0.75,
+      "knockback": true,
+      "delay": 1
+    }
   },
   "reload": {
     "type": "magazine",
@@ -44,6 +51,13 @@
   "put_away_time": 0.5,
   "aim_time": 0.21,
   "sprint_time": 0.22,
+  "weight": 5.1,
+  "movement_speed": {
+    "base": 0.0,
+    "aim": -0.15,
+    "reload": -0.1
+  },
+  "crawl_recoil_multiplier": 0.2,
   "fire_mode": [
     "semi",
     "auto"
@@ -52,13 +66,13 @@
     "auto": {
       // 加算，全自动模式的开火数值调整，如无调整可不写
       "damage": -5,
-      "rpm": 550,
+      "rpm": 380,
       "speed": -30,
       "knockback": 0,
       "armor_ignore": -0.2,
       "head_shot_multiplier": -0.25,
-      "aim_inaccuracy": 0.05,
-      "other_inaccuracy": -0.5
+      "aim_inaccuracy": 0.2,
+      "other_inaccuracy": 0.5
     }
   },
   "recoil": {

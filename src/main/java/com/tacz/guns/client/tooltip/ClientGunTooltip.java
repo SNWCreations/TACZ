@@ -1,11 +1,13 @@
 package com.tacz.guns.client.tooltip;
 
+import com.tacz.guns.api.TimelessAPI;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.builder.AmmoItemBuilder;
-import com.tacz.guns.api.item.gun.FireMode;
 import com.tacz.guns.client.input.RefitKey;
 import com.tacz.guns.client.resource.ClientAssetManager;
+import com.tacz.guns.client.resource.index.ClientGunIndex;
 import com.tacz.guns.client.resource.pojo.PackInfo;
+import com.tacz.guns.client.resource.pojo.display.gun.AmmoCountStyle;
 import com.tacz.guns.config.sync.SyncConfig;
 import com.tacz.guns.inventory.tooltip.GunTooltip;
 import com.tacz.guns.item.GunTooltipPart;
@@ -20,7 +22,6 @@ import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.network.chat.Style;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.FormattedCharSequence;
 import net.minecraft.util.Mth;
@@ -36,10 +37,12 @@ public class ClientGunTooltip implements ClientTooltipComponent {
     private static final DecimalFormat FORMAT = new DecimalFormat("#.##%");
     private static final DecimalFormat FORMAT_P_D1 = new DecimalFormat("#.#%");
     private static final DecimalFormat DAMAGE_FORMAT = new DecimalFormat("#.##");
+    private static final DecimalFormat CURRENT_AMMO_FORMAT_PERCENT = new DecimalFormat("0%");
 
     private final ItemStack gun;
     private final IGun iGun;
     private final CommonGunIndex gunIndex;
+    private @Nullable final ClientGunIndex clientGunIndex;
     private final ItemStack ammo;
     private @Nullable List<FormattedCharSequence> desc;
     private Component ammoName;
@@ -60,6 +63,7 @@ public class ClientGunTooltip implements ClientTooltipComponent {
         this.iGun = tooltip.getIGun();
         ResourceLocation ammoId = tooltip.getAmmoId();
         this.gunIndex = tooltip.getGunIndex();
+        this.clientGunIndex = TimelessAPI.getClientGunIndex(this.iGun.getGunId(this.gun)).orElse(null);
         this.ammo = AmmoItemBuilder.create().setId(ammoId).build();
         this.maxWidth = 0;
         this.getText();
@@ -98,8 +102,6 @@ public class ClientGunTooltip implements ClientTooltipComponent {
         Font font = Minecraft.getInstance().font;
         BulletData bulletData = gunIndex.getBulletData();
         GunData gunData = gunIndex.getGunData();
-        FireMode fireMode = iGun.getFireMode(gun);
-        GunFireModeAdjustData fireModeAdjustData = gunData.getFireModeAdjustData(fireMode);
 
         if (shouldShow(GunTooltipPart.DESCRIPTION)) {
             @Nullable String tooltip = gunIndex.getPojo().getTooltip();
@@ -126,10 +128,20 @@ public class ClientGunTooltip implements ClientTooltipComponent {
             int currentAmmoCount = iGun.getCurrentAmmoCount(this.gun) + barrelBulletAmount;
 
             if (!iGun.useDummyAmmo(gun)) {
-                this.ammoCountText = Component.literal("%d/%d".formatted(currentAmmoCount, maxAmmoCount));
+                if (clientGunIndex != null && clientGunIndex.getAmmoCountStyle()== AmmoCountStyle.PERCENT) {
+                    this.ammoCountText = Component.literal(CURRENT_AMMO_FORMAT_PERCENT.format((float) currentAmmoCount / (maxAmmoCount == 0 ? 1f : maxAmmoCount)));
+                } else {
+                    this.ammoCountText = Component.literal("%d/%d".formatted(currentAmmoCount, maxAmmoCount));
+                }
             } else {
                 int dummyAmmoAmount = iGun.getDummyAmmoAmount(gun);
-                this.ammoCountText = Component.literal("%d/%d (%d)".formatted(currentAmmoCount, maxAmmoCount, dummyAmmoAmount));
+                if (clientGunIndex != null && clientGunIndex.getAmmoCountStyle()== AmmoCountStyle.PERCENT) {
+                    String p = CURRENT_AMMO_FORMAT_PERCENT.format((float) currentAmmoCount / (maxAmmoCount == 0 ? 1f : maxAmmoCount));
+                    this.ammoCountText = Component.literal("%s (%d)".formatted(p, dummyAmmoAmount));
+                } else {
+                    this.ammoCountText = Component.literal("%d/%d (%d)".formatted(currentAmmoCount, maxAmmoCount, dummyAmmoAmount));
+                }
+
             }
             this.maxWidth = Math.max(font.width(this.ammoCountText) + 22, this.maxWidth);
         }
@@ -152,12 +164,9 @@ public class ClientGunTooltip implements ClientTooltipComponent {
             this.gunType = Component.translatable("tooltip.tacz.gun.type").append(Component.translatable(tabKey).withStyle(ChatFormatting.AQUA));
             this.maxWidth = Math.max(font.width(this.gunType), this.maxWidth);
 
-            float damage = bulletData.getDamageAmount();
-            if (fireModeAdjustData != null) {
-                damage += fireModeAdjustData.getDamageAmount();
-            }
-            MutableComponent value = Component.literal(DAMAGE_FORMAT.format(damage * SyncConfig.DAMAGE_BASE_MULTIPLIER.get())).withStyle(ChatFormatting.AQUA);
-            if (bulletData.getExplosionData() != null) {
+            double damage = AttachmentDataUtils.getDamageWithAttachment(gun, gunData);
+            MutableComponent value = Component.literal(DAMAGE_FORMAT.format(damage)).withStyle(ChatFormatting.AQUA);
+            if (bulletData.getExplosionData() != null && (AttachmentDataUtils.isExplodeEnabled(gun, gunData) || bulletData.getExplosionData().isExplode())) {
                 value.append(" + ").append(DAMAGE_FORMAT.format(bulletData.getExplosionData().getDamage() * SyncConfig.DAMAGE_BASE_MULTIPLIER.get())).append(Component.translatable("tooltip.tacz.gun.explosion"));
             }
             this.damage = Component.translatable("tooltip.tacz.gun.damage").append(value);
@@ -168,19 +177,11 @@ public class ClientGunTooltip implements ClientTooltipComponent {
         if (shouldShow(GunTooltipPart.EXTRA_DAMAGE_INFO)) {
             @Nullable ExtraDamage extraDamage = bulletData.getExtraDamage();
             if (extraDamage != null) {
-                float armorIgnore = extraDamage.getArmorIgnore();
-                if (fireModeAdjustData != null) {
-                    armorIgnore += fireModeAdjustData.getArmorIgnore();
-                }
-                float armorDamagePercent = (float) (armorIgnore * SyncConfig.ARMOR_IGNORE_BASE_MULTIPLIER.get());
-
-                float headShotMultiplier = extraDamage.getHeadShotMultiplier();
-                if (fireModeAdjustData != null) {
-                    headShotMultiplier += fireModeAdjustData.getHeadShotMultiplier();
-                }
-                float headShotMultiplierPercent = (float) (headShotMultiplier * SyncConfig.HEAD_SHOT_BASE_MULTIPLIER.get());
+                double armorDamagePercent = AttachmentDataUtils.getArmorIgnoreWithAttachment(gun, gunData);
+                double headShotMultiplierPercent = AttachmentDataUtils.getHeadshotMultiplier(gun, gunData);
 
                 armorDamagePercent = Mth.clamp(armorDamagePercent, 0.0F, 1.0F);
+
                 this.armorIgnore = Component.translatable("tooltip.tacz.gun.armor_ignore", FORMAT.format(armorDamagePercent));
                 this.headShotMultiplier = Component.translatable("tooltip.tacz.gun.head_shot_multiplier", FORMAT.format(headShotMultiplierPercent));
             } else {
@@ -190,7 +191,7 @@ public class ClientGunTooltip implements ClientTooltipComponent {
 
             double weightFactor = SyncConfig.WEIGHT_SPEED_MULTIPLIER.get();
             double weight = AttachmentDataUtils.getWightWithAttachment(gun, gunData);
-            this.weight = Component.translatable("tooltip.tacz.gun.movment_speed", FORMAT_P_D1.format(-weightFactor * weight)).withStyle(ChatFormatting.RED);
+            this.weight = Component.translatable("tooltip.tacz.gun.movement_speed", FORMAT_P_D1.format(-weightFactor * weight)).withStyle(ChatFormatting.RED);
 
             this.maxWidth = Math.max(font.width(this.armorIgnore), this.maxWidth);
             this.maxWidth = Math.max(font.width(this.headShotMultiplier), this.maxWidth);
