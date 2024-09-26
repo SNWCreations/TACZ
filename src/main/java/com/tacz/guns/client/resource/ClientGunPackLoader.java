@@ -7,10 +7,13 @@ import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.resource.ResourceManager;
 import com.tacz.guns.client.resource.index.ClientAmmoIndex;
 import com.tacz.guns.client.resource.index.ClientAttachmentIndex;
+import com.tacz.guns.client.resource.index.ClientBlockIndex;
 import com.tacz.guns.client.resource.index.ClientGunIndex;
+import com.tacz.guns.client.resource.loader.ClientLoaders;
 import com.tacz.guns.client.resource.loader.asset.*;
 import com.tacz.guns.client.resource.loader.index.ClientAmmoIndexLoader;
 import com.tacz.guns.client.resource.loader.index.ClientAttachmentIndexLoader;
+import com.tacz.guns.client.resource.loader.index.ClientBlockIndexLoader;
 import com.tacz.guns.client.resource.loader.index.ClientGunIndexLoader;
 import com.tacz.guns.client.resource.pojo.CommonTransformObject;
 import com.tacz.guns.client.resource.pojo.animation.bedrock.AnimationKeyframes;
@@ -63,6 +66,7 @@ public class ClientGunPackLoader {
     public static final Map<ResourceLocation, ClientGunIndex> GUN_INDEX = Maps.newHashMap();
     public static final Map<ResourceLocation, ClientAmmoIndex> AMMO_INDEX = Maps.newHashMap();
     public static final Map<ResourceLocation, ClientAttachmentIndex> ATTACHMENT_INDEX = Maps.newHashMap();
+    public static final Map<ResourceLocation, ClientBlockIndex> BLOCK_INDEX = Maps.newHashMap();
 
     /**
      * 创建存放枪包的文件夹、放入默认枪包
@@ -92,10 +96,12 @@ public class ClientGunPackLoader {
         AMMO_INDEX.clear();
         GUN_INDEX.clear();
         ATTACHMENT_INDEX.clear();
+        BLOCK_INDEX.clear();
 
         ClientAmmoIndexLoader.loadAmmoIndex();
         ClientGunIndexLoader.loadGunIndex();
         ClientAttachmentIndexLoader.loadAttachmentIndex();
+        ClientBlockIndexLoader.loadBlockIndex();
 
         // 如果玩家此时持有枪械，那么需要刷新配件缓存
         LocalPlayer player = Minecraft.getInstance().player;
@@ -145,6 +151,7 @@ public class ClientGunPackLoader {
             GunDisplayLoader.load(root);
             AmmoDisplayLoader.load(root);
             AttachmentDisplayLoader.load(root);
+            ClientLoaders.BLOCK_DISPLAY.load(root);
             AttachmentSkinLoader.load(root);
             AnimationLoader.load(root);
             PlayerAnimatorCompat.loadAnimationFromFile(root);
@@ -173,6 +180,9 @@ public class ClientGunPackLoader {
                     continue;
                 }
                 if (AttachmentDisplayLoader.load(zipFile, path)) {
+                    continue;
+                }
+                if (ClientLoaders.BLOCK_DISPLAY.load(zipFile, path)) {
                     continue;
                 }
                 // 加载全部的 skin 文件

@@ -9,13 +9,17 @@ import com.tacz.guns.api.resource.ResourceManager;
 import com.tacz.guns.config.common.OtherConfig;
 import com.tacz.guns.crafting.GunSmithTableIngredient;
 import com.tacz.guns.crafting.GunSmithTableResult;
+import com.tacz.guns.resource.filter.RecipeFilter;
 import com.tacz.guns.resource.index.CommonAmmoIndex;
 import com.tacz.guns.resource.index.CommonAttachmentIndex;
+import com.tacz.guns.resource.index.CommonBlockIndex;
 import com.tacz.guns.resource.index.CommonGunIndex;
+import com.tacz.guns.resource.loader.CommonDataLoaders;
 import com.tacz.guns.resource.loader.asset.*;
 import com.tacz.guns.resource.loader.index.CommonAmmoIndexLoader;
 import com.tacz.guns.resource.loader.index.CommonAttachmentIndexLoader;
 import com.tacz.guns.resource.loader.index.CommonGunIndexLoader;
+import com.tacz.guns.resource.loader.index.CommonIndexLoaders;
 import com.tacz.guns.resource.modifier.AttachmentPropertyManager;
 import com.tacz.guns.resource.network.CommonGunPackNetwork;
 import com.tacz.guns.resource.pojo.data.gun.ExtraDamage;
@@ -47,6 +51,7 @@ public class CommonGunPackLoader {
             .registerTypeAdapter(ExtraDamage.DistanceDamagePair.class, new DistanceDamagePairSerializer())
             .registerTypeAdapter(Vec3.class, new Vec3Serializer())
             .registerTypeAdapter(Ignite.class, new IgniteSerializer())
+            .registerTypeAdapter(RecipeFilter.class, new RecipeFilter.Deserializer())
             .create();
     /**
      * 放置自定义枪械模型的目录
@@ -58,6 +63,7 @@ public class CommonGunPackLoader {
     public static final Map<ResourceLocation, CommonGunIndex> GUN_INDEX = Maps.newHashMap();
     public static final Map<ResourceLocation, CommonAmmoIndex> AMMO_INDEX = Maps.newHashMap();
     public static final Map<ResourceLocation, CommonAttachmentIndex> ATTACHMENT_INDEX = Maps.newHashMap();
+    public static final Map<ResourceLocation, CommonBlockIndex> BLOCK_INDEX = Maps.newHashMap();
 
     /**
      * 创建存放枪包的文件夹、放入默认枪包，清空网络包缓存
@@ -168,6 +174,7 @@ public class CommonGunPackLoader {
                 AttachmentTagsLoader.load(zipFile, path);
                 // 枪械允许的 tag
                 AllowAttachmentTagsLoader.load(zipFile, path);
+                CommonDataLoaders.BLOCKS.load(zipFile, path);
             }
         } catch (IOException ioException) {
             ioException.printStackTrace();
@@ -180,6 +187,7 @@ public class CommonGunPackLoader {
             AttachmentDataLoader.load(root);
             AttachmentTagsLoader.load(root);
             AllowAttachmentTagsLoader.load(root);
+            CommonDataLoaders.BLOCKS.load(root);
         }
     }
 
@@ -212,6 +220,7 @@ public class CommonGunPackLoader {
                 CommonAmmoIndexLoader.loadAmmoIndex(path, zipFile);
                 CommonGunIndexLoader.loadGunIndex(path, zipFile);
                 CommonAttachmentIndexLoader.loadAttachmentIndex(path, zipFile);
+                CommonIndexLoaders.BLOCK.load(zipFile, path);
             }
         } catch (IOException ioException) {
             ioException.printStackTrace();
@@ -224,6 +233,7 @@ public class CommonGunPackLoader {
                 CommonAmmoIndexLoader.loadAmmoIndex(root);
                 CommonGunIndexLoader.loadGunIndex(root);
                 CommonAttachmentIndexLoader.loadAttachmentIndex(root);
+                CommonIndexLoaders.BLOCK.load(root);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -257,6 +267,7 @@ public class CommonGunPackLoader {
             while (iteration.hasMoreElements()) {
                 String path = iteration.nextElement().getName();
                 RecipeLoader.load(zipFile, path);
+                CommonDataLoaders.RECIPE_FILTER.load(zipFile, path);
             }
         } catch (IOException ioException) {
             ioException.printStackTrace();
@@ -266,6 +277,7 @@ public class CommonGunPackLoader {
     private static void readDirRecipes(File root) {
         if (VersionChecker.match(root)) {
             RecipeLoader.load(root);
+            CommonDataLoaders.RECIPE_FILTER.load(root);
         }
     }
 
@@ -283,6 +295,10 @@ public class CommonGunPackLoader {
 
     public static Set<Map.Entry<ResourceLocation, CommonGunIndex>> getAllGuns() {
         return GUN_INDEX.entrySet();
+    }
+
+    public static Set<Map.Entry<ResourceLocation, CommonBlockIndex>> getAllBlocks() {
+        return BLOCK_INDEX.entrySet();
     }
 
     public static Set<Map.Entry<ResourceLocation, CommonAmmoIndex>> getAllAmmo() {
