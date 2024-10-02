@@ -6,9 +6,14 @@ import com.tacz.guns.client.resource.pojo.display.block.BlockDisplay;
 import com.tacz.guns.client.resource.pojo.model.BedrockModelPOJO;
 import com.tacz.guns.client.resource.pojo.model.BedrockVersion;
 import com.tacz.guns.resource.pojo.BlockIndexPOJO;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
+import net.minecraft.resources.ResourceLocation;
 
 public class ClientBlockIndex {
     private BedrockModel model;
+    private ResourceLocation texture;
+    private String name;
+    private ItemTransforms transforms;
 
     public static ClientBlockIndex getInstance(BlockIndexPOJO pojo) {
         ClientBlockIndex index = new ClientBlockIndex();
@@ -22,10 +27,25 @@ public class ClientBlockIndex {
         if (BedrockVersion.isNewVersion(modelPOJO) && modelPOJO.getGeometryModelNew() != null) {
             index.model = new BedrockModel(modelPOJO, BedrockVersion.NEW);
         }
+        index.texture = display.getModelTexture();
+        index.name = pojo.getName();
+        index.transforms = display.getTransforms();
         return index;
     }
 
     public BedrockModel getModel() {
         return model;
+    }
+
+    public ResourceLocation getTexture() {
+        return texture;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public ItemTransforms getTransforms() {
+        return transforms;
     }
 }

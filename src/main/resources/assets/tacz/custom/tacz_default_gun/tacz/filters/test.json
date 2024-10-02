@@ -1,6 +1,5 @@
 {
   "whitelist": [
-    "tacz:ak47",
     "^tacz:.*$"
   ],
   "blacklist": [

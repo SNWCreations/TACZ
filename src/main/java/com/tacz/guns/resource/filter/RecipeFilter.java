@@ -8,50 +8,55 @@ import org.jetbrains.annotations.NotNull;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 import java.util.regex.PatternSyntaxException;
 
 public class RecipeFilter {
-    public List<IFilter<ResourceLocation>> whitelist = new ArrayList<>();
-    public List<IFilter<ResourceLocation>> blacklist = new ArrayList<>();
-
-    public List<ResourceLocation> cache;
+    private final List<IFilter<ResourceLocation>> whitelist = new ArrayList<>();
+    private final List<IFilter<ResourceLocation>> blacklist = new ArrayList<>();
 
     public void merge(RecipeFilter other) {
         this.whitelist.addAll(other.whitelist);
         this.blacklist.addAll(other.blacklist);
     }
 
+    public boolean contains(ResourceLocation location) {
+        boolean allowed = whitelist.isEmpty();
+        for (IFilter<ResourceLocation> filter : this.whitelist) {
+            if (filter.test(location)) {
+                allowed = true;
+                break;
+            }
+        }
+        for (IFilter<ResourceLocation> filter : this.blacklist) {
+            if (filter.test(location)) {
+                allowed = false;
+                break;
+            }
+        }
+        return allowed;
+    }
+
     public List<ResourceLocation> filter(List<ResourceLocation> input) {
         List<ResourceLocation> output = new ArrayList<>();
         for (ResourceLocation location : input) {
-            boolean allowed = false;
-            for (IFilter<ResourceLocation> filter : this.whitelist) {
-                if (filter.test(location)) {
-                    allowed = true;
-                    break;
-                }
-            }
-            for (IFilter<ResourceLocation> filter : this.blacklist) {
-                if (filter.test(location)) {
-                    allowed = false;
-                    break;
-                }
-            }
-            if (allowed) {
+            if (contains(location)) {
                 output.add(location);
             }
         }
         return output;
     }
 
-    public List<ResourceLocation> cache(List<ResourceLocation> input) {
-        this.cache = this.filter(input);
-        return this.cache;
+    public <T> List<T> filter(List<T> input, Function<T, ResourceLocation> getter) {
+        List<T> output = new ArrayList<>();
+        for (T entry : input) {
+            if (contains(getter.apply(entry))) {
+                output.add(entry);
+            }
+        }
+        return output;
     }
 
-    public List<ResourceLocation> getCached() {
-        return this.cache;
-    }
 
     public static class Deserializer implements JsonDeserializer<RecipeFilter> {
         @Override

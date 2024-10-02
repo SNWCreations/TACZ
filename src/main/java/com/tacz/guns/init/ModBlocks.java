@@ -1,9 +1,7 @@
 package com.tacz.guns.init;
 
 import com.tacz.guns.GunMod;
-import com.tacz.guns.block.GunSmithTableBlock;
-import com.tacz.guns.block.StatueBlock;
-import com.tacz.guns.block.TargetBlock;
+import com.tacz.guns.block.*;
 import com.tacz.guns.block.entity.GunSmithTableBlockEntity;
 import com.tacz.guns.block.entity.StatueBlockEntity;
 import com.tacz.guns.block.entity.TargetBlockEntity;
@@ -20,7 +18,10 @@ public class ModBlocks {
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, GunMod.MOD_ID);
     public static final DeferredRegister<BlockEntityType<?>> TILE_ENTITIES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, GunMod.MOD_ID);
 
-    public static RegistryObject<Block> GUN_SMITH_TABLE = BLOCKS.register("gun_smith_table", GunSmithTableBlock::new);
+//    public static RegistryObject<Block> GUN_SMITH_TABLE = BLOCKS.register("gun_smith_table", GunSmithTableBlock::new);
+    public static RegistryObject<Block> GUN_SMITH_TABLE = BLOCKS.register("gun_smith_table", GunSmithTableB::new);
+    public static RegistryObject<Block> GUN_SMITH_TABLE_A = BLOCKS.register("gun_smith_table_a", GunSmithTableA::new);
+
     public static RegistryObject<Block> TARGET = BLOCKS.register("target", TargetBlock::new);
     public static RegistryObject<Block> STATUE = BLOCKS.register("statue", StatueBlock::new);
 

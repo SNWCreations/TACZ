@@ -1,5 +1,6 @@
 package com.tacz.guns.client.gui;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mojang.blaze3d.platform.GlStateManager;
@@ -25,7 +26,11 @@ import com.tacz.guns.init.ModRecipe;
 import com.tacz.guns.inventory.GunSmithTableMenu;
 import com.tacz.guns.network.NetworkHandler;
 import com.tacz.guns.network.message.ClientMessageCraft;
+import com.tacz.guns.resource.CommonAssetManager;
+import com.tacz.guns.resource.filter.RecipeFilter;
+import com.tacz.guns.resource.pojo.data.block.BlockData;
 import com.tacz.guns.util.RenderDistance;
+import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
 import net.minecraft.ChatFormatting;
 import net.minecraft.Util;
@@ -58,6 +63,7 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
+import java.util.WeakHashMap;
 
 public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMenu> {
     private static final ResourceLocation TEXTURE = new ResourceLocation(GunMod.MOD_ID, "textures/gui/gun_smith_table.png");
@@ -115,10 +121,14 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
         putRecipeType(ModCreativeTabs.GUN_RPG_TAB);
         putRecipeType(ModCreativeTabs.GUN_MG_TAB);
 
+        List<Pair<String, ResourceLocation>> recipeIds = Lists.newArrayList();
+
         TimelessAPI.getAllRecipes().forEach((id, recipe) -> {
-            String groupName = recipe.getResult().getGroup();
-            if (this.recipeKeys.contains(groupName)) {
-                recipes.computeIfAbsent(groupName, g -> Lists.newArrayList()).add(id);
+            if (recipe instanceof GunSmithTableRecipe) {
+                String groupName = recipe.getResult().getGroup();
+                if (this.recipeKeys.contains(groupName)) {
+                    recipeIds.add(Pair.of(groupName, id));
+                }
             }
         });
 
@@ -126,12 +136,28 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
             RecipeManager recipeManager = Minecraft.getInstance().level.getRecipeManager();
             List<GunSmithTableRecipe> recipeList = recipeManager.getAllRecipesFor(ModRecipe.GUN_SMITH_TABLE_CRAFTING.get());
             for (GunSmithTableRecipe recipe : recipeList) {
+                ResourceLocation id = recipe.getId();
                 String groupName = recipe.getResult().getGroup();
                 if (this.recipeKeys.contains(groupName)) {
-                    recipes.computeIfAbsent(groupName, g -> Lists.newArrayList()).add(recipe.getId());
+                    recipeIds.add(Pair.of(groupName, id));
                 }
             }
         }
+
+        TimelessAPI.getCommonBlockIndex(menu.getBlockId()).map(blockIndex -> {
+            BlockData data = blockIndex.getData();
+            RecipeFilter filter = CommonAssetManager.INSTANCE.getRecipeFilter(data.getFilter());
+            if (filter != null) {
+                return filter.filter(recipeIds, Pair::value);
+            }
+            return null;
+        }).orElse(recipeIds).forEach(entry -> {
+            String groupName = entry.key();
+            if (this.recipeKeys.contains(groupName)) {
+                recipes.computeIfAbsent(groupName, g -> Lists.newArrayList()).add(entry.value());
+            }
+        });
+
     }
 
     private void putRecipeType(RegistryObject<CreativeModeTab> tab) {

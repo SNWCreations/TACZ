@@ -31,6 +31,8 @@ import com.tacz.guns.resource.network.CommonGunPackNetwork;
 import com.tacz.guns.util.GetJarResources;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
+import net.minecraft.client.renderer.block.model.ItemTransform;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
@@ -58,6 +60,8 @@ public class ClientGunPackLoader {
             .registerTypeAdapter(ItemStack.class, new ItemStackSerializer())
             .registerTypeAdapter(AnimationKeyframes.class, new AnimationKeyframesSerializer())
             .registerTypeAdapter(SoundEffectKeyframes.class, new SoundEffectKeyframesSerializer())
+            .registerTypeAdapter(ItemTransforms.class, new ItemTransforms.Deserializer())
+            .registerTypeAdapter(ItemTransform.class, new ItemTransform.Deserializer())
             .create();
 
     /**
@@ -233,6 +237,10 @@ public class ClientGunPackLoader {
         return ATTACHMENT_INDEX.entrySet();
     }
 
+    public static Set<Map.Entry<ResourceLocation, ClientBlockIndex>> getAllBlocks() {
+        return BLOCK_INDEX.entrySet();
+    }
+
     public static Optional<ClientGunIndex> getGunIndex(ResourceLocation registryName) {
         return Optional.ofNullable(GUN_INDEX.get(registryName));
     }
@@ -243,5 +251,9 @@ public class ClientGunPackLoader {
 
     public static Optional<ClientAttachmentIndex> getAttachmentIndex(ResourceLocation registryName) {
         return Optional.ofNullable(ATTACHMENT_INDEX.get(registryName));
+    }
+
+    public static Optional<ClientBlockIndex> getBlockIndex(ResourceLocation registryName) {
+        return Optional.ofNullable(BLOCK_INDEX.get(registryName));
     }
 }

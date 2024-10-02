@@ -2,10 +2,17 @@ package com.tacz.guns.client.renderer.block;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
+import com.tacz.guns.GunMod;
+import com.tacz.guns.api.DefaultAssets;
+import com.tacz.guns.api.TimelessAPI;
+import com.tacz.guns.api.item.IBlock;
+import com.tacz.guns.block.AbstractGunSmithTableBlock;
 import com.tacz.guns.block.GunSmithTableBlock;
 import com.tacz.guns.block.entity.GunSmithTableBlockEntity;
 import com.tacz.guns.client.model.bedrock.BedrockModel;
 import com.tacz.guns.client.resource.InternalAssetLoader;
+import com.tacz.guns.client.resource.index.ClientBlockIndex;
+import com.tacz.guns.client.resource.pojo.display.block.BlockDisplay;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
@@ -13,6 +20,7 @@ import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemDisplayContext;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BedPart;
 
@@ -22,19 +30,35 @@ public class GunSmithTableRenderer implements BlockEntityRenderer<GunSmithTableB
     public GunSmithTableRenderer(BlockEntityRendererProvider.Context context) {
     }
 
-    public static Optional<BedrockModel> getModel() {
-        return InternalAssetLoader.getBedrockModel(InternalAssetLoader.SMITH_TABLE_MODEL_LOCATION);
+    public Optional<ClientBlockIndex> getIndex(GunSmithTableBlockEntity blockEntity) {
+        ResourceLocation id = blockEntity.getId();
+        if (id==null || id.equals(DefaultAssets.EMPTY_BLOCK_ID)) {
+            return Optional.empty();
+        }
+        return TimelessAPI.getClientBlockIndex(id);
     }
 
-    public static ResourceLocation getTextureLocation() {
-        return InternalAssetLoader.SMITH_TABLE_TEXTURE_LOCATION;
+    public static Optional<ClientBlockIndex> getIndex(ItemStack stack) {
+        if (stack.getItem() instanceof IBlock iBlock) {
+            ResourceLocation id = iBlock.getBlockId(stack);
+            if (id.equals(DefaultAssets.EMPTY_BLOCK_ID)) {
+                return Optional.empty();
+            }
+            return TimelessAPI.getClientBlockIndex(id);
+        }
+        return Optional.empty();
     }
 
     @Override
     public void render(GunSmithTableBlockEntity blockEntity, float partialTick, PoseStack poseStack, MultiBufferSource bufferIn, int combinedLightIn, int combinedOverlayIn) {
-        getModel().ifPresent(model -> {
+        getIndex(blockEntity).ifPresent(index -> {
+            BedrockModel model = index.getModel();
+            ResourceLocation texture = index.getTexture();
+            if (model == null) {
+                return;
+            }
             BlockState blockState = blockEntity.getBlockState();
-            if (blockState.getValue(GunSmithTableBlock.PART).equals(BedPart.HEAD)) {
+            if (blockState.getBlock() instanceof AbstractGunSmithTableBlock block && !block.isRoot(blockState)) {
                 return;
             }
             Direction facing = blockState.getValue(GunSmithTableBlock.FACING);
@@ -42,7 +66,7 @@ public class GunSmithTableRenderer implements BlockEntityRenderer<GunSmithTableB
             poseStack.translate(0.5, 1.5, 0.5);
             poseStack.mulPose(Axis.ZN.rotationDegrees(180));
             poseStack.mulPose(Axis.YN.rotationDegrees(90 - facing.get2DDataValue() * 90));
-            RenderType renderType = RenderType.entityTranslucent(InternalAssetLoader.SMITH_TABLE_TEXTURE_LOCATION);
+            RenderType renderType = RenderType.entityTranslucent(texture);
             model.render(poseStack, ItemDisplayContext.NONE, renderType, combinedLightIn, combinedOverlayIn);
             poseStack.popPose();
         });

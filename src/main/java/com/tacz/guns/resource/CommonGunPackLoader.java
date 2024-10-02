@@ -26,6 +26,8 @@ import com.tacz.guns.resource.pojo.data.gun.ExtraDamage;
 import com.tacz.guns.resource.pojo.data.gun.Ignite;
 import com.tacz.guns.resource.serialize.*;
 import com.tacz.guns.util.GetJarResources;
+import net.minecraft.client.renderer.block.model.ItemTransform;
+import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -293,6 +295,10 @@ public class CommonGunPackLoader {
         return Optional.ofNullable(ATTACHMENT_INDEX.get(registryName));
     }
 
+    public static Optional<CommonBlockIndex> getBlockIndex(ResourceLocation blockId) {
+        return Optional.ofNullable(BLOCK_INDEX.get(blockId));
+    }
+
     public static Set<Map.Entry<ResourceLocation, CommonGunIndex>> getAllGuns() {
         return GUN_INDEX.entrySet();
     }
@@ -308,4 +314,6 @@ public class CommonGunPackLoader {
     public static Set<Map.Entry<ResourceLocation, CommonAttachmentIndex>> getAllAttachments() {
         return ATTACHMENT_INDEX.entrySet();
     }
+
+
 }

@@ -5,6 +5,7 @@ import com.tacz.guns.api.client.other.ThirdPersonManager;
 import com.tacz.guns.client.resource.ClientGunPackLoader;
 import com.tacz.guns.client.resource.index.ClientAmmoIndex;
 import com.tacz.guns.client.resource.index.ClientAttachmentIndex;
+import com.tacz.guns.client.resource.index.ClientBlockIndex;
 import com.tacz.guns.client.resource.index.ClientGunIndex;
 import com.tacz.guns.crafting.GunSmithTableRecipe;
 import com.tacz.guns.resource.CommonAssetManager;
@@ -38,6 +39,11 @@ public final class TimelessAPI {
     }
 
     @OnlyIn(Dist.CLIENT)
+    public static Optional<ClientBlockIndex> getClientBlockIndex(ResourceLocation blockId) {
+        return ClientGunPackLoader.getBlockIndex(blockId);
+    }
+
+    @OnlyIn(Dist.CLIENT)
     public static Set<Map.Entry<ResourceLocation, ClientGunIndex>> getAllClientGunIndex() {
         return ClientGunPackLoader.getAllGuns();
     }
@@ -50,6 +56,10 @@ public final class TimelessAPI {
     @OnlyIn(Dist.CLIENT)
     public static Set<Map.Entry<ResourceLocation, ClientAttachmentIndex>> getAllClientAttachmentIndex() {
         return ClientGunPackLoader.getAllAttachments();
+    }
+
+    public static Optional<CommonBlockIndex> getCommonBlockIndex(ResourceLocation blockId) {
+        return CommonGunPackLoader.getBlockIndex(blockId);
     }
 
     public static Optional<CommonGunIndex> getCommonGunIndex(ResourceLocation gunId) {
