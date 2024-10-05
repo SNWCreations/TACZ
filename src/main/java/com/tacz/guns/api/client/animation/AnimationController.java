@@ -145,7 +145,7 @@ public class AnimationController {
             return;
         }
         //更新当前动画runner
-        if (runner.isRunning() || runner.isHolding() || runner.isTransitioning()) {
+        if (runner.isRunning() || runner.isHolding() || runner.isPausing() || runner.isTransitioning()) {
             runner.update(blend);
         }
         //更新过渡目标动画runner，并且如果过渡已经完成，将其塞进currentRunners

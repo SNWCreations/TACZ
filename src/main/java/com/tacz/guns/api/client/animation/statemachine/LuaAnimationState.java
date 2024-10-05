@@ -1,11 +1,12 @@
 package com.tacz.guns.api.client.animation.statemachine;
 
 import org.luaj.vm2.*;
+import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
-public class LuaAnimationState<T extends AnimationStateContext> implements AnimationState<LuaContextWrapper<T>> {
+public class LuaAnimationState<T extends AnimationStateContext> implements AnimationState<T> {
     private final @Nonnull LuaTable luaTable;
     private final @Nullable LuaFunction updateFunction;
     private final @Nullable LuaFunction enterFunction;
@@ -27,31 +28,31 @@ public class LuaAnimationState<T extends AnimationStateContext> implements Anima
     }
 
     @Override
-    public void update(LuaContextWrapper<T> context) {
+    public void update(T context) {
         if (updateFunction != null) {
-            updateFunction.call(context.getLuaContext());
+            updateFunction.call(CoerceJavaToLua.coerce(context));
         }
     }
 
     @Override
-    public void entryAction(LuaContextWrapper<T> context) {
+    public void entryAction(T context) {
         if (enterFunction != null) {
-            enterFunction.call(context.getLuaContext());
+            enterFunction.call(CoerceJavaToLua.coerce(context));
         }
     }
 
     @Override
-    public void exitAction(LuaContextWrapper<T> context) {
+    public void exitAction(T context) {
         if (exitFunction != null) {
-            exitFunction.call(context.getLuaContext());
+            exitFunction.call(CoerceJavaToLua.coerce(context));
         }
     }
 
     @Override
-    public AnimationState<LuaContextWrapper<T>> transition(LuaContextWrapper<T> context, String condition) {
+    public AnimationState<T> transition(T context, String condition) {
         if (transitionFunction != null) {
             LuaString conditionToLua = LuaString.valueOf(condition);
-            LuaValue nextStateTable = transitionFunction.call(context.getLuaContext(), conditionToLua);
+            LuaValue nextStateTable = transitionFunction.call(CoerceJavaToLua.coerce(context), conditionToLua);
             if (nextStateTable.istable()) {
                 return new LuaAnimationState<>((LuaTable) nextStateTable);
             } else if (nextStateTable.isnil()) {

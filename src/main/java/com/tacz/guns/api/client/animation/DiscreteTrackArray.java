@@ -54,7 +54,7 @@ public class DiscreteTrackArray implements Iterable<Integer>{
                     tracks.set(index, list);
                 }
         );
-        return top;
+        return top - 1;
     }
 
     public int getTrackLineSize() {

@@ -12,7 +12,6 @@ import com.tacz.guns.api.event.common.GunFireEvent;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.attachment.AttachmentType;
 import com.tacz.guns.client.animation.screen.RefitTransform;
-import com.tacz.guns.client.animation.statemachine.GunAnimationStateMachine;
 import com.tacz.guns.client.model.BedrockAttachmentModel;
 import com.tacz.guns.client.model.BedrockGunModel;
 import com.tacz.guns.client.model.bedrock.BedrockModel;
@@ -114,14 +113,16 @@ public class FirstPersonRenderGunEvent {
         ResourceLocation gunId = iGun.getGunId(stack);
         TimelessAPI.getClientGunIndex(gunId).ifPresentOrElse(gunIndex -> {
             BedrockGunModel gunModel = gunIndex.getGunModel();
-            GunAnimationStateMachine animationStateMachine = gunIndex.getAnimationStateMachine();
+            var animationStateMachine = gunIndex.getAnimationStateMachine();
             if (gunModel == null) {
                 return;
             }
             // 在渲染之前，先更新动画，让动画数据写入模型
-            if (animationStateMachine != null) {
-                animationStateMachine.update(event.getPartialTick(), player);
-            }
+            animationStateMachine.processContextIfExist(context -> {
+                context.setCurrentGunItem(stack);
+                context.setPartialTicks(event.getPartialTick());
+            });
+            animationStateMachine.update();
 
             PoseStack poseStack = event.getPoseStack();
             poseStack.pushPose();

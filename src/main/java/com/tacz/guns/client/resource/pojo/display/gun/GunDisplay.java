@@ -39,6 +39,9 @@ public class GunDisplay {
     @SerializedName("animation")
     private ResourceLocation animationLocation;
     @Nullable
+    @SerializedName("state_machine")
+    private ResourceLocation stateMachineLocation;
+    @Nullable
     @SerializedName("use_default_animation")
     private DefaultAnimation defaultAnimation;
     @Nullable
@@ -102,6 +105,11 @@ public class GunDisplay {
     @Nullable
     public ResourceLocation getAnimationLocation() {
         return animationLocation;
+    }
+
+    @Nullable
+    public ResourceLocation getStateMachineLocation() {
+        return stateMachineLocation;
     }
 
     @Nullable

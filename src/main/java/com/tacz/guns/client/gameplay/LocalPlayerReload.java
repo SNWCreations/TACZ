@@ -1,15 +1,13 @@
 package com.tacz.guns.client.gameplay;
 
-import com.tacz.guns.api.DefaultAssets;
 import com.tacz.guns.api.TimelessAPI;
 import com.tacz.guns.api.entity.IGunOperator;
 import com.tacz.guns.api.event.common.GunReloadEvent;
 import com.tacz.guns.api.item.IAmmo;
 import com.tacz.guns.api.item.IAmmoBox;
 import com.tacz.guns.api.item.IGun;
-import com.tacz.guns.api.item.attachment.AttachmentType;
 import com.tacz.guns.api.item.gun.AbstractGunItem;
-import com.tacz.guns.client.animation.statemachine.GunAnimationStateMachine;
+import com.tacz.guns.client.animation.statemachine.GunAnimationConstant;
 import com.tacz.guns.client.resource.index.ClientGunIndex;
 import com.tacz.guns.client.sound.SoundPlayManager;
 import com.tacz.guns.network.NetworkHandler;
@@ -63,7 +61,7 @@ public class LocalPlayerReload {
     }
 
     private void doReload(IGun iGun, ClientGunIndex gunIndex, ItemStack mainhandItem) {
-        GunAnimationStateMachine animationStateMachine = gunIndex.getAnimationStateMachine();
+        var animationStateMachine = gunIndex.getAnimationStateMachine();
         if (animationStateMachine != null) {
             Bolt boltType = gunIndex.getGunData().getBolt();
             boolean noAmmo;
@@ -77,17 +75,7 @@ public class LocalPlayerReload {
             // 触发 reload，停止播放声音
             SoundPlayManager.stopPlayGunSound();
             SoundPlayManager.playReloadSound(player, gunIndex, noAmmo);
-            animationStateMachine.setNoAmmo(noAmmo).onGunReload();
-        }
-    }
-
-    // TODO 这块没完全弄好，目前还有问题
-    private void playMagExtendedAnimation(ItemStack mainhandItem, IGun iGun, GunAnimationStateMachine animationStateMachine) {
-        ResourceLocation extendedMagId = iGun.getAttachmentId(mainhandItem, AttachmentType.EXTENDED_MAG);
-        if (!DefaultAssets.isEmptyAttachmentId(extendedMagId)) {
-            TimelessAPI.getCommonAttachmentIndex(extendedMagId).ifPresent(index -> {
-                animationStateMachine.setMagExtended(index.getData().getExtendedMagLevel() > 0);
-            });
+            animationStateMachine.trigger(GunAnimationConstant.INPUT_RELOAD);
         }
     }
 

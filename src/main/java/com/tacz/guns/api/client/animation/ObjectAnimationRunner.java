@@ -31,6 +31,7 @@ public class ObjectAnimationRunner {
      */
     protected ArrayList<ObjectAnimationChannel> recoverChannels;
     private boolean running = false;
+    private boolean pausing = false;
     private long lastUpdateNs;
     /**
      * 当前动画播放进度
@@ -62,20 +63,22 @@ public class ObjectAnimationRunner {
             running = true;
             lastUpdateNs = System.nanoTime();
         }
+        pausing = false;
     }
 
     public void pause() {
         running = false;
+        pausing = true;
     }
 
     public void hold() {
         progressNs = (long) (animation.getMaxEndTimeS() * 1e9) + 1;
-        pause();
+        running = false;
     }
 
     public void stop() {
         progressNs = (long) (animation.getMaxEndTimeS() * 1e9) + 2;
-        pause();
+        running = false;
     }
 
     public void reset() {
@@ -98,7 +101,7 @@ public class ObjectAnimationRunner {
             this.transitionToChannels = new ArrayList<>();
             this.recoverChannels = new ArrayList<>();
             this.transitionTo = transitionTo;
-            this.pause();
+            this.running = false;
             for (Map.Entry<String, List<ObjectAnimationChannel>> entry : animation.getChannels().entrySet()) {
                 List<ObjectAnimationChannel> toChannels = transitionTo.animation.getChannels().get(entry.getKey());
                 if (toChannels != null) {
@@ -267,6 +270,8 @@ public class ObjectAnimationRunner {
     public boolean isRunning() {
         return running;
     }
+
+    public boolean isPausing() { return pausing; }
 
     public boolean isHolding() {
         return progressNs == (long) (getAnimation().getMaxEndTimeS() * 1e9) + 1;

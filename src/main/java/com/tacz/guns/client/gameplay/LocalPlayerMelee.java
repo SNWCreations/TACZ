@@ -2,11 +2,11 @@ package com.tacz.guns.client.gameplay;
 
 import com.tacz.guns.api.DefaultAssets;
 import com.tacz.guns.api.TimelessAPI;
+import com.tacz.guns.api.client.animation.statemachine.AnimationStateMachine;
 import com.tacz.guns.api.event.common.GunMeleeEvent;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.attachment.AttachmentType;
 import com.tacz.guns.client.animation.statemachine.GunAnimationConstant;
-import com.tacz.guns.client.animation.statemachine.GunAnimationStateMachine;
 import com.tacz.guns.client.sound.SoundPlayManager;
 import com.tacz.guns.network.NetworkHandler;
 import com.tacz.guns.network.message.ClientMessagePlayerMelee;
@@ -21,9 +21,9 @@ import net.minecraftforge.fml.LogicalSide;
 import javax.annotation.Nullable;
 
 public class LocalPlayerMelee {
+    public static final String MELEE_STOCK_ANIMATION = "melee_stock";
     private final LocalPlayerDataHolder data;
     private final LocalPlayer player;
-    private int meleeCounter = 0;
 
     public LocalPlayerMelee(LocalPlayerDataHolder data, LocalPlayer player) {
         this.data = data;
@@ -62,7 +62,7 @@ public class LocalPlayerMelee {
                 return;
             }
             String animationType = defaultMeleeData.getAnimationType();
-            if (GunAnimationConstant.MELEE_STOCK_ANIMATION.equals(animationType)) {
+            if (MELEE_STOCK_ANIMATION.equals(animationType)) {
                 this.doStockMelee(gunId);
                 return;
             }
@@ -86,10 +86,9 @@ public class LocalPlayerMelee {
                 // 发送切换开火模式的数据包，通知服务器
                 NetworkHandler.CHANNEL.sendToServer(new ClientMessagePlayerMelee());
                 // 动画状态机转移状态
-                GunAnimationStateMachine animationStateMachine = gunIndex.getAnimationStateMachine();
+                AnimationStateMachine<?> animationStateMachine = gunIndex.getAnimationStateMachine();
                 if (animationStateMachine != null) {
-                    animationStateMachine.onBayonetAttack(meleeCounter);
-                    meleeCounter = (meleeCounter + 1) % 3;
+                    animationStateMachine.trigger(GunAnimationConstant.INPUT_BAYONET_MUZZLE);
                 }
             });
         }
@@ -103,9 +102,9 @@ public class LocalPlayerMelee {
                 // 发送切换开火模式的数据包，通知服务器
                 NetworkHandler.CHANNEL.sendToServer(new ClientMessagePlayerMelee());
                 // 动画状态机转移状态
-                GunAnimationStateMachine animationStateMachine = gunIndex.getAnimationStateMachine();
+                AnimationStateMachine<?> animationStateMachine = gunIndex.getAnimationStateMachine();
                 if (animationStateMachine != null) {
-                    animationStateMachine.onStockAttack();
+                    animationStateMachine.trigger(GunAnimationConstant.INPUT_BAYONET_STOCK);
                 }
             });
         }
@@ -119,9 +118,9 @@ public class LocalPlayerMelee {
                 // 发送切换开火模式的数据包，通知服务器
                 NetworkHandler.CHANNEL.sendToServer(new ClientMessagePlayerMelee());
                 // 动画状态机转移状态
-                GunAnimationStateMachine animationStateMachine = gunIndex.getAnimationStateMachine();
+                AnimationStateMachine<?> animationStateMachine = gunIndex.getAnimationStateMachine();
                 if (animationStateMachine != null) {
-                    animationStateMachine.onPushAttack();
+                    animationStateMachine.trigger(GunAnimationConstant.INPUT_BAYONET_PUSH);
                 }
             });
         }

@@ -152,6 +152,7 @@ public class ClientGunPackLoader {
             TextureLoader.load(root);
             SoundLoader.load(root);
             LanguageLoader.load(root);
+            ScriptLoader.load(root);
             PackInfoLoader.load(root);
         }
     }
@@ -201,6 +202,10 @@ public class ClientGunPackLoader {
                 }
                 // 加载语言文件
                 if (LanguageLoader.load(zipFile, path)) {
+                    continue;
+                }
+                // 加载脚本文件
+                if (ScriptLoader.load(zipFile, path)) {
                     continue;
                 }
                 // 加载信息文件

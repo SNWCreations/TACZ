@@ -1,8 +1,9 @@
 package com.tacz.guns.client.gameplay;
 
 import com.tacz.guns.api.TimelessAPI;
+import com.tacz.guns.api.client.animation.statemachine.AnimationStateMachine;
 import com.tacz.guns.api.item.IGun;
-import com.tacz.guns.client.animation.statemachine.GunAnimationStateMachine;
+import com.tacz.guns.client.animation.statemachine.GunAnimationConstant;
 import com.tacz.guns.client.sound.SoundPlayManager;
 import com.tacz.guns.network.NetworkHandler;
 import com.tacz.guns.network.message.ClientMessagePlayerBoltGun;
@@ -53,10 +54,10 @@ public class LocalPlayerBolt {
             // 发包通知服务器
             NetworkHandler.CHANNEL.sendToServer(new ClientMessagePlayerBoltGun());
             // 播放动画和音效
-            GunAnimationStateMachine animationStateMachine = gunIndex.getAnimationStateMachine();
+            AnimationStateMachine<?> animationStateMachine = gunIndex.getAnimationStateMachine();
             if (animationStateMachine != null) {
                 SoundPlayManager.playBoltSound(player, gunIndex);
-                animationStateMachine.onGunBolt();
+                animationStateMachine.trigger(GunAnimationConstant.INPUT_BOLT);
             }
         });
     }

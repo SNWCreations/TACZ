@@ -10,8 +10,10 @@ import com.tacz.guns.api.client.animation.AnimationController;
 import com.tacz.guns.api.client.animation.Animations;
 import com.tacz.guns.api.client.animation.ObjectAnimation;
 import com.tacz.guns.api.client.animation.gltf.AnimationStructure;
+import com.tacz.guns.api.client.animation.statemachine.LuaAnimationStateMachine;
+import com.tacz.guns.api.client.animation.statemachine.LuaStateMachineFactory;
 import com.tacz.guns.api.item.gun.FireMode;
-import com.tacz.guns.client.animation.statemachine.GunAnimationStateMachine;
+import com.tacz.guns.client.animation.statemachine.GunAnimationStateContext;
 import com.tacz.guns.client.model.BedrockGunModel;
 import com.tacz.guns.client.resource.ClientAssetManager;
 import com.tacz.guns.client.resource.InternalAssetLoader;
@@ -47,7 +49,7 @@ public class ClientGunIndex {
     private String thirdPersonAnimation = "empty";
     private BedrockGunModel gunModel;
     private @Nullable Pair<BedrockGunModel, ResourceLocation> lodModel;
-    private GunAnimationStateMachine animationStateMachine;
+    private LuaAnimationStateMachine<GunAnimationStateContext> animationStateMachine;
     private @Nullable ResourceLocation playerAnimator3rd = new ResourceLocation(GunMod.MOD_ID, "rifle_default.player_animation");
     private Map<String, ResourceLocation> sounds;
     private GunTransform transform;
@@ -230,8 +232,16 @@ public class ClientGunIndex {
                 }
             }
         }
-        // 将动画控制器包装起来
-        index.animationStateMachine = new GunAnimationStateMachine(controller);
+        // 初始化动画状态机，将动画控制器封装进去。
+        ResourceLocation stateMachineLocation = display.getStateMachineLocation();
+        if (stateMachineLocation == null) {
+            // 如果没指定状态机，则使用默认状态机
+            stateMachineLocation = new ResourceLocation("tacz", "default_state_machine");
+        }
+        index.animationStateMachine = new LuaStateMachineFactory<GunAnimationStateContext>()
+                .setController(controller)
+                .setLuaScripts(ClientAssetManager.INSTANCE.getScript(stateMachineLocation))
+                .build();
         // 初始化第三人称动画
         if (StringUtils.isNoneBlank(display.getThirdPersonAnimation())) {
             index.thirdPersonAnimation = display.getThirdPersonAnimation();
@@ -355,7 +365,7 @@ public class ClientGunIndex {
         return lodModel;
     }
 
-    public GunAnimationStateMachine getAnimationStateMachine() {
+    public LuaAnimationStateMachine<GunAnimationStateContext> getAnimationStateMachine() {
         return animationStateMachine;
     }
 

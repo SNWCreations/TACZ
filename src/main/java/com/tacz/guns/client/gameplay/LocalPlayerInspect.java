@@ -2,7 +2,7 @@ package com.tacz.guns.client.gameplay;
 
 import com.tacz.guns.api.TimelessAPI;
 import com.tacz.guns.api.item.IGun;
-import com.tacz.guns.client.animation.statemachine.GunAnimationStateMachine;
+import com.tacz.guns.client.animation.statemachine.GunAnimationConstant;
 import com.tacz.guns.client.sound.SoundPlayManager;
 import com.tacz.guns.resource.pojo.data.gun.Bolt;
 import net.minecraft.client.player.LocalPlayer;
@@ -40,9 +40,9 @@ public class LocalPlayerInspect {
             // 触发 inspect，停止播放声音
             SoundPlayManager.stopPlayGunSound();
             SoundPlayManager.playInspectSound(player, gunIndex, noAmmo);
-            GunAnimationStateMachine animationStateMachine = gunIndex.getAnimationStateMachine();
+            var animationStateMachine = gunIndex.getAnimationStateMachine();
             if (animationStateMachine != null) {
-                animationStateMachine.setNoAmmo(noAmmo).onGunInspect();
+                animationStateMachine.trigger(GunAnimationConstant.INPUT_INSPECT);
             }
         });
     }

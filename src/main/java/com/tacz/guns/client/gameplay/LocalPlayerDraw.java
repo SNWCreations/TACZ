@@ -1,10 +1,12 @@
 package com.tacz.guns.client.gameplay;
 
 import com.tacz.guns.api.TimelessAPI;
+import com.tacz.guns.api.client.animation.statemachine.AnimationStateMachine;
 import com.tacz.guns.api.client.other.KeepingItemRenderer;
 import com.tacz.guns.api.event.common.GunDrawEvent;
 import com.tacz.guns.api.item.IGun;
-import com.tacz.guns.client.animation.statemachine.GunAnimationStateMachine;
+import com.tacz.guns.client.animation.statemachine.GunAnimationConstant;
+import com.tacz.guns.client.animation.statemachine.GunAnimationStateContext;
 import com.tacz.guns.client.sound.SoundPlayManager;
 import com.tacz.guns.network.NetworkHandler;
 import com.tacz.guns.network.message.ClientMessagePlayerDrawGun;
@@ -66,16 +68,26 @@ public class LocalPlayerDraw {
 
     private void doDraw(IGun currentGun, ItemStack currentItem, long putAwayTime) {
         TimelessAPI.getClientGunIndex(currentGun.getGunId(currentItem)).ifPresent(gunIndex -> {
-            GunAnimationStateMachine animationStateMachine = gunIndex.getAnimationStateMachine();
+            // 初始化状态机
+            AnimationStateMachine<GunAnimationStateContext> animationStateMachine = gunIndex.getAnimationStateMachine();
             if (animationStateMachine == null) {
                 return;
             }
+            if (animationStateMachine.isInitialized()) {
+                animationStateMachine.exit();
+            }
+            GunAnimationStateContext context = new GunAnimationStateContext();
+            context.setCurrentGunItem(currentItem);
+            animationStateMachine.setContext(context);
+            animationStateMachine.initialize();
+            // 取消预定中的 draw 行为
             if (data.drawFuture != null) {
                 data.drawFuture.cancel(false);
             }
+            // 根据 put away time 预定 draw 行为
             data.drawFuture = LocalPlayerDataHolder.SCHEDULED_EXECUTOR_SERVICE.schedule(() -> {
                 Minecraft.getInstance().submitAsync(() -> {
-                    animationStateMachine.onGunDraw();
+                    animationStateMachine.trigger(GunAnimationConstant.INPUT_DRAW);
                     SoundPlayManager.stopPlayGunSound();
                     SoundPlayManager.playDrawSound(player, gunIndex);
                 });
@@ -94,11 +106,19 @@ public class LocalPlayerDraw {
                 SoundPlayManager.playPutAwaySound(player, gunIndex);
             });
             // 播放收枪动画
-            GunAnimationStateMachine animationStateMachine = gunIndex.getAnimationStateMachine();
+            AnimationStateMachine<GunAnimationStateContext> animationStateMachine = gunIndex.getAnimationStateMachine();
             if (animationStateMachine != null) {
-                animationStateMachine.onGunPutAway(putAwayTime / 1000F);
+                animationStateMachine.processContextIfExist(context -> {
+                    context.setPutAwayTime(putAwayTime / 1000F);
+                    context.setCurrentGunItem(lastItem);
+                });
+                animationStateMachine.trigger(GunAnimationConstant.INPUT_PUT_AWAY);
                 // 保持枪械的渲染直到收枪动作完成
                 KeepingItemRenderer.getRenderer().keep(lastItem, putAwayTime);
+                // 退出状态机
+                if (animationStateMachine.isInitialized()) {
+                    animationStateMachine.exit();
+                }
             }
         });
     }

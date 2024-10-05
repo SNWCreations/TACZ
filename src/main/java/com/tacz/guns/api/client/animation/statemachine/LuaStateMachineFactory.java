@@ -4,6 +4,7 @@ import com.tacz.guns.api.client.animation.AnimationController;
 import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 
 import java.util.LinkedList;
 import java.util.function.Supplier;
@@ -19,12 +20,12 @@ public class LuaStateMachineFactory<T extends AnimationStateContext> {
         var stateMachine = new LuaAnimationStateMachine<T>(controller);
         stateMachine.initializeFunc = (context) -> {
             if (initializeFunc != null) {
-                initializeFunc.call(context.getLuaContext());
+                initializeFunc.call(CoerceJavaToLua.coerce(context));
             }
         };
         stateMachine.exitFunc = (context) -> {
             if (exitFunc != null) {
-                exitFunc.call(context.getLuaContext());
+                exitFunc.call(CoerceJavaToLua.coerce(context));
             }
         };
         stateMachine.setStatesSupplier(getStatesSupplier());
@@ -37,6 +38,9 @@ public class LuaStateMachineFactory<T extends AnimationStateContext> {
     }
 
     public LuaStateMachineFactory<T> setLuaScripts(LuaTable table) {
+        if (table == null) {
+            return this;
+        }
         this.initializeFunc = checkFunction("initialize", table);
         this.exitFunc = checkFunction("exit", table);
         this.statesFunc = checkFunction("states", table);
@@ -57,7 +61,7 @@ public class LuaStateMachineFactory<T extends AnimationStateContext> {
         }
     }
 
-    private Supplier<Iterable<? extends AnimationState<LuaContextWrapper<T>>>> getStatesSupplier() {
+    private Supplier<Iterable<? extends AnimationState<T>>> getStatesSupplier() {
         if (statesFunc == null) {
             return null;
         }

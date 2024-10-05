@@ -1,7 +1,6 @@
 package com.tacz.guns.client.resource;
 
 import com.google.common.collect.Maps;
-import com.mojang.blaze3d.audio.SoundBuffer;
 import com.tacz.guns.api.client.animation.gltf.AnimationStructure;
 import com.tacz.guns.client.model.BedrockAttachmentModel;
 import com.tacz.guns.client.model.BedrockGunModel;
@@ -17,6 +16,7 @@ import com.tacz.guns.compat.playeranimator.PlayerAnimatorCompat;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
+import org.luaj.vm2.LuaTable;
 
 import javax.annotation.Nullable;
 import javax.sound.sampled.AudioFormat;
@@ -67,6 +67,8 @@ public enum ClientAssetManager {
     private final Map<ResourceLocation, BedrockAttachmentModel> tempAttachmentModelMap = Maps.newHashMap();
 
     private final Map<ResourceLocation, BedrockGunModel> tempGunModelMap = Maps.newHashMap();
+
+    private final Map<ResourceLocation, LuaTable> scriptsMap = Maps.newHashMap();
 
     @Nullable
     private static BedrockAttachmentModel getAttachmentModel(BedrockModelPOJO modelPOJO) {
@@ -128,6 +130,10 @@ public enum ClientAssetManager {
         Map<String, String> languageMaps = languages.getOrDefault(region, Maps.newHashMap());
         languageMaps.putAll(lang);
         languages.put(region, languageMaps);
+    }
+
+    public void putScript(ResourceLocation registryName, LuaTable luaTable) {
+        scriptsMap.put(registryName, luaTable);
     }
 
     public GunDisplay getGunDisplay(ResourceLocation registryName) {
@@ -196,6 +202,10 @@ public enum ClientAssetManager {
         return attachmentModel;
     }
 
+    public LuaTable getScript(ResourceLocation registryName) {
+        return scriptsMap.get(registryName);
+    }
+
     /**
      * 清除所有缓存
      */
@@ -212,6 +222,7 @@ public enum ClientAssetManager {
         this.languages.clear();
         this.tempGunModelMap.clear();
         this.tempAttachmentModelMap.clear();
+        this.scriptsMap.clear();
         PlayerAnimatorCompat.clearAllAnimationCache();
     }
 

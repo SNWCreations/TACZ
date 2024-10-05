@@ -1,10 +1,11 @@
 package com.tacz.guns.client.gameplay;
 
 import com.tacz.guns.api.TimelessAPI;
+import com.tacz.guns.api.client.animation.statemachine.AnimationStateMachine;
 import com.tacz.guns.api.event.common.GunFireSelectEvent;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.gun.AbstractGunItem;
-import com.tacz.guns.client.animation.statemachine.GunAnimationStateMachine;
+import com.tacz.guns.client.animation.statemachine.GunAnimationConstant;
 import com.tacz.guns.client.sound.SoundPlayManager;
 import com.tacz.guns.network.NetworkHandler;
 import com.tacz.guns.network.message.ClientMessagePlayerFireSelect;
@@ -49,9 +50,9 @@ public class LocalPlayerFireSelect {
             }
             AttachmentPropertyManager.postChangeEvent(player, mainhandItem);
             // 动画状态机转移状态
-            GunAnimationStateMachine animationStateMachine = gunIndex.getAnimationStateMachine();
+            AnimationStateMachine<?> animationStateMachine = gunIndex.getAnimationStateMachine();
             if (animationStateMachine != null) {
-                animationStateMachine.onGunFireSelect();
+                animationStateMachine.trigger(GunAnimationConstant.INPUT_FIRE_SELECT);
             }
         });
     }

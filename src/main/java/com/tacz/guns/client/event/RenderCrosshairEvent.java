@@ -5,11 +5,12 @@ import com.mojang.blaze3d.platform.Window;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.tacz.guns.GunMod;
 import com.tacz.guns.api.TimelessAPI;
+import com.tacz.guns.api.client.animation.statemachine.AnimationStateContext;
+import com.tacz.guns.api.client.animation.statemachine.AnimationStateMachine;
 import com.tacz.guns.api.client.gameplay.IClientPlayerGunOperator;
 import com.tacz.guns.api.entity.IGunOperator;
 import com.tacz.guns.api.entity.ReloadState;
 import com.tacz.guns.api.item.IGun;
-import com.tacz.guns.client.animation.statemachine.GunAnimationStateMachine;
 import com.tacz.guns.client.gui.GunRefitScreen;
 import com.tacz.guns.client.renderer.crosshair.CrosshairType;
 import com.tacz.guns.compat.shouldersurfing.ShoulderSurfingCompat;
@@ -85,8 +86,9 @@ public class RenderCrosshairEvent {
                     }
                 }
 
-                GunAnimationStateMachine animationStateMachine = gunIndex.getAnimationStateMachine();
-                if (!animationStateMachine.shouldHideCrossHair()) {
+                AnimationStateMachine<?> animationStateMachine = gunIndex.getAnimationStateMachine();
+                AnimationStateContext context = animationStateMachine.getContext();
+                if (context == null || !context.shouldHideCrossHair()) {
                     renderCrosshair(event.getGuiGraphics(), event.getWindow());
                 }
             });

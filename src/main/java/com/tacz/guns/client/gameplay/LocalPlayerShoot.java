@@ -1,6 +1,7 @@
 package com.tacz.guns.client.gameplay;
 
 import com.tacz.guns.api.TimelessAPI;
+import com.tacz.guns.api.client.animation.statemachine.AnimationStateMachine;
 import com.tacz.guns.api.client.gameplay.IClientPlayerGunOperator;
 import com.tacz.guns.api.entity.IGunOperator;
 import com.tacz.guns.api.entity.ShootResult;
@@ -8,7 +9,7 @@ import com.tacz.guns.api.event.common.GunFireEvent;
 import com.tacz.guns.api.event.common.GunShootEvent;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.gun.FireMode;
-import com.tacz.guns.client.animation.statemachine.GunAnimationStateMachine;
+import com.tacz.guns.client.animation.statemachine.GunAnimationConstant;
 import com.tacz.guns.client.resource.index.ClientGunIndex;
 import com.tacz.guns.client.sound.SoundPlayManager;
 import com.tacz.guns.network.NetworkHandler;
@@ -158,9 +159,9 @@ public class LocalPlayerShoot {
             boolean fire = !MinecraftForge.EVENT_BUS.post(new GunFireEvent(player, mainhandItem, LogicalSide.CLIENT));
             if (fire) {
                 // 动画和声音循环播放
-                GunAnimationStateMachine animationStateMachine = gunIndex.getAnimationStateMachine();
+                AnimationStateMachine<?> animationStateMachine = gunIndex.getAnimationStateMachine();
                 if (animationStateMachine != null) {
-                    animationStateMachine.onGunShoot();
+                    animationStateMachine.trigger(GunAnimationConstant.INPUT_SHOOT);
                 }
                 // 获取消音
                 final boolean useSilenceSound = this.useSilenceSound();
