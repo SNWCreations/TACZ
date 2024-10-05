@@ -47,6 +47,7 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
     }
 
     /**
+     * 获取枪膛中是否有子弹。
      * @return 枪膛中是否有子弹。如果是开膛待击的枪械，则此方法返回 false。
      */
     public boolean hasBulletInBarrel() {
@@ -57,6 +58,7 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
     }
 
     /**
+     * 获取弹匣中的备弹数。
      * @return 返回弹匣中的备弹数，不计算已在枪管中的弹药。
      */
     public int getAmmoCount() {
@@ -64,6 +66,7 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
     }
 
     /**
+     * 获取枪械弹匣的最大备弹数。
      * @return 返回枪械弹匣的最大备弹数，不计算已在枪管中的弹药。
      */
     public int getMaxAmmoCount() {
@@ -82,7 +85,8 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
     }
 
     /**
-     * @return 持枪玩家的喵准进度，取值范围：0 ~ 1。
+     * 获取持枪玩家的瞄准进度。
+     * @return 持枪玩家的瞄准进度，取值范围：0 ~ 1。
      *         0 代表没有喵准，1 代表喵准完成。
      */
     public float getAimingProgress() {
@@ -90,6 +94,7 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
     }
 
     /**
+     * 获取玩家的射击冷却。
      * @return 玩家的射击冷却，单位为毫秒(ms)。
      */
     public long getShootCoolDown() {
@@ -97,6 +102,7 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
     }
 
     /**
+     * 获取玩家的按键输入是否为上。
      * @return 玩家的按键输入是否为上 (对应着移动中的前进按键，如 W)
      */
     public boolean isInputUp() {
@@ -104,6 +110,7 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
     }
 
     /**
+     * 获取玩家的按键输入是否为下。
      * @return 玩家的按键输入是否为下 (对应着移动中的后退按键，如 S)
      */
     public boolean isInputDown() {
@@ -111,6 +118,7 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
     }
 
     /**
+     * 获取玩家的按键输入是否为左。
      * @return 玩家的按键输入是否为左 (对应着移动中的左移按键，如 A)
      */
     public boolean isInputLeft() {
@@ -118,6 +126,7 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
     }
 
     /**
+     * 获取玩家的按键输入是否为右。
      * @return 玩家的按键输入是否为右 (对应着移动中的右移按键，如 D)
      */
     public boolean isInputRight() {
@@ -125,6 +134,7 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
     }
 
     /**
+     * 获取玩家的按键输入是否为跳跃。
      * @return 玩家的按键输入是否为跳跃 (对应着移动中的跳跃按键，如 Space)
      */
     public boolean isInputJumping() {
@@ -132,6 +142,7 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
     }
 
     /**
+     * 获取玩家当前是否正在匍匐
      * @return 玩家当前是否正在匍匐
      */
     public boolean isCrawl() {
@@ -139,6 +150,7 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
     }
 
     /**
+     * 获取玩家是否接触地面
      * @return 玩家是否接触地面
      */
     public boolean isOnGround() {
@@ -146,6 +158,7 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
     }
 
     /**
+     * 获取 玩家是否蹲伏
      * @return 玩家是否蹲伏
      */
     public boolean isCrouching() {
@@ -153,7 +166,7 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
     }
 
     /**
-     * 在玩家当前的 walkDist 打上锚点。此后，getWalkDist() 将返回与此锚点的相对值
+     * 在玩家当前的行走距离打上锚点。此后，getWalkDist() 将返回与此锚点的相对值
      */
     public void anchorWalkDist() {
         processPlayer(player -> {
@@ -163,7 +176,8 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
     }
 
     /**
-     * @return 如果 walkDist 打过锚点，则返回与锚点的相对行走距离。否则返回绝对行走距离。
+     * 获取与锚点相对的行走距离。如果没有打锚点，则直接获取行走距离。
+     * @return 与锚点相对的行走距离。如果没有打锚点，则直接返回行走距离。
      */
     public float getWalkDist() {
         return processPlayer(player -> {
@@ -172,6 +186,9 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
         }).orElse(0f);
     }
 
+    /**
+     * 状态机脚本请不要调用此方法。此方法用于状态机更新时设置当前的物品对象。
+     */
     public void setCurrentGunItem(ItemStack currentGunItem) {
         this.currentGunItem = currentGunItem;
         this.iGun = IGun.getIGunOrNull(currentGunItem);
@@ -181,12 +198,16 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
     }
 
     /**
-     * @return 状态机更新时的 partialTicks。此值在每次 update 时都会更新。
+     * 获取最后一次更新时的 partialTicks
+     * @return 状态机最后一次更新的 partialTicks.
      */
     public float getPartialTicks() {
         return partialTicks;
     }
 
+    /**
+     * 状态机脚本请不要调用此方法。此方法用于状态机更新时设置 partialTicks。
+     */
     public void setPartialTicks(float partialTicks) {
         this.partialTicks = partialTicks;
     }

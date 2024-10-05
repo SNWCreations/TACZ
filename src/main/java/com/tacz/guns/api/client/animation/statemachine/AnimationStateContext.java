@@ -14,10 +14,18 @@ public class AnimationStateContext {
     private @Nullable AnimationStateMachine<?> stateMachine;
     private final DiscreteTrackArray trackArray = new DiscreteTrackArray();
 
+    /**
+     * 状态机脚本不要调用此方法。
+     * @return 上下文绑定的状态机。
+     */
     public @Nullable AnimationStateMachine<?> getStateMachine() {
         return stateMachine;
     }
 
+    /**
+     * 状态机脚本不要调用此方法。
+     * @return 上下文的离散轨道序列。
+     */
     public DiscreteTrackArray getTrackArray() {
         return trackArray;
     }
@@ -43,6 +51,7 @@ public class AnimationStateContext {
     }
 
     /**
+     * 获取轨道行的数量
      * @return 轨道行的数量
      * @throws TrackArrayMismatchException 当状态机对应的 track array 不是当前 context 指定的实例，抛出此异常。
      */
@@ -96,7 +105,7 @@ public class AnimationStateContext {
     }
 
     /**
-     *
+     * 获取轨道指针
      * @param trackLineIndex 轨道行的下标
      * @param trackIndex 轨道的下标
      * @return 轨道在控制器中的指针，或者 -1 当轨道不存在
@@ -257,6 +266,7 @@ public class AnimationStateContext {
     }
 
     /**
+     * 获取指定轨道是否被挂起
      * @return 返回对应轨道的动画是否挂起。轨道为空时此方法返回 false，因为轨道没有动画的时候视为轨道停止，而非挂起。
      */
     public boolean isHolding(int track) {
@@ -270,6 +280,7 @@ public class AnimationStateContext {
     }
 
     /**
+     * 获取指定轨道是否停止
      * @return 返回对应轨道的动画是否停止。轨道为空时此方法返回 true，因为轨道没有动画的时候视为轨道停止。
      */
     public boolean isStopped(int track) {
@@ -283,6 +294,7 @@ public class AnimationStateContext {
     }
 
     /**
+     * 获取指定轨道是否暂停
      * @return 返回对应轨道的动画是否暂停。轨道为空时此方法返回 false，因为轨道没有动画的时候视为轨道停止，而非暂停。
      */
     public boolean isPause(int track) {
