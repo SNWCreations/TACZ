@@ -33,11 +33,15 @@ public class SoundPlayManager {
      */
     private static GunSoundInstance tmpSoundInstance = null;
 
-    public static GunSoundInstance playClientSound(Entity entity, @Nullable ResourceLocation name, float volume, float pitch, int distance) {
+    public static GunSoundInstance playClientSound(Entity entity, @Nullable ResourceLocation name, float volume, float pitch, int distance, boolean mono) {
         Minecraft minecraft = Minecraft.getInstance();
-        GunSoundInstance instance = new GunSoundInstance(ModSounds.GUN.get(), SoundSource.PLAYERS, volume, pitch, entity, distance, name);
+        GunSoundInstance instance = new GunSoundInstance(ModSounds.GUN.get(), SoundSource.PLAYERS, volume, pitch, entity, distance, name, mono);
         minecraft.getSoundManager().play(instance);
         return instance;
+    }
+
+    public static GunSoundInstance playClientSound(Entity entity, @Nullable ResourceLocation name, float volume, float pitch, int distance) {
+        return playClientSound(entity, name, volume, pitch, distance, false);
     }
 
     public static void stopPlayGunSound() {
@@ -154,11 +158,16 @@ public class SoundPlayManager {
         }
         ResourceLocation gunId = message.getGunId();
         TimelessAPI.getClientGunIndex(gunId).ifPresent(index -> {
-            ResourceLocation soundId = index.getSounds(message.getSoundName());
+            String soundName = message.getSoundName();
+            ResourceLocation soundId = index.getSounds(soundName);
             if (soundId == null) {
                 return;
             }
-            playClientSound(livingEntity, soundId, message.getVolume(), message.getPitch(), message.getDistance());
+            if (SoundManager.SHOOT_3P_SOUND.equals(soundName) || SoundManager.SILENCE_3P_SOUND.equals(soundName)) {
+                playClientSound(livingEntity, soundId, message.getVolume(), message.getPitch(), message.getDistance(), true);
+            } else {
+                playClientSound(livingEntity, soundId, message.getVolume(), message.getPitch(), message.getDistance());
+            }
         });
     }
 }
