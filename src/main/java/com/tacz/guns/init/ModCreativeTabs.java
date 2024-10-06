@@ -11,6 +11,7 @@ import com.tacz.guns.api.item.gun.AbstractGunItem;
 import com.tacz.guns.item.AmmoBoxItem;
 import com.tacz.guns.item.AmmoItem;
 import com.tacz.guns.item.AttachmentItem;
+import com.tacz.guns.item.GunSmithTableItem;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
@@ -26,7 +27,7 @@ public class ModCreativeTabs {
             .title(Component.translatable("itemGroup.tab.tacz.other"))
             .icon(() -> ModItems.GUN_SMITH_TABLE.get().getDefaultInstance())
             .displayItems((parameters, output) -> {
-                output.accept(ModItems.GUN_SMITH_TABLE.get());
+                output.acceptAll(GunSmithTableItem.fillItemCategory());
                 output.accept(ModItems.TARGET.get());
                 output.accept(ModItems.STATUE.get());
                 output.accept(ModItems.TARGET_MINECART.get());

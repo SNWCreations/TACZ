@@ -1,5 +1,4 @@
 {
-  "block.tacz.gun_smith_table": "枪械工作台",
   "block.tacz.statue": "石像",
   "block.tacz.target": "人形标靶",
   "commands.tacz.reload.backup": "§a§l●§r You can find the overwritten files in the §c§nconfig/tacz/backup§r folder",

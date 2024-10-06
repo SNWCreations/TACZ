@@ -184,5 +184,7 @@
   "tacz.attachment.stock_militech_b5.name": "Militech B5 Stock",
   "tacz.attachment.oem_stock_heavy.name": "Factory Issued Heavy Stock",
   "tacz.attachment.oem_stock_light.name": "Factory Issued light Stock",
-  "tacz.attachment.oem_stock_tactical.name": "Factory Issued Tactical Stock"
+  "tacz.attachment.oem_stock_tactical.name": "Factory Issued Tactical Stock",
+
+  "tacz.block.gun_smith_table": "Gun Smith Table"
 }

@@ -8,6 +8,7 @@ import com.tacz.guns.client.resource.pojo.PackInfo;
 import com.tacz.guns.client.resource.pojo.animation.bedrock.BedrockAnimationFile;
 import com.tacz.guns.client.resource.pojo.display.ammo.AmmoDisplay;
 import com.tacz.guns.client.resource.pojo.display.attachment.AttachmentDisplay;
+import com.tacz.guns.client.resource.pojo.display.block.BlockDisplay;
 import com.tacz.guns.client.resource.pojo.display.gun.GunDisplay;
 import com.tacz.guns.client.resource.pojo.model.BedrockModelPOJO;
 import com.tacz.guns.client.resource.pojo.model.BedrockVersion;
@@ -39,6 +40,7 @@ public enum ClientAssetManager {
     private final Map<ResourceLocation, GunDisplay> gunDisplays = Maps.newHashMap();
     private final Map<ResourceLocation, AmmoDisplay> ammoDisplays = Maps.newHashMap();
     private final Map<ResourceLocation, AttachmentDisplay> attachmentDisplays = Maps.newHashMap();
+    private final Map<ResourceLocation, BlockDisplay> blockDisplays = Maps.newHashMap();
     /**
      * 储存 skin数据
      */
@@ -100,6 +102,10 @@ public enum ClientAssetManager {
         attachmentDisplays.put(registryName, display);
     }
 
+    public void putBlockDisplay(ResourceLocation registryName, BlockDisplay display) {
+        blockDisplays.put(registryName, display);
+    }
+
     public void putAttachmentSkin(ResourceLocation registryName, AttachmentSkin skin) {
         attachmentSkins.compute(skin.getParent(), (name, map) -> {
             if (map == null) {
@@ -134,6 +140,10 @@ public enum ClientAssetManager {
 
     public void putScript(ResourceLocation registryName, LuaTable luaTable) {
         scriptsMap.put(registryName, luaTable);
+    }
+
+    public BlockDisplay getBlockDisplays(ResourceLocation registryName) {
+        return blockDisplays.get(registryName);
     }
 
     public GunDisplay getGunDisplay(ResourceLocation registryName) {
