@@ -7,7 +7,7 @@ import net.minecraft.world.level.block.state.BlockState;
 /**
  * 单方块的枪械工作台
  */
-public class GunSmithTableA extends AbstractGunSmithTableBlock {
+public class GunSmithTableBlockA extends AbstractGunSmithTableBlock {
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         Direction direction = context.getHorizontalDirection().getClockWise();

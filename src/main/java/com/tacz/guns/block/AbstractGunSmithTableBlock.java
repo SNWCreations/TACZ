@@ -84,9 +84,4 @@ public abstract class AbstractGunSmithTableBlock extends BaseEntityBlock {
     }
 
     public abstract boolean isRoot(BlockState blockState);
-
-    @Override
-    protected void spawnDestroyParticles(Level pLevel, Player pPlayer, BlockPos pPos, BlockState pState) {
-        super.spawnDestroyParticles(pLevel, pPlayer, pPos, pState);
-    }
 }

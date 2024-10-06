@@ -1,6 +1,6 @@
 {
   "whitelist": [
-    "^tacz:.*$"
+    "^.*$"
   ],
   "blacklist": [
     "tacz:test"

@@ -1,4 +1,4 @@
 {
   // 配方过滤器
-  "filter": "tacz:test"
+  "filter": "tacz:default"
 }

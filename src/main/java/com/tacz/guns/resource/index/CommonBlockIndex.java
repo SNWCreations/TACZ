@@ -1,5 +1,6 @@
 package com.tacz.guns.resource.index;
 
+import com.google.common.base.Preconditions;
 import com.tacz.guns.resource.CommonAssetManager;
 import com.tacz.guns.resource.pojo.BlockIndexPOJO;
 import com.tacz.guns.resource.pojo.data.block.BlockData;
@@ -16,17 +17,26 @@ public class CommonBlockIndex {
     public static CommonBlockIndex getInstance(BlockIndexPOJO gunIndexPOJO) throws IllegalArgumentException {
         CommonBlockIndex index = new CommonBlockIndex();
         index.pojo = gunIndexPOJO;
+        checkIndex(gunIndexPOJO, index);
+        checkData(gunIndexPOJO, index);
+        return index;
+    }
+
+    private static void checkIndex(BlockIndexPOJO block, CommonBlockIndex index) {
         ResourceLocation id = index.pojo.getId();
+        Preconditions.checkArgument(block != null, "index object file is empty");
         if(!(ForgeRegistries.ITEMS.getValue(id) instanceof BlockItem item)) {
-            throw new IllegalArgumentException("BlockItem not found for " + gunIndexPOJO.getName());
+            throw new IllegalArgumentException("BlockItem not found for " + block.getName());
         }
         index.block = item;
-        BlockData data = CommonAssetManager.INSTANCE.getBlockData(gunIndexPOJO.getData());
-        if (data == null) {
-            throw new IllegalArgumentException("BlockData not found for " + gunIndexPOJO.getName());
-        }
+    }
+
+    private static void checkData(BlockIndexPOJO block, CommonBlockIndex index) {
+        ResourceLocation pojoData = block.getData();
+        Preconditions.checkArgument(pojoData != null, "index object missing pojoData field");
+        BlockData data = CommonAssetManager.INSTANCE.getBlockData(pojoData);
+        Preconditions.checkArgument(data != null, "there is no corresponding data file");
         index.data = data;
-        return index;
     }
 
     public BlockIndexPOJO getPojo() {

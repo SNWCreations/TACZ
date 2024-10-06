@@ -26,7 +26,8 @@ import org.jetbrains.annotations.Nullable;
 public class GunSmithTableBlockEntity extends BlockEntity implements MenuProvider {
     public static final BlockEntityType<GunSmithTableBlockEntity> TYPE = BlockEntityType.Builder.of(GunSmithTableBlockEntity::new,
             ModBlocks.GUN_SMITH_TABLE.get(),
-            ModBlocks.GUN_SMITH_TABLE_A.get()
+            ModBlocks.GUN_SMITH_TABLE_A.get(),
+            ModBlocks.GUN_SMITH_TABLE_B.get()
     ).build(null);
 
     private static final String ID_TAG = "BlockId";

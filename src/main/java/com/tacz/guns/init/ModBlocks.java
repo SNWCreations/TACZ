@@ -19,8 +19,9 @@ public class ModBlocks {
     public static final DeferredRegister<BlockEntityType<?>> TILE_ENTITIES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, GunMod.MOD_ID);
 
 //    public static RegistryObject<Block> GUN_SMITH_TABLE = BLOCKS.register("gun_smith_table", GunSmithTableBlock::new);
-    public static RegistryObject<Block> GUN_SMITH_TABLE = BLOCKS.register("gun_smith_table", GunSmithTableB::new);
-    public static RegistryObject<Block> GUN_SMITH_TABLE_A = BLOCKS.register("gun_smith_table_a", GunSmithTableA::new);
+    public static RegistryObject<Block> GUN_SMITH_TABLE = BLOCKS.register("gun_smith_table", GunSmithTableBlock::new);
+    public static RegistryObject<Block> GUN_SMITH_TABLE_A = BLOCKS.register("gun_smith_table_a", GunSmithTableBlockA::new);
+    public static RegistryObject<Block> GUN_SMITH_TABLE_B = BLOCKS.register("gun_smith_table_b", GunSmithTableBlockB::new);
 
     public static RegistryObject<Block> TARGET = BLOCKS.register("target", TargetBlock::new);
     public static RegistryObject<Block> STATUE = BLOCKS.register("statue", StatueBlock::new);
