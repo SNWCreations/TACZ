@@ -70,6 +70,7 @@ public class ClientGunIndex {
     private float @Nullable [] tracerColor = null;
     private EnumMap<FireMode, ControllableData> controllableData;
     private AmmoCountStyle ammoCountStyle = AmmoCountStyle.NORMAL;
+    private DamageStyle damageStyle = DamageStyle.PER_PROJECTILE;
 
     private ClientGunIndex() {
     }
@@ -96,6 +97,7 @@ public class ClientGunIndex {
         index.showCrosshair = display.isShowCrosshair();
         index.controllableData = display.getControllableData();
         index.ammoCountStyle = display.getAmmoCountStyle();
+        index.damageStyle = display.getDamageStyle();
         return index;
     }
 
@@ -450,5 +452,9 @@ public class ClientGunIndex {
 
     public AmmoCountStyle getAmmoCountStyle() {
         return ammoCountStyle;
+    }
+
+    public DamageStyle getDamageStyle() {
+        return damageStyle;
     }
 }

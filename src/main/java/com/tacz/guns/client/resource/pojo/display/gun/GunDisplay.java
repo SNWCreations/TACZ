@@ -32,6 +32,9 @@ public class GunDisplay {
     @NotNull
     @SerializedName("ammo_count_style")
     private AmmoCountStyle ammoCountStyle = AmmoCountStyle.NORMAL;
+    @NotNull
+    @SerializedName("damage_style")
+    private DamageStyle damageStyle = DamageStyle.PER_PROJECTILE;
     @Nullable
     @SerializedName("third_person_animation")
     private String thirdPersonAnimation;
@@ -179,5 +182,9 @@ public class GunDisplay {
 
     public @NotNull AmmoCountStyle getAmmoCountStyle() {
         return ammoCountStyle;
+    }
+
+    public @NotNull DamageStyle getDamageStyle() {
+        return damageStyle;
     }
 }
