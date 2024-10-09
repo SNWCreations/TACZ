@@ -5701,13 +5701,13 @@
 					]
 				},
 				{
-					"name": "sight",
+					"name": "sights",
 					"parent": "front2",
 					"pivot": [0, 8.64456, -5.15214]
 				},
 				{
 					"name": "base",
-					"parent": "sight",
+					"parent": "sights",
 					"pivot": [0, 6.31422, -1.89062],
 					"cubes": [
 						{
@@ -5777,7 +5777,7 @@
 				},
 				{
 					"name": "fore_sight_illuminated",
-					"parent": "sight",
+					"parent": "sights",
 					"pivot": [0, 8.64456, -5.15214],
 					"cubes": [
 						{
