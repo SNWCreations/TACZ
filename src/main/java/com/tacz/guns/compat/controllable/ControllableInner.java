@@ -13,7 +13,7 @@ import com.tacz.guns.api.TimelessAPI;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.gun.FireMode;
 import com.tacz.guns.client.input.*;
-import com.tacz.guns.client.resource.pojo.display.gun.ControllableData;
+import com.tacz.guns.client.resource_new.pojo.display.gun.ControllableData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;

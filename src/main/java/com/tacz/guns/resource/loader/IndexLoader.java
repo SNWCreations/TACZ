@@ -1,7 +1,7 @@
 package com.tacz.guns.resource.loader;
 
 import com.tacz.guns.resource.CommonGunPackLoader;
-import com.tacz.guns.resource.network.DataType;
+import com.tacz.guns.resource_new.network.DataType;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.function.BiConsumer;

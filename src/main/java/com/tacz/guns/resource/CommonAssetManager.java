@@ -4,9 +4,9 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.tacz.guns.crafting.GunSmithTableRecipe;
 import com.tacz.guns.resource.filter.RecipeFilter;
-import com.tacz.guns.resource.pojo.data.attachment.AttachmentData;
-import com.tacz.guns.resource.pojo.data.block.BlockData;
-import com.tacz.guns.resource.pojo.data.gun.GunData;
+import com.tacz.guns.resource_new.pojo.data.attachment.AttachmentData;
+import com.tacz.guns.resource_new.pojo.data.block.BlockData;
+import com.tacz.guns.resource_new.pojo.data.gun.GunData;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.List;
@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+@Deprecated
 public enum CommonAssetManager {
     INSTANCE;
 

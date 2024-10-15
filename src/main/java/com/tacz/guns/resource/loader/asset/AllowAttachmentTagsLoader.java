@@ -7,7 +7,7 @@ import com.tacz.guns.GunMod;
 import com.tacz.guns.resource.CommonAssetManager;
 import com.tacz.guns.resource.CommonGunPackLoader;
 import com.tacz.guns.resource.network.CommonGunPackNetwork;
-import com.tacz.guns.resource.network.DataType;
+import com.tacz.guns.resource_new.network.DataType;
 import com.tacz.guns.util.TacPathVisitor;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.commons.io.IOUtils;

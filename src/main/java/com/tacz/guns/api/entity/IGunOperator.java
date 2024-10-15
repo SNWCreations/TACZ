@@ -1,6 +1,6 @@
 package com.tacz.guns.api.entity;
 
-import com.tacz.guns.resource.modifier.AttachmentCacheProperty;
+import com.tacz.guns.resource_new.modifier.AttachmentCacheProperty;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 

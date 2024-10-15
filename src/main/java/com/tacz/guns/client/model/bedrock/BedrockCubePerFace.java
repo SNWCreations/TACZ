@@ -2,8 +2,8 @@ package com.tacz.guns.client.model.bedrock;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.tacz.guns.client.resource.pojo.model.FaceItem;
-import com.tacz.guns.client.resource.pojo.model.FaceUVsItem;
+import com.tacz.guns.client.resource_new.pojo.model.FaceItem;
+import com.tacz.guns.client.resource_new.pojo.model.FaceUVsItem;
 import net.minecraft.core.Direction;
 import org.joml.Matrix3f;
 import org.joml.Matrix4f;

@@ -10,24 +10,23 @@ import com.tacz.guns.config.common.OtherConfig;
 import com.tacz.guns.crafting.GunSmithTableIngredient;
 import com.tacz.guns.crafting.GunSmithTableResult;
 import com.tacz.guns.resource.filter.RecipeFilter;
-import com.tacz.guns.resource.index.CommonAmmoIndex;
-import com.tacz.guns.resource.index.CommonAttachmentIndex;
-import com.tacz.guns.resource.index.CommonBlockIndex;
-import com.tacz.guns.resource.index.CommonGunIndex;
+import com.tacz.guns.resource_new.VersionChecker;
+import com.tacz.guns.resource_new.index.CommonAmmoIndex;
+import com.tacz.guns.resource_new.index.CommonAttachmentIndex;
+import com.tacz.guns.resource_new.index.CommonBlockIndex;
+import com.tacz.guns.resource_new.index.CommonGunIndex;
 import com.tacz.guns.resource.loader.CommonDataLoaders;
 import com.tacz.guns.resource.loader.asset.*;
 import com.tacz.guns.resource.loader.index.CommonAmmoIndexLoader;
 import com.tacz.guns.resource.loader.index.CommonAttachmentIndexLoader;
 import com.tacz.guns.resource.loader.index.CommonGunIndexLoader;
 import com.tacz.guns.resource.loader.index.CommonIndexLoaders;
-import com.tacz.guns.resource.modifier.AttachmentPropertyManager;
+import com.tacz.guns.resource_new.modifier.AttachmentPropertyManager;
 import com.tacz.guns.resource.network.CommonGunPackNetwork;
-import com.tacz.guns.resource.pojo.data.gun.ExtraDamage;
-import com.tacz.guns.resource.pojo.data.gun.Ignite;
-import com.tacz.guns.resource.serialize.*;
+import com.tacz.guns.resource_new.pojo.data.gun.ExtraDamage;
+import com.tacz.guns.resource_new.pojo.data.gun.Ignite;
+import com.tacz.guns.resource_new.serialize.*;
 import com.tacz.guns.util.GetJarResources;
-import net.minecraft.client.renderer.block.model.ItemTransform;
-import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -44,6 +43,7 @@ import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+@Deprecated
 public class CommonGunPackLoader {
     public static final Gson GSON = new GsonBuilder()
             .registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer())
@@ -169,7 +169,7 @@ public class CommonGunPackLoader {
             while (iteration.hasMoreElements()) {
                 String path = iteration.nextElement().getName();
                 // 加载枪械 data 文件
-                GunDataLoader.load(zipFile, path);
+//                GunDataLoader.load(zipFile, path);
                 // 加载配件 data 文件
                 AttachmentDataLoader.load(zipFile, path);
                 // 配件 tag
@@ -185,7 +185,7 @@ public class CommonGunPackLoader {
 
     private static void readDirAsset(File root) {
         if (VersionChecker.match(root)) {
-            GunDataLoader.load(root);
+//            GunDataLoader.load(root);
             AttachmentDataLoader.load(root);
             AttachmentTagsLoader.load(root);
             AllowAttachmentTagsLoader.load(root);
@@ -233,7 +233,7 @@ public class CommonGunPackLoader {
         if (VersionChecker.match(root)) {
             try {
                 CommonAmmoIndexLoader.loadAmmoIndex(root);
-                CommonGunIndexLoader.loadGunIndex(root);
+//                CommonGunIndexLoader.loadGunIndex(root);
                 CommonAttachmentIndexLoader.loadAttachmentIndex(root);
                 CommonIndexLoaders.BLOCK.load(root);
             } catch (IOException e) {

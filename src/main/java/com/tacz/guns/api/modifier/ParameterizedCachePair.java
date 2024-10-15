@@ -1,7 +1,7 @@
 package com.tacz.guns.api.modifier;
 
 
-import com.tacz.guns.resource.pojo.data.attachment.Modifier;
+import com.tacz.guns.resource_new.pojo.data.attachment.Modifier;
 import it.unimi.dsi.fastutil.Pair;
 
 import java.util.List;

@@ -3,17 +3,19 @@ package com.tacz.guns.api;
 import com.tacz.guns.api.client.other.IThirdPersonAnimation;
 import com.tacz.guns.api.client.other.ThirdPersonManager;
 import com.tacz.guns.client.resource.ClientGunPackLoader;
-import com.tacz.guns.client.resource.index.ClientAmmoIndex;
-import com.tacz.guns.client.resource.index.ClientAttachmentIndex;
-import com.tacz.guns.client.resource.index.ClientBlockIndex;
-import com.tacz.guns.client.resource.index.ClientGunIndex;
+import com.tacz.guns.client.resource_new.index.ClientAmmoIndex;
+import com.tacz.guns.client.resource_new.index.ClientAttachmentIndex;
+import com.tacz.guns.client.resource_new.index.ClientBlockIndex;
+import com.tacz.guns.client.resource_new.index.ClientGunIndex;
+import com.tacz.guns.client.resource_new.ClientIndexManager;
 import com.tacz.guns.crafting.GunSmithTableRecipe;
 import com.tacz.guns.resource.CommonAssetManager;
 import com.tacz.guns.resource.CommonGunPackLoader;
-import com.tacz.guns.resource.index.CommonAmmoIndex;
-import com.tacz.guns.resource.index.CommonAttachmentIndex;
-import com.tacz.guns.resource.index.CommonBlockIndex;
-import com.tacz.guns.resource.index.CommonGunIndex;
+import com.tacz.guns.resource_new.index.CommonAmmoIndex;
+import com.tacz.guns.resource_new.index.CommonAttachmentIndex;
+import com.tacz.guns.resource_new.index.CommonBlockIndex;
+import com.tacz.guns.resource_new.index.CommonGunIndex;
+import com.tacz.guns.resource_new.CommonAssetsManager;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -25,7 +27,7 @@ import java.util.Set;
 public final class TimelessAPI {
     @OnlyIn(Dist.CLIENT)
     public static Optional<ClientGunIndex> getClientGunIndex(ResourceLocation gunId) {
-        return ClientGunPackLoader.getGunIndex(gunId);
+        return Optional.ofNullable(ClientIndexManager.GUN_INDEX.get(gunId));
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -35,7 +37,7 @@ public final class TimelessAPI {
 
     @OnlyIn(Dist.CLIENT)
     public static Optional<ClientAmmoIndex> getClientAmmoIndex(ResourceLocation ammoId) {
-        return ClientGunPackLoader.getAmmoIndex(ammoId);
+        return Optional.ofNullable(ClientIndexManager.AMMO_INDEX.get(ammoId));
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -63,7 +65,7 @@ public final class TimelessAPI {
     }
 
     public static Optional<CommonGunIndex> getCommonGunIndex(ResourceLocation gunId) {
-        return CommonGunPackLoader.getGunIndex(gunId);
+        return Optional.ofNullable(CommonAssetsManager.get().getGunIndex(gunId));
     }
 
     public static Optional<CommonAttachmentIndex> getCommonAttachmentIndex(ResourceLocation attachmentId) {
@@ -71,7 +73,7 @@ public final class TimelessAPI {
     }
 
     public static Optional<CommonAmmoIndex> getCommonAmmoIndex(ResourceLocation ammoId) {
-        return CommonGunPackLoader.getAmmoIndex(ammoId);
+        return Optional.ofNullable(CommonAssetsManager.get().getAmmoIndex(ammoId));
     }
 
     public static Optional<GunSmithTableRecipe> getRecipe(ResourceLocation recipeId) {
@@ -83,11 +85,11 @@ public final class TimelessAPI {
     }
 
     public static Set<Map.Entry<ResourceLocation, CommonGunIndex>> getAllCommonGunIndex() {
-        return CommonGunPackLoader.getAllGuns();
+        return CommonAssetsManager.get().getAllGuns();
     }
 
     public static Set<Map.Entry<ResourceLocation, CommonAmmoIndex>> getAllCommonAmmoIndex() {
-        return CommonGunPackLoader.getAllAmmo();
+        return CommonAssetsManager.get().getAllAmmos();
     }
 
     public static Set<Map.Entry<ResourceLocation, CommonAttachmentIndex>> getAllCommonAttachmentIndex() {

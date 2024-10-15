@@ -3,6 +3,7 @@ package com.tacz.guns.client.resource.loader.asset;
 import com.mojang.blaze3d.audio.OggAudioStream;
 import com.tacz.guns.GunMod;
 import com.tacz.guns.client.resource.ClientAssetManager;
+import com.tacz.guns.client.resource_new.manager.SoundAssetsManager;
 import com.tacz.guns.util.TacPathVisitor;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.Marker;
@@ -38,7 +39,7 @@ public final class SoundLoader {
             try (InputStream zipEntryStream = zipFile.getInputStream(entry); OggAudioStream audioStream = new OggAudioStream(zipEntryStream)) {
                 ByteBuffer bytebuffer = audioStream.readAll();
                 ResourceLocation registryName = new ResourceLocation(namespace, path);
-                ClientAssetManager.INSTANCE.putSoundBuffer(registryName, new ClientAssetManager.SoundData(bytebuffer, audioStream.getFormat()));
+                ClientAssetManager.INSTANCE.putSoundBuffer(registryName, new SoundAssetsManager.SoundData(bytebuffer, audioStream.getFormat()));
                 return true;
             } catch (IOException ioe) {
                 GunMod.LOGGER.warn(MARKER, "Failed to load sound: {}", zipPath);
@@ -54,7 +55,7 @@ public final class SoundLoader {
             TacPathVisitor visitor = new TacPathVisitor(filePath.toFile(), root.getName(), ".ogg", (id, file) -> {
                 try (InputStream stream = Files.newInputStream(file); OggAudioStream audioStream = new OggAudioStream(stream)) {
                     ByteBuffer bytebuffer = audioStream.readAll();
-                    ClientAssetManager.INSTANCE.putSoundBuffer(id, new ClientAssetManager.SoundData(bytebuffer, audioStream.getFormat()));
+                    ClientAssetManager.INSTANCE.putSoundBuffer(id, new SoundAssetsManager.SoundData(bytebuffer, audioStream.getFormat()));
                 } catch (IOException exception) {
                     GunMod.LOGGER.warn(MARKER, "Failed to read sound file: {}", file);
                     exception.printStackTrace();

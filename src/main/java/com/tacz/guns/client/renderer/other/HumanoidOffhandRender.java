@@ -3,7 +3,7 @@ package com.tacz.guns.client.renderer.other;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.tacz.guns.api.TimelessAPI;
 import com.tacz.guns.api.item.IGun;
-import com.tacz.guns.client.resource.pojo.display.gun.LayerGunShow;
+import com.tacz.guns.client.resource_new.pojo.display.gun.LayerGunShow;
 import com.tacz.guns.util.math.MathUtil;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;

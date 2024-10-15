@@ -1,7 +1,7 @@
 package com.tacz.guns.api.modifier;
 
-import com.tacz.guns.resource.modifier.AttachmentCacheProperty;
-import com.tacz.guns.resource.pojo.data.gun.GunData;
+import com.tacz.guns.resource_new.modifier.AttachmentCacheProperty;
+import com.tacz.guns.resource_new.pojo.data.gun.GunData;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;

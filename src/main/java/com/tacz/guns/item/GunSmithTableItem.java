@@ -1,18 +1,10 @@
 package com.tacz.guns.item;
 
 import com.tacz.guns.api.TimelessAPI;
-import com.tacz.guns.api.item.GunTabType;
 import com.tacz.guns.api.item.builder.BlockItemBuilder;
-import com.tacz.guns.api.item.builder.GunItemBuilder;
 import com.tacz.guns.api.item.nbt.BlockItemDataAccessor;
-import com.tacz.guns.client.model.SlotModel;
 import com.tacz.guns.client.renderer.item.GunSmithTableItemRenderer;
-import com.tacz.guns.client.resource.index.ClientAmmoIndex;
-import com.tacz.guns.client.resource.index.ClientBlockIndex;
-import com.tacz.guns.init.ModBlocks;
-import com.tacz.guns.init.ModItems;
-import com.tacz.guns.resource.index.CommonGunIndex;
-import com.tacz.guns.resource.pojo.data.gun.GunData;
+import com.tacz.guns.client.resource_new.index.ClientBlockIndex;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.NonNullList;
@@ -27,7 +19,6 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import net.minecraftforge.client.extensions.common.IClientItemExtensions;
 
 import javax.annotation.Nonnull;
-import java.util.Locale;
 import java.util.Optional;
 import java.util.function.Consumer;
 

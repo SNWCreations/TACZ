@@ -4,15 +4,17 @@ import com.google.common.collect.Maps;
 import com.tacz.guns.api.client.animation.gltf.AnimationStructure;
 import com.tacz.guns.client.model.BedrockAttachmentModel;
 import com.tacz.guns.client.model.BedrockGunModel;
-import com.tacz.guns.client.resource.pojo.PackInfo;
-import com.tacz.guns.client.resource.pojo.animation.bedrock.BedrockAnimationFile;
-import com.tacz.guns.client.resource.pojo.display.ammo.AmmoDisplay;
-import com.tacz.guns.client.resource.pojo.display.attachment.AttachmentDisplay;
-import com.tacz.guns.client.resource.pojo.display.block.BlockDisplay;
-import com.tacz.guns.client.resource.pojo.display.gun.GunDisplay;
-import com.tacz.guns.client.resource.pojo.model.BedrockModelPOJO;
-import com.tacz.guns.client.resource.pojo.model.BedrockVersion;
-import com.tacz.guns.client.resource.pojo.skin.attachment.AttachmentSkin;
+import com.tacz.guns.client.resource_new.manager.SoundAssetsManager;
+import com.tacz.guns.client.resource_new.pojo.PackInfo;
+import com.tacz.guns.client.resource_new.pojo.animation.bedrock.BedrockAnimationFile;
+import com.tacz.guns.client.resource_new.pojo.display.ammo.AmmoDisplay;
+import com.tacz.guns.client.resource_new.pojo.display.attachment.AttachmentDisplay;
+import com.tacz.guns.client.resource_new.pojo.display.block.BlockDisplay;
+import com.tacz.guns.client.resource_new.pojo.display.gun.GunDisplay;
+import com.tacz.guns.client.resource_new.pojo.model.BedrockModelPOJO;
+import com.tacz.guns.client.resource_new.pojo.model.BedrockVersion;
+import com.tacz.guns.client.resource_new.pojo.skin.attachment.AttachmentSkin;
+import com.tacz.guns.client.resource_new.ClientAssetsManager;
 import com.tacz.guns.compat.playeranimator.PlayerAnimatorCompat;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
@@ -20,14 +22,13 @@ import net.minecraftforge.api.distmarker.OnlyIn;
 import org.luaj.vm2.LuaTable;
 
 import javax.annotation.Nullable;
-import javax.sound.sampled.AudioFormat;
-import java.nio.ByteBuffer;
 import java.util.Map;
 
 /**
  * 缓存 Map 的键统一为 ResourceLocation，其 namespace 为枪包的根目录的下一级文件夹的名称， path 为资源对应的 id 。
  */
 @OnlyIn(Dist.CLIENT)
+@Deprecated
 public enum ClientAssetManager {
     INSTANCE;
     /**
@@ -60,7 +61,7 @@ public enum ClientAssetManager {
     /**
      * 储存声音
      */
-    private final Map<ResourceLocation, SoundData> soundBuffers = Maps.newHashMap();
+    private final Map<ResourceLocation, SoundAssetsManager.SoundData> soundBuffers = Maps.newHashMap();
     /**
      * 存储语言
      */
@@ -128,7 +129,7 @@ public enum ClientAssetManager {
         models.put(registryName, model);
     }
 
-    public void putSoundBuffer(ResourceLocation registryName, SoundData soundData) {
+    public void putSoundBuffer(ResourceLocation registryName, SoundAssetsManager.SoundData soundData) {
         soundBuffers.put(registryName, soundData);
     }
 
@@ -147,7 +148,7 @@ public enum ClientAssetManager {
     }
 
     public GunDisplay getGunDisplay(ResourceLocation registryName) {
-        return gunDisplays.get(registryName);
+        return ClientAssetsManager.INSTANCE.getGunDisplay(registryName);
     }
 
     public AmmoDisplay getAmmoDisplay(ResourceLocation registryName) {
@@ -164,18 +165,18 @@ public enum ClientAssetManager {
     }
 
     public AnimationStructure getGltfAnimations(ResourceLocation registryName) {
-        return gltfAnimations.get(registryName);
+        return ClientAssetsManager.INSTANCE.getGltfAnimation(registryName);
     }
 
     public BedrockAnimationFile getBedrockAnimations(ResourceLocation registryName) {
-        return bedrockAnimations.get(registryName);
+        return ClientAssetsManager.INSTANCE.getBedrockAnimations(registryName);
     }
 
-    public BedrockModelPOJO getModels(ResourceLocation registryName) {
-        return models.get(registryName);
-    }
+//    public BedrockModelPOJO getModels(ResourceLocation registryName) {
+//        return ClientAssetsManager.INSTANCE.getBedrockModelPOJO(registryName);
+//    }
 
-    public SoundData getSoundBuffers(ResourceLocation registryName) {
+    public SoundAssetsManager.SoundData getSoundBuffers(ResourceLocation registryName) {
         return soundBuffers.get(registryName);
     }
 
@@ -200,7 +201,7 @@ public enum ClientAssetManager {
         if (model != null) {
             return model;
         }
-        BedrockModelPOJO modelPOJO = getModels(modelLocation);
+        BedrockModelPOJO modelPOJO = ClientAssetsManager.INSTANCE.getBedrockModelPOJO(modelLocation);
         if (modelPOJO == null) {
             return null;
         }
@@ -213,7 +214,7 @@ public enum ClientAssetManager {
     }
 
     public LuaTable getScript(ResourceLocation registryName) {
-        return scriptsMap.get(registryName);
+        return ClientAssetsManager.INSTANCE.getScript(registryName);
     }
 
     /**
@@ -236,6 +237,4 @@ public enum ClientAssetManager {
         PlayerAnimatorCompat.clearAllAnimationCache();
     }
 
-    public record SoundData(ByteBuffer byteBuffer, AudioFormat audioFormat) {
-    }
 }

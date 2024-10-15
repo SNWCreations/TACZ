@@ -7,7 +7,7 @@ import com.tacz.guns.api.event.common.GunMeleeEvent;
 import com.tacz.guns.api.event.common.GunReloadEvent;
 import com.tacz.guns.api.event.common.GunShootEvent;
 import com.tacz.guns.api.item.IGun;
-import com.tacz.guns.client.resource.index.ClientGunIndex;
+import com.tacz.guns.client.resource_new.index.ClientGunIndex;
 import com.tacz.guns.compat.playeranimator.AnimationName;
 import com.tacz.guns.compat.playeranimator.PlayerAnimatorCompat;
 import dev.kosmx.playerAnim.api.layered.IAnimation;

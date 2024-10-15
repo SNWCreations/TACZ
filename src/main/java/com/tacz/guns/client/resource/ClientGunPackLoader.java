@@ -5,28 +5,28 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.resource.ResourceManager;
-import com.tacz.guns.client.resource.index.ClientAmmoIndex;
-import com.tacz.guns.client.resource.index.ClientAttachmentIndex;
-import com.tacz.guns.client.resource.index.ClientBlockIndex;
-import com.tacz.guns.client.resource.index.ClientGunIndex;
+import com.tacz.guns.client.resource_new.index.ClientAmmoIndex;
+import com.tacz.guns.client.resource_new.index.ClientAttachmentIndex;
+import com.tacz.guns.client.resource_new.index.ClientBlockIndex;
+import com.tacz.guns.client.resource_new.index.ClientGunIndex;
 import com.tacz.guns.client.resource.loader.ClientLoaders;
 import com.tacz.guns.client.resource.loader.asset.*;
 import com.tacz.guns.client.resource.loader.index.ClientAmmoIndexLoader;
 import com.tacz.guns.client.resource.loader.index.ClientAttachmentIndexLoader;
 import com.tacz.guns.client.resource.loader.index.ClientBlockIndexLoader;
 import com.tacz.guns.client.resource.loader.index.ClientGunIndexLoader;
-import com.tacz.guns.client.resource.pojo.CommonTransformObject;
-import com.tacz.guns.client.resource.pojo.animation.bedrock.AnimationKeyframes;
-import com.tacz.guns.client.resource.pojo.animation.bedrock.SoundEffectKeyframes;
-import com.tacz.guns.client.resource.pojo.model.CubesItem;
-import com.tacz.guns.client.resource.serialize.AnimationKeyframesSerializer;
-import com.tacz.guns.client.resource.serialize.ItemStackSerializer;
-import com.tacz.guns.client.resource.serialize.SoundEffectKeyframesSerializer;
-import com.tacz.guns.client.resource.serialize.Vector3fSerializer;
+import com.tacz.guns.client.resource_new.pojo.CommonTransformObject;
+import com.tacz.guns.client.resource_new.pojo.animation.bedrock.AnimationKeyframes;
+import com.tacz.guns.client.resource_new.pojo.animation.bedrock.SoundEffectKeyframes;
+import com.tacz.guns.client.resource_new.pojo.model.CubesItem;
+import com.tacz.guns.client.resource_new.serialize.AnimationKeyframesSerializer;
+import com.tacz.guns.client.resource_new.serialize.ItemStackSerializer;
+import com.tacz.guns.client.resource_new.serialize.SoundEffectKeyframesSerializer;
+import com.tacz.guns.client.resource_new.serialize.Vector3fSerializer;
 import com.tacz.guns.compat.playeranimator.PlayerAnimatorCompat;
 import com.tacz.guns.config.common.OtherConfig;
-import com.tacz.guns.resource.VersionChecker;
-import com.tacz.guns.resource.modifier.AttachmentPropertyManager;
+import com.tacz.guns.resource_new.VersionChecker;
+import com.tacz.guns.resource_new.modifier.AttachmentPropertyManager;
 import com.tacz.guns.resource.network.CommonGunPackNetwork;
 import com.tacz.guns.util.GetJarResources;
 import net.minecraft.client.Minecraft;
@@ -51,6 +51,7 @@ import java.util.zip.ZipFile;
 
 import static com.tacz.guns.resource.CommonGunPackLoader.FOLDER;
 
+@Deprecated
 @OnlyIn(Dist.CLIENT)
 public class ClientGunPackLoader {
     public static final Gson GSON = new GsonBuilder().registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer())

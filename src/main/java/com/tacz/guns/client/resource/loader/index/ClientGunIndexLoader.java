@@ -2,8 +2,8 @@ package com.tacz.guns.client.resource.loader.index;
 
 import com.tacz.guns.GunMod;
 import com.tacz.guns.api.TimelessAPI;
-import com.tacz.guns.client.resource.index.ClientGunIndex;
-import com.tacz.guns.resource.pojo.GunIndexPOJO;
+import com.tacz.guns.client.resource_new.index.ClientGunIndex;
+import com.tacz.guns.resource_new.pojo.GunIndexPOJO;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;

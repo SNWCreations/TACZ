@@ -8,7 +8,7 @@ import com.tacz.guns.api.client.animation.gltf.accessor.AccessorData;
 import com.tacz.guns.api.client.animation.gltf.accessor.AccessorFloatData;
 import com.tacz.guns.api.client.animation.interpolator.CustomInterpolator;
 import com.tacz.guns.api.client.animation.interpolator.InterpolatorUtil;
-import com.tacz.guns.client.resource.pojo.animation.bedrock.*;
+import com.tacz.guns.client.resource_new.pojo.animation.bedrock.*;
 import com.tacz.guns.util.math.MathUtil;
 import it.unimi.dsi.fastutil.doubles.Double2ObjectMap;
 import it.unimi.dsi.fastutil.doubles.Double2ObjectRBTreeMap;

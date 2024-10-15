@@ -5,7 +5,7 @@ import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.gun.AbstractGunItem;
 import com.tacz.guns.network.NetworkHandler;
 import com.tacz.guns.network.message.event.ServerMessageGunFireSelect;
-import com.tacz.guns.resource.modifier.AttachmentPropertyManager;
+import com.tacz.guns.resource_new.modifier.AttachmentPropertyManager;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;

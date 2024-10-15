@@ -3,7 +3,7 @@ package com.tacz.guns.api.client.animation.gltf;
 import com.tacz.guns.api.client.animation.gltf.accessor.AccessorData;
 import com.tacz.guns.api.client.animation.gltf.accessor.AccessorDatas;
 import com.tacz.guns.api.client.animation.gltf.accessor.AccessorSparseUtils;
-import com.tacz.guns.client.resource.pojo.animation.gltf.*;
+import com.tacz.guns.client.resource_new.pojo.animation.gltf.*;
 
 import java.net.URI;
 import java.net.URISyntaxException;

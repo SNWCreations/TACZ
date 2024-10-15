@@ -6,7 +6,7 @@ import com.mojang.math.Axis;
 import com.tacz.guns.client.model.BedrockGunModel;
 import com.tacz.guns.client.model.IFunctionalRenderer;
 import com.tacz.guns.client.model.papi.PapiManager;
-import com.tacz.guns.client.resource.pojo.display.gun.TextShow;
+import com.tacz.guns.client.resource_new.pojo.display.gun.TextShow;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
 import net.minecraft.client.renderer.LightTexture;

@@ -7,6 +7,7 @@ import com.tacz.guns.client.gui.overlay.GunHudOverlay;
 import com.tacz.guns.client.gui.overlay.InteractKeyTextOverlay;
 import com.tacz.guns.client.gui.overlay.KillAmountOverlay;
 import com.tacz.guns.client.input.*;
+import com.tacz.guns.client.resource_new.ClientAssetsManager;
 import com.tacz.guns.client.tooltip.ClientAmmoBoxTooltip;
 import com.tacz.guns.client.tooltip.ClientAttachmentItemTooltip;
 import com.tacz.guns.client.tooltip.ClientGunTooltip;
@@ -21,6 +22,7 @@ import com.tacz.guns.item.AmmoBoxItem;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.item.ItemProperties;
 import net.minecraftforge.api.distmarker.Dist;
+import net.minecraftforge.client.event.RegisterClientReloadListenersEvent;
 import net.minecraftforge.client.event.RegisterClientTooltipComponentFactoriesEvent;
 import net.minecraftforge.client.event.RegisterGuiOverlaysEvent;
 import net.minecraftforge.client.event.RegisterKeyMappingsEvent;
@@ -88,5 +90,10 @@ public class ClientSetupEvent {
 
         // 与 Controllable 的兼容
         event.enqueueWork(ControllableCompat::init);
+    }
+
+    @SubscribeEvent
+    public static void onClientResourceReload(RegisterClientReloadListenersEvent event) {
+        ClientAssetsManager.INSTANCE.reloadAndRegister(event::registerReloadListener);
     }
 }

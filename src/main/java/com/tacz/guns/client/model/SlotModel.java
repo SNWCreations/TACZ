@@ -4,7 +4,7 @@ import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.tacz.guns.client.model.bedrock.BedrockCubePerFace;
 import com.tacz.guns.client.model.bedrock.BedrockPart;
-import com.tacz.guns.client.resource.pojo.model.FaceUVsItem;
+import com.tacz.guns.client.resource_new.pojo.model.FaceUVsItem;
 import net.minecraft.client.model.EntityModel;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.item.ItemDisplayContext;

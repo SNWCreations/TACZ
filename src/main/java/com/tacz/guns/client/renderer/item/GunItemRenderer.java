@@ -8,7 +8,7 @@ import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.client.model.BedrockGunModel;
 import com.tacz.guns.client.model.SlotModel;
 import com.tacz.guns.client.model.bedrock.BedrockPart;
-import com.tacz.guns.client.resource.pojo.TransformScale;
+import com.tacz.guns.client.resource_new.pojo.TransformScale;
 import com.tacz.guns.util.RenderDistance;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;

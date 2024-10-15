@@ -10,6 +10,7 @@ import com.tacz.guns.resource.loader.index.CommonAmmoIndexLoader;
 import com.tacz.guns.resource.loader.index.CommonAttachmentIndexLoader;
 import com.tacz.guns.resource.loader.index.CommonGunIndexLoader;
 import com.tacz.guns.resource.loader.index.CommonIndexLoaders;
+import com.tacz.guns.resource_new.network.DataType;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
@@ -23,6 +24,7 @@ import java.util.EnumMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+@Deprecated
 public class CommonGunPackNetwork {
     private static final Pattern SHA1 = Pattern.compile("^[a-fA-F0-9]{40}$");
     private static final EnumMap<DataType, Map<ResourceLocation, String>> NETWORK_CACHE = new EnumMap<>(DataType.class);

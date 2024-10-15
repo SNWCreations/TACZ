@@ -11,9 +11,9 @@ import com.tacz.guns.client.model.listener.constraint.ConstraintObject;
 import com.tacz.guns.client.model.listener.model.ModelRotateListener;
 import com.tacz.guns.client.model.listener.model.ModelScaleListener;
 import com.tacz.guns.client.model.listener.model.ModelTranslateListener;
-import com.tacz.guns.client.resource.pojo.model.BedrockModelPOJO;
-import com.tacz.guns.client.resource.pojo.model.BedrockVersion;
-import com.tacz.guns.client.resource.pojo.model.BonesItem;
+import com.tacz.guns.client.resource_new.pojo.model.BedrockModelPOJO;
+import com.tacz.guns.client.resource_new.pojo.model.BedrockVersion;
+import com.tacz.guns.client.resource_new.pojo.model.BonesItem;
 import org.joml.Quaternionf;
 
 import javax.annotation.Nonnull;

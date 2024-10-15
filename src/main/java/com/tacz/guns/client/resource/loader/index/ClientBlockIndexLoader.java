@@ -2,16 +2,13 @@ package com.tacz.guns.client.resource.loader.index;
 
 import com.tacz.guns.GunMod;
 import com.tacz.guns.api.TimelessAPI;
-import com.tacz.guns.client.resource.index.ClientBlockIndex;
-import com.tacz.guns.client.resource.index.ClientGunIndex;
-import com.tacz.guns.resource.pojo.BlockIndexPOJO;
-import com.tacz.guns.resource.pojo.GunIndexPOJO;
+import com.tacz.guns.client.resource_new.index.ClientBlockIndex;
+import com.tacz.guns.resource_new.pojo.BlockIndexPOJO;
 import net.minecraft.resources.ResourceLocation;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 
 import static com.tacz.guns.client.resource.ClientGunPackLoader.BLOCK_INDEX;
-import static com.tacz.guns.client.resource.ClientGunPackLoader.GUN_INDEX;
 
 public final class ClientBlockIndexLoader {
     private static final Marker MARKER = MarkerManager.getMarker("ClientBlockIndexLoader");

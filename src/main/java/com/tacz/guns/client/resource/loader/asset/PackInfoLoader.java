@@ -4,7 +4,7 @@ import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 import com.tacz.guns.GunMod;
 import com.tacz.guns.client.resource.ClientAssetManager;
-import com.tacz.guns.client.resource.pojo.PackInfo;
+import com.tacz.guns.client.resource_new.pojo.PackInfo;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 

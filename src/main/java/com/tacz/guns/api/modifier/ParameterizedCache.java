@@ -2,8 +2,8 @@ package com.tacz.guns.api.modifier;
 
 
 import com.google.common.collect.ImmutableList;
-import com.tacz.guns.resource.modifier.AttachmentPropertyManager;
-import com.tacz.guns.resource.pojo.data.attachment.Modifier;
+import com.tacz.guns.resource_new.modifier.AttachmentPropertyManager;
+import com.tacz.guns.resource_new.pojo.data.attachment.Modifier;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;

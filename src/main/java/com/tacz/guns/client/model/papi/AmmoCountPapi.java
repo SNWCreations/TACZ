@@ -2,8 +2,8 @@ package com.tacz.guns.client.model.papi;
 
 import com.tacz.guns.api.TimelessAPI;
 import com.tacz.guns.api.item.IGun;
-import com.tacz.guns.client.resource.index.ClientGunIndex;
-import com.tacz.guns.resource.pojo.data.gun.Bolt;
+import com.tacz.guns.client.resource_new.index.ClientGunIndex;
+import com.tacz.guns.resource_new.pojo.data.gun.Bolt;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 

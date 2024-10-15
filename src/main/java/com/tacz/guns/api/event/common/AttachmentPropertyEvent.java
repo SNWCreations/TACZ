@@ -1,6 +1,6 @@
 package com.tacz.guns.api.event.common;
 
-import com.tacz.guns.resource.modifier.AttachmentCacheProperty;
+import com.tacz.guns.resource_new.modifier.AttachmentCacheProperty;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.eventbus.api.Event;
 

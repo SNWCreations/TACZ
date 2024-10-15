@@ -3,8 +3,8 @@ package com.tacz.guns.entity.shooter;
 import com.tacz.guns.api.TimelessAPI;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.gun.AbstractGunItem;
-import com.tacz.guns.resource.index.CommonGunIndex;
-import com.tacz.guns.resource.pojo.data.gun.Bolt;
+import com.tacz.guns.resource_new.index.CommonGunIndex;
+import com.tacz.guns.resource_new.pojo.data.gun.Bolt;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 

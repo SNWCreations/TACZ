@@ -8,7 +8,7 @@ import com.tacz.guns.api.item.IBlock;
 import com.tacz.guns.block.AbstractGunSmithTableBlock;
 import com.tacz.guns.block.entity.GunSmithTableBlockEntity;
 import com.tacz.guns.client.model.bedrock.BedrockModel;
-import com.tacz.guns.client.resource.index.ClientBlockIndex;
+import com.tacz.guns.client.resource_new.index.ClientBlockIndex;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;

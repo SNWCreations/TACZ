@@ -4,9 +4,9 @@ import com.tacz.guns.client.download.ClientGunPackDownloadManager;
 import com.tacz.guns.config.sync.SyncConfig;
 import com.tacz.guns.network.message.ServerMessageSyncGunPack;
 import com.tacz.guns.resource.CommonGunPackLoader;
-import com.tacz.guns.resource.VersionChecker;
+import com.tacz.guns.resource_new.VersionChecker;
 import com.tacz.guns.resource.network.CommonGunPackNetwork;
-import com.tacz.guns.resource.network.DataType;
+import com.tacz.guns.resource_new.network.DataType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 
@@ -16,6 +16,7 @@ import java.util.Map;
 
 import static com.tacz.guns.config.ServerConfig.SERVER_CONFIG_SPEC;
 
+@Deprecated
 public class ClientReloadManager {
     private static final EnumMap<DataType, Map<ResourceLocation, String>> LOCALE_CACHE = new EnumMap<>(DataType.class);
 
@@ -31,7 +32,7 @@ public class ClientReloadManager {
         CommonGunPackLoader.reloadIndex();
         ClientGunPackLoader.reloadIndex();
         // 合成表
-        CommonGunPackLoader.reloadRecipes();
+//        CommonGunPackLoader.reloadRecipes();
         // 联机 / 非联机情况判断
         Minecraft mc = Minecraft.getInstance();
         // 局域网联机（自己是主机），需要给其他玩家发送自己的同步数据

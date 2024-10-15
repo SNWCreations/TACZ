@@ -4,7 +4,7 @@ import com.tacz.guns.api.resource.JsonResourceLoader;
 import com.tacz.guns.resource.CommonAssetManager;
 import com.tacz.guns.resource.CommonGunPackLoader;
 import com.tacz.guns.resource.network.CommonGunPackNetwork;
-import com.tacz.guns.resource.network.DataType;
+import com.tacz.guns.resource_new.network.DataType;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.function.BiConsumer;

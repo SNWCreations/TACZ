@@ -1,6 +1,5 @@
 package com.tacz.guns.client.gui;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mojang.blaze3d.platform.GlStateManager;
@@ -17,7 +16,7 @@ import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.client.gui.components.smith.ResultButton;
 import com.tacz.guns.client.gui.components.smith.TypeButton;
 import com.tacz.guns.client.resource.ClientAssetManager;
-import com.tacz.guns.client.resource.pojo.PackInfo;
+import com.tacz.guns.client.resource_new.pojo.PackInfo;
 import com.tacz.guns.crafting.GunSmithTableIngredient;
 import com.tacz.guns.crafting.GunSmithTableRecipe;
 import com.tacz.guns.crafting.GunSmithTableResult;
@@ -28,7 +27,7 @@ import com.tacz.guns.network.NetworkHandler;
 import com.tacz.guns.network.message.ClientMessageCraft;
 import com.tacz.guns.resource.CommonAssetManager;
 import com.tacz.guns.resource.filter.RecipeFilter;
-import com.tacz.guns.resource.pojo.data.block.BlockData;
+import com.tacz.guns.resource_new.pojo.data.block.BlockData;
 import com.tacz.guns.util.RenderDistance;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
@@ -63,7 +62,6 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
-import java.util.WeakHashMap;
 
 public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMenu> {
     private static final ResourceLocation TEXTURE = new ResourceLocation(GunMod.MOD_ID, "textures/gui/gun_smith_table.png");

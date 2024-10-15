@@ -1,8 +1,8 @@
 package com.tacz.guns.resource.loader;
 
 import com.tacz.guns.resource.filter.RecipeFilter;
-import com.tacz.guns.resource.network.DataType;
-import com.tacz.guns.resource.pojo.data.block.BlockData;
+import com.tacz.guns.resource_new.network.DataType;
+import com.tacz.guns.resource_new.pojo.data.block.BlockData;
 
 public class CommonDataLoaders {
     public static final DataLoader<RecipeFilter> RECIPE_FILTER = new DataLoader<>(DataType.RECIPE_FILTER,

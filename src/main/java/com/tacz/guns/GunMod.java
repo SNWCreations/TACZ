@@ -1,11 +1,10 @@
 package com.tacz.guns;
 
-import com.tacz.guns.api.resource.ResourceManager;
 import com.tacz.guns.config.ClientConfig;
 import com.tacz.guns.config.CommonConfig;
 import com.tacz.guns.config.ServerConfig;
 import com.tacz.guns.init.*;
-import com.tacz.guns.resource.modifier.AttachmentPropertyManager;
+import com.tacz.guns.resource_new.modifier.AttachmentPropertyManager;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -47,6 +46,6 @@ public class GunMod {
 
     private static void registerDefaultExtraGunPack() {
         String jarDefaultPackPath = String.format("/assets/%s/custom/%s", GunMod.MOD_ID, DEFAULT_GUN_PACK_NAME);
-        ResourceManager.registerExtraGunPack(GunMod.class, jarDefaultPackPath);
+//        ResourceManager.registerExtraGunPack(GunMod.class, jarDefaultPackPath);
     }
 }
