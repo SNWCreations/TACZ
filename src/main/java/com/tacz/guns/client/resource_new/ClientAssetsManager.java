@@ -6,10 +6,12 @@ import com.tacz.guns.api.client.animation.gltf.AnimationStructure;
 import com.tacz.guns.client.resource_new.manager.DisplayManager;
 import com.tacz.guns.client.resource_new.manager.SoundAssetsManager;
 import com.tacz.guns.client.resource_new.pojo.CommonTransformObject;
+import com.tacz.guns.client.resource_new.pojo.PackInfo;
 import com.tacz.guns.client.resource_new.pojo.animation.bedrock.AnimationKeyframes;
 import com.tacz.guns.client.resource_new.pojo.animation.bedrock.BedrockAnimationFile;
 import com.tacz.guns.client.resource_new.pojo.animation.bedrock.SoundEffectKeyframes;
 import com.tacz.guns.client.resource_new.pojo.display.ammo.AmmoDisplay;
+import com.tacz.guns.client.resource_new.pojo.display.attachment.AttachmentDisplay;
 import com.tacz.guns.client.resource_new.pojo.display.gun.GunDisplay;
 import com.tacz.guns.client.resource_new.pojo.model.BedrockModelPOJO;
 import com.tacz.guns.client.resource_new.pojo.model.CubesItem;
@@ -58,6 +60,8 @@ public enum ClientAssetsManager {
     private JsonDataManager<GunDisplay> gunDisplay;
     // 弹药展示数据
     private JsonDataManager<AmmoDisplay> ammoDisplay;
+    // 配件展示数据
+    private JsonDataManager<AttachmentDisplay> attachmentDisplay;
     // 原始基岩版模型
     private JsonDataManager<BedrockModelPOJO> bedrockModel;
     // 基岩版模型动画
@@ -68,6 +72,8 @@ public enum ClientAssetsManager {
     private ScriptManager scriptManager;
     // 音效
     private SoundAssetsManager soundAssetsManager;
+    // 枪包元数据
+    private JsonDataManager<PackInfo> packInfo;
 
     private List<PreparableReloadListener> listeners;
 
@@ -76,11 +82,13 @@ public enum ClientAssetsManager {
             listeners = new ArrayList<>();
             gunDisplay = register(new DisplayManager<>(GunDisplay.class, GSON, "display/guns", "GunDisplayLoader"));
             ammoDisplay = register(new DisplayManager<>(AmmoDisplay.class, GSON, "display/ammo", "AmmoDisplayLoader"));
+            attachmentDisplay = register(new DisplayManager<>(AttachmentDisplay.class, GSON, "display/attachments", "AttachmentDisplayLoader"));
             bedrockModel = register(new JsonDataManager<>(BedrockModelPOJO.class, GSON, "geo_models", "BedrockModelLoader"));
             bedrockAnimation = register(new JsonDataManager<>(BedrockAnimationFile.class, GSON, new FileToIdConverter("animations", ".animation.json"), "BedrockAnimationLoader"));
             gltfAnimation = register(new GltfManager());
             scriptManager = register(new ScriptManager());
             soundAssetsManager = register(new SoundAssetsManager());
+
         }
         listeners.forEach(register);
     }
@@ -93,6 +101,11 @@ public enum ClientAssetsManager {
     @Nullable
     public GunDisplay getGunDisplay(ResourceLocation id) {
         return gunDisplay.getData(id);
+    }
+
+    @Nullable
+    public AttachmentDisplay getAttachmentDisplay(ResourceLocation id) {
+        return attachmentDisplay.getData(id);
     }
 
     @Nullable

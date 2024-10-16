@@ -16,7 +16,7 @@ import java.util.Map;
  * 该类型的数据管理器用于服务端数据加载并向客户端同步
  * @param <T> 数据类型
  */
-public class CommonDataManager<T> extends JsonDataManager<T> {
+public class CommonDataManager<T> extends JsonDataManager<T> implements INetworkCacheReloadListener {
     private final DataType type;
     protected Map<ResourceLocation, String> networkCache;
 

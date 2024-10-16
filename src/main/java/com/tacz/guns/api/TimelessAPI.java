@@ -17,6 +17,7 @@ import com.tacz.guns.resource_new.index.CommonBlockIndex;
 import com.tacz.guns.resource_new.index.CommonGunIndex;
 import com.tacz.guns.resource_new.CommonAssetsManager;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 
@@ -32,7 +33,7 @@ public final class TimelessAPI {
 
     @OnlyIn(Dist.CLIENT)
     public static Optional<ClientAttachmentIndex> getClientAttachmentIndex(ResourceLocation attachmentId) {
-        return ClientGunPackLoader.getAttachmentIndex(attachmentId);
+        return Optional.ofNullable(ClientIndexManager.ATTACHMENT_INDEX.get(attachmentId));
     }
 
     @OnlyIn(Dist.CLIENT)
@@ -42,22 +43,22 @@ public final class TimelessAPI {
 
     @OnlyIn(Dist.CLIENT)
     public static Optional<ClientBlockIndex> getClientBlockIndex(ResourceLocation blockId) {
-        return ClientGunPackLoader.getBlockIndex(blockId);
+        return Optional.ofNullable(ClientIndexManager.BLOCK_INDEX.get(blockId));
     }
 
     @OnlyIn(Dist.CLIENT)
     public static Set<Map.Entry<ResourceLocation, ClientGunIndex>> getAllClientGunIndex() {
-        return ClientGunPackLoader.getAllGuns();
+        return ClientIndexManager.getAllGuns();
     }
 
     @OnlyIn(Dist.CLIENT)
     public static Set<Map.Entry<ResourceLocation, ClientAmmoIndex>> getAllClientAmmoIndex() {
-        return ClientGunPackLoader.getAllAmmo();
+        return ClientIndexManager.getAllAmmo();
     }
 
     @OnlyIn(Dist.CLIENT)
     public static Set<Map.Entry<ResourceLocation, ClientAttachmentIndex>> getAllClientAttachmentIndex() {
-        return ClientGunPackLoader.getAllAttachments();
+        return ClientIndexManager.getAllAttachments();
     }
 
     public static Optional<CommonBlockIndex> getCommonBlockIndex(ResourceLocation blockId) {
@@ -69,15 +70,21 @@ public final class TimelessAPI {
     }
 
     public static Optional<CommonAttachmentIndex> getCommonAttachmentIndex(ResourceLocation attachmentId) {
-        return CommonGunPackLoader.getAttachmentIndex(attachmentId);
+        return Optional.ofNullable(CommonAssetsManager.get().getAttachmentIndex(attachmentId));
     }
 
     public static Optional<CommonAmmoIndex> getCommonAmmoIndex(ResourceLocation ammoId) {
         return Optional.ofNullable(CommonAssetsManager.get().getAmmoIndex(ammoId));
     }
 
+    /**
+     * @deprecated
+     * 不再使用独立的配方同步，而是使用原版的配方加载器<br/>
+     * 请用 {@link net.minecraft.world.item.crafting.RecipeManager#byKey(ResourceLocation)}和{@link net.minecraft.world.item.crafting.RecipeManager#getAllRecipesFor(RecipeType)}获取配方
+     */
+    @Deprecated
     public static Optional<GunSmithTableRecipe> getRecipe(ResourceLocation recipeId) {
-        return CommonAssetManager.INSTANCE.getRecipe(recipeId);
+        return Optional.empty();
     }
 
     public static Set<Map.Entry<ResourceLocation, CommonBlockIndex>> getAllCommonBlockIndex() {
@@ -93,11 +100,17 @@ public final class TimelessAPI {
     }
 
     public static Set<Map.Entry<ResourceLocation, CommonAttachmentIndex>> getAllCommonAttachmentIndex() {
-        return CommonGunPackLoader.getAllAttachments();
+        return CommonAssetsManager.get().getAllAttachments();
     }
 
+    /**
+     * @deprecated
+     * 不再使用独立的配方同步，而是使用原版的配方加载器<br/>
+     * 请用 {@link net.minecraft.world.item.crafting.RecipeManager#byKey(ResourceLocation)}和{@link net.minecraft.world.item.crafting.RecipeManager#getAllRecipesFor(RecipeType)}获取配方
+     */
+    @Deprecated
     public static Map<ResourceLocation, GunSmithTableRecipe> getAllRecipes() {
-        return CommonAssetManager.INSTANCE.getAllRecipes();
+        return Map.of();
     }
 
     public static void registerThirdPersonAnimation(String name, IThirdPersonAnimation animation) {

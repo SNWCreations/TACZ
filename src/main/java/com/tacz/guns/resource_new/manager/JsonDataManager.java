@@ -13,6 +13,7 @@ import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
 import net.minecraft.util.profiling.ProfilerFiller;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 
@@ -41,6 +42,7 @@ public class JsonDataManager<T> extends SimplePreparableReloadListener<Map<Resou
         this.fileToIdConverter = fileToIdConverter;
     }
 
+    @NotNull
     @Override
     protected Map<ResourceLocation, JsonElement> prepare(ResourceManager pResourceManager, ProfilerFiller pProfiler) {
         return ResourceScanner.scanDirectory(pResourceManager, fileToIdConverter, this.gson);
@@ -53,7 +55,7 @@ public class JsonDataManager<T> extends SimplePreparableReloadListener<Map<Resou
             ResourceLocation id = entry.getKey();
             JsonElement element = entry.getValue();
             try {
-                T data = gson.fromJson(element, getDataClass());
+                T data = parseJson(element);
                 if (data != null) {
                     dataMap.put(id, data);
                 }
@@ -61,6 +63,10 @@ public class JsonDataManager<T> extends SimplePreparableReloadListener<Map<Resou
                 GunMod.LOGGER.error(marker, "Failed to load data file {}", id, e);
             }
         }
+    }
+
+    protected T parseJson(JsonElement element) {
+        return gson.fromJson(element, getDataClass());
     }
 
     public Class<T> getDataClass() {

@@ -1,7 +1,9 @@
 package com.tacz.guns.resource_new;
 
+import com.google.common.collect.Maps;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
+import com.google.gson.annotations.SerializedName;
 import com.tacz.guns.GunMod;
 import com.tacz.guns.client.resource_new.pojo.PackInfo;
 import cpw.mods.jarhandling.SecureJar;
@@ -24,6 +26,9 @@ import net.minecraftforge.resource.DelegatingPackResources;
 import net.minecraftforge.resource.PathPackResources;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
+import org.apache.maven.artifact.versioning.ArtifactVersion;
+import org.apache.maven.artifact.versioning.InvalidVersionSpecificationException;
+import org.apache.maven.artifact.versioning.VersionRange;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -35,6 +40,7 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -119,17 +125,22 @@ public enum GunPackLoader implements RepositorySource {
     }
 
     private static GunPack fromDirPath(Path path) throws IOException {
-        Path packInfoFilePath = path.resolve("pack.json");
+        Path packInfoFilePath = path.resolve("gunpack.meta.json");
         try (InputStream stream = Files.newInputStream(packInfoFilePath)) {
-            PackInfo info = GSON.fromJson(new InputStreamReader(stream, StandardCharsets.UTF_8), PackInfo.class);
+            PackMeta info = GSON.fromJson(new InputStreamReader(stream, StandardCharsets.UTF_8), PackMeta.class);
 
             if (info == null) {
                 GunMod.LOGGER.warn(MARKER, "Failed to read info json: {}", packInfoFilePath);
                 return null;
             }
 
+            if (info.dependencies !=null && !modVersionAllMatch(info)) {
+                GunMod.LOGGER.warn(MARKER, "Mod version mismatch: {}", packInfoFilePath);
+                return null;
+            }
+
             return new GunPack(path, info.getName());
-        } catch (IOException | JsonSyntaxException | JsonIOException exception) {
+        } catch (IOException | JsonSyntaxException | JsonIOException | InvalidVersionSpecificationException exception) {
             GunMod.LOGGER.warn(MARKER, "Failed to read info json: {}", packInfoFilePath);
             GunMod.LOGGER.warn(exception.getMessage());
         }
@@ -167,5 +178,42 @@ public enum GunPackLoader implements RepositorySource {
         }
 
         return gunPacks;
+    }
+
+    private static boolean modVersionAllMatch(PackMeta info) throws InvalidVersionSpecificationException {
+        HashMap<String, String> dependencies = info.getDependencies();
+        for (String modId : dependencies.keySet()) {
+            if (!modVersionMatch(modId, dependencies.get(modId))) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static boolean modVersionMatch(String modId, String version) throws InvalidVersionSpecificationException {
+        VersionRange versionRange = VersionRange.createFromVersionSpec(version);
+        return ModList.get().getModContainerById(modId).map(mod -> {
+            ArtifactVersion modVersion = mod.getModInfo().getVersion();
+            return versionRange.containsVersion(modVersion);
+        }).orElse(false);
+    }
+
+    private static class PackMeta {
+        @SerializedName("name")
+        private String name;
+
+        @SerializedName("dependencies")
+        private HashMap<String, String> dependencies = Maps.newHashMap();
+
+        public HashMap<String, String> getDependencies() {
+            return dependencies;
+        }
+
+        public String getName() {
+            return name;
+        }
+    }
+
+    public record GunPack(Path path, String name) {
     }
 }

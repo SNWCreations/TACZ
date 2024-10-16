@@ -9,7 +9,10 @@ import com.tacz.guns.network.NetworkHandler;
 import com.tacz.guns.network.message.ServerMessageSyncGunPack;
 import com.tacz.guns.resource.filter.RecipeFilter;
 import com.tacz.guns.resource_new.index.CommonAmmoIndex;
+import com.tacz.guns.resource_new.index.CommonAttachmentIndex;
 import com.tacz.guns.resource_new.index.CommonGunIndex;
+import com.tacz.guns.resource_new.manager.AttachmentsTagManager;
+import com.tacz.guns.resource_new.manager.INetworkCacheReloadListener;
 import com.tacz.guns.resource_new.pojo.data.attachment.AttachmentData;
 import com.tacz.guns.resource_new.pojo.data.gun.ExtraDamage;
 import com.tacz.guns.resource_new.pojo.data.gun.GunData;
@@ -46,31 +49,38 @@ public class CommonAssetsManager implements ICommonResourceProvider {
             .registerTypeAdapter(RecipeFilter.class, new RecipeFilter.Deserializer())
             .registerTypeAdapter(CommonGunIndex.class, new CommonGunIndexSerializer())
             .registerTypeAdapter(CommonAmmoIndex.class, new CommonAmmoIndexSerializer())
+            .registerTypeAdapter(CommonAttachmentIndex.class, new CommonAttachmentIndexSerializer())
             .create();
 
-    private final List<CommonDataManager<?>> listeners = new ArrayList<>();
+    private final List<INetworkCacheReloadListener> listeners = new ArrayList<>();
     private CommonDataManager<GunData> gunData;
+    private CommonDataManager<AttachmentData> attachmentData;
     private CommonDataManager<CommonAmmoIndex> ammoIndex;
     private CommonDataManager<CommonGunIndex> gunIndex;
+    private CommonDataManager<CommonAttachmentIndex> attachmentIndex;
+    private AttachmentsTagManager attachmentsTagManager;
 
     public void reloadAndRegister(Consumer<PreparableReloadListener> register) {
         // 这里会顺序重载，所以需要把index这种依赖data的放在后面
         gunData = register(new CommonDataManager<>(DataType.GUN_DATA, GunData.class, GSON, "data/guns", "GunDataLoader"));
+        attachmentData = register(new CommonDataManager<>(DataType.ATTACHMENT_DATA, AttachmentData.class, GSON, "data/attachments", "AttachmentDataLoader"));
+        attachmentsTagManager = register(new AttachmentsTagManager());
 
         ammoIndex = register(new CommonDataManager<>(DataType.AMMO_INDEX, CommonAmmoIndex.class, GSON, "index/ammo", "AmmoIndexLoader"));
         gunIndex = register(new CommonDataManager<>(DataType.GUN_INDEX, CommonGunIndex.class, GSON, "index/guns", "GunIndexLoader"));
+        attachmentIndex = register(new CommonDataManager<>(DataType.ATTACHMENT_INDEX, CommonAttachmentIndex.class, GSON, "index/attachments", "AttachmentIndexLoader"));
 
         listeners.forEach(register);
     }
 
-    private <T extends CommonDataManager<?>> T register(T listener) {
+    private <T extends INetworkCacheReloadListener> T register(T listener) {
         listeners.add(listener);
         return listener;
     }
 
     public Map<DataType, Map<ResourceLocation, String>> getNetworkCache() {
         ImmutableMap.Builder<DataType, Map<ResourceLocation, String>> builder = ImmutableMap.builder();
-        for (CommonDataManager<?> listener : listeners) {
+        for (INetworkCacheReloadListener listener : listeners) {
             builder.put(listener.getType(), listener.getNetworkCache());
         }
         return builder.build();
@@ -80,6 +90,11 @@ public class CommonAssetsManager implements ICommonResourceProvider {
     @Override
     public GunData getGunData(ResourceLocation id) {
         return gunData.getData(id);
+    }
+
+    @Override
+    public AttachmentData getAttachmentData(ResourceLocation dataId) {
+        return attachmentData.getData(dataId);
     }
 
     @Nullable
@@ -105,8 +120,23 @@ public class CommonAssetsManager implements ICommonResourceProvider {
     }
 
     @Override
-    public AttachmentData getAttachmentData(ResourceLocation dataId) {
-        return null;
+    public CommonAttachmentIndex getAttachmentIndex(ResourceLocation attachmentId) {
+        return attachmentIndex.getData(attachmentId);
+    }
+
+    @Override
+    public Set<Map.Entry<ResourceLocation, CommonAttachmentIndex>> getAllAttachments() {
+        return attachmentIndex.getAllData().entrySet();
+    }
+
+    @Override
+    public Set<String> getAttachmentTags(ResourceLocation registryName) {
+        return attachmentsTagManager.getAttachmentTags(registryName);
+    }
+
+    @Override
+    public Set<String> getAllowAttachmentTags(ResourceLocation registryName) {
+        return attachmentsTagManager.getAllowAttachmentTags(registryName);
     }
 
     /**
