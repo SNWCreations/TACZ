@@ -9,10 +9,9 @@ import com.tacz.guns.GunMod;
 import com.tacz.guns.api.client.animation.Animations;
 import com.tacz.guns.api.client.animation.ObjectAnimation;
 import com.tacz.guns.client.model.bedrock.BedrockModel;
-import com.tacz.guns.client.resource_new.ClientAssetsManager;
-import com.tacz.guns.client.resource_new.pojo.animation.bedrock.BedrockAnimationFile;
-import com.tacz.guns.client.resource_new.pojo.model.BedrockModelPOJO;
-import com.tacz.guns.client.resource_new.pojo.model.BedrockVersion;
+import com.tacz.guns.client.resource.pojo.animation.bedrock.BedrockAnimationFile;
+import com.tacz.guns.client.resource.pojo.model.BedrockModelPOJO;
+import com.tacz.guns.client.resource.pojo.model.BedrockVersion;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 

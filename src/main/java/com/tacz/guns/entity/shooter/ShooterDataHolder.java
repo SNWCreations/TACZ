@@ -1,7 +1,7 @@
 package com.tacz.guns.entity.shooter;
 
 import com.tacz.guns.api.entity.ReloadState;
-import com.tacz.guns.resource_new.modifier.AttachmentCacheProperty;
+import com.tacz.guns.resource.modifier.AttachmentCacheProperty;
 import net.minecraft.world.item.ItemStack;
 
 import javax.annotation.Nonnull;

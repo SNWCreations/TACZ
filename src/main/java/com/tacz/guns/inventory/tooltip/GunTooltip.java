@@ -1,7 +1,7 @@
 package com.tacz.guns.inventory.tooltip;
 
 import com.tacz.guns.api.item.IGun;
-import com.tacz.guns.resource_new.index.CommonGunIndex;
+import com.tacz.guns.resource.index.CommonGunIndex;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.inventory.tooltip.TooltipComponent;
 import net.minecraft.world.item.ItemStack;

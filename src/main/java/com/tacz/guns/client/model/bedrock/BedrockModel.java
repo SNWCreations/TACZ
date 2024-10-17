@@ -3,7 +3,7 @@ package com.tacz.guns.client.model.bedrock;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.tacz.guns.client.model.IFunctionalRenderer;
-import com.tacz.guns.client.resource_new.pojo.model.*;
+import com.tacz.guns.client.resource.pojo.model.*;
 import com.tacz.guns.compat.oculus.OculusCompat;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;

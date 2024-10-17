@@ -1,8 +1,8 @@
 package com.tacz.guns.network.message;
 
-import com.tacz.guns.client.resource_new.ClientIndexManager;
-import com.tacz.guns.resource_new.network.CommonNetworkCache;
-import com.tacz.guns.resource_new.network.DataType;
+import com.tacz.guns.client.resource.ClientIndexManager;
+import com.tacz.guns.resource.network.CommonNetworkCache;
+import com.tacz.guns.resource.network.DataType;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;

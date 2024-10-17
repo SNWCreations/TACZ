@@ -4,7 +4,7 @@ import com.tacz.guns.api.client.animation.AnimationListener;
 import com.tacz.guns.api.client.animation.ObjectAnimationChannel;
 import com.tacz.guns.client.model.BedrockAnimatedModel;
 import com.tacz.guns.client.model.bedrock.ModelRendererWrapper;
-import com.tacz.guns.client.resource_new.pojo.model.BonesItem;
+import com.tacz.guns.client.resource.pojo.model.BonesItem;
 
 import javax.annotation.Nullable;
 

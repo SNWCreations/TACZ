@@ -4,7 +4,7 @@ import com.tacz.guns.api.TimelessAPI;
 import com.tacz.guns.api.item.builder.BlockItemBuilder;
 import com.tacz.guns.api.item.nbt.BlockItemDataAccessor;
 import com.tacz.guns.client.renderer.item.GunSmithTableItemRenderer;
-import com.tacz.guns.client.resource_new.index.ClientBlockIndex;
+import com.tacz.guns.client.resource.index.ClientBlockIndex;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.core.NonNullList;

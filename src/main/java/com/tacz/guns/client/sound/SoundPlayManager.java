@@ -2,7 +2,7 @@ package com.tacz.guns.client.sound;
 
 import com.tacz.guns.api.TimelessAPI;
 import com.tacz.guns.api.item.IAttachment;
-import com.tacz.guns.client.resource_new.index.ClientGunIndex;
+import com.tacz.guns.client.resource.index.ClientGunIndex;
 import com.tacz.guns.config.common.GunConfig;
 import com.tacz.guns.init.ModSounds;
 import com.tacz.guns.network.message.ServerMessageSound;

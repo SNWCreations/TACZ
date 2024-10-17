@@ -1,7 +1,7 @@
 package com.tacz.guns.compat.playeranimator;
 
 import com.tacz.guns.GunMod;
-import com.tacz.guns.client.resource_new.index.ClientGunIndex;
+import com.tacz.guns.client.resource.index.ClientGunIndex;
 import com.tacz.guns.compat.playeranimator.animation.AnimationDataRegisterFactory;
 import com.tacz.guns.compat.playeranimator.animation.AnimationManager;
 import com.tacz.guns.compat.playeranimator.animation.PlayerAnimatorAssetManager;

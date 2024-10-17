@@ -2,8 +2,8 @@ package com.tacz.guns.client.model;
 
 import com.tacz.guns.client.model.bedrock.BedrockModel;
 import com.tacz.guns.client.model.bedrock.BedrockPart;
-import com.tacz.guns.client.resource_new.pojo.model.BedrockModelPOJO;
-import com.tacz.guns.client.resource_new.pojo.model.BedrockVersion;
+import com.tacz.guns.client.resource.pojo.model.BedrockModelPOJO;
+import com.tacz.guns.client.resource.pojo.model.BedrockVersion;
 
 import javax.annotation.Nullable;
 import java.util.List;

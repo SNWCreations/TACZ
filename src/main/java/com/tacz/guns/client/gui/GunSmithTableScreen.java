@@ -15,8 +15,8 @@ import com.tacz.guns.api.item.IAttachment;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.client.gui.components.smith.ResultButton;
 import com.tacz.guns.client.gui.components.smith.TypeButton;
-import com.tacz.guns.client.resource.ClientAssetManager;
-import com.tacz.guns.client.resource_new.pojo.PackInfo;
+import com.tacz.guns.client.resource_legacy.ClientAssetManager;
+import com.tacz.guns.client.resource.pojo.PackInfo;
 import com.tacz.guns.crafting.GunSmithTableIngredient;
 import com.tacz.guns.crafting.GunSmithTableRecipe;
 import com.tacz.guns.crafting.GunSmithTableResult;
@@ -25,9 +25,9 @@ import com.tacz.guns.init.ModRecipe;
 import com.tacz.guns.inventory.GunSmithTableMenu;
 import com.tacz.guns.network.NetworkHandler;
 import com.tacz.guns.network.message.ClientMessageCraft;
-import com.tacz.guns.resource.CommonAssetManager;
+import com.tacz.guns.resource_legacy.CommonAssetManager;
 import com.tacz.guns.resource.filter.RecipeFilter;
-import com.tacz.guns.resource_new.pojo.data.block.BlockData;
+import com.tacz.guns.resource.pojo.data.block.BlockData;
 import com.tacz.guns.util.RenderDistance;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
@@ -165,21 +165,19 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
 
     @Nullable
     private GunSmithTableRecipe getSelectedRecipe(ResourceLocation recipeId) {
-        return TimelessAPI.getRecipe(recipeId).orElseGet(()->{
-            if (minecraft !=null && minecraft.level != null) {
-                RecipeManager recipeManager = minecraft.level.getRecipeManager();
-                Recipe<?> recipe = recipeManager.byKey(recipeId).orElse(null);
-                if (recipe instanceof GunSmithTableRecipe) {
-                    return (GunSmithTableRecipe) recipe;
-                }
+        if (minecraft !=null && minecraft.level != null) {
+            RecipeManager recipeManager = minecraft.level.getRecipeManager();
+            Recipe<?> recipe = recipeManager.byKey(recipeId).orElse(null);
+            if (recipe instanceof GunSmithTableRecipe) {
+                return (GunSmithTableRecipe) recipe;
             }
-            return null;
-        });
+        }
+        return null;
     }
 
     private void getPlayerIngredientCount(GunSmithTableRecipe recipe) {
         LocalPlayer player = Minecraft.getInstance().player;
-        if (player == null) {
+        if (player == null || recipe == null) {
             return;
         }
         List<GunSmithTableIngredient> ingredients = recipe.getInputs();

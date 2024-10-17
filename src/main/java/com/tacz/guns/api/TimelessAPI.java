@@ -2,20 +2,17 @@ package com.tacz.guns.api;
 
 import com.tacz.guns.api.client.other.IThirdPersonAnimation;
 import com.tacz.guns.api.client.other.ThirdPersonManager;
-import com.tacz.guns.client.resource.ClientGunPackLoader;
-import com.tacz.guns.client.resource_new.index.ClientAmmoIndex;
-import com.tacz.guns.client.resource_new.index.ClientAttachmentIndex;
-import com.tacz.guns.client.resource_new.index.ClientBlockIndex;
-import com.tacz.guns.client.resource_new.index.ClientGunIndex;
-import com.tacz.guns.client.resource_new.ClientIndexManager;
+import com.tacz.guns.client.resource.index.ClientAmmoIndex;
+import com.tacz.guns.client.resource.index.ClientAttachmentIndex;
+import com.tacz.guns.client.resource.index.ClientBlockIndex;
+import com.tacz.guns.client.resource.index.ClientGunIndex;
+import com.tacz.guns.client.resource.ClientIndexManager;
 import com.tacz.guns.crafting.GunSmithTableRecipe;
-import com.tacz.guns.resource.CommonAssetManager;
-import com.tacz.guns.resource.CommonGunPackLoader;
-import com.tacz.guns.resource_new.index.CommonAmmoIndex;
-import com.tacz.guns.resource_new.index.CommonAttachmentIndex;
-import com.tacz.guns.resource_new.index.CommonBlockIndex;
-import com.tacz.guns.resource_new.index.CommonGunIndex;
-import com.tacz.guns.resource_new.CommonAssetsManager;
+import com.tacz.guns.resource.index.CommonAmmoIndex;
+import com.tacz.guns.resource.index.CommonAttachmentIndex;
+import com.tacz.guns.resource.index.CommonBlockIndex;
+import com.tacz.guns.resource.index.CommonGunIndex;
+import com.tacz.guns.resource.CommonAssetsManager;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraftforge.api.distmarker.Dist;
@@ -62,7 +59,7 @@ public final class TimelessAPI {
     }
 
     public static Optional<CommonBlockIndex> getCommonBlockIndex(ResourceLocation blockId) {
-        return CommonGunPackLoader.getBlockIndex(blockId);
+        return Optional.ofNullable(CommonAssetsManager.get().getBlockIndex(blockId));
     }
 
     public static Optional<CommonGunIndex> getCommonGunIndex(ResourceLocation gunId) {
@@ -88,7 +85,7 @@ public final class TimelessAPI {
     }
 
     public static Set<Map.Entry<ResourceLocation, CommonBlockIndex>> getAllCommonBlockIndex() {
-        return CommonGunPackLoader.getAllBlocks();
+        return CommonAssetsManager.get().getAllBlocks();
     }
 
     public static Set<Map.Entry<ResourceLocation, CommonGunIndex>> getAllCommonGunIndex() {

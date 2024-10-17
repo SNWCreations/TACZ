@@ -1,7 +1,7 @@
 package com.tacz.guns.crafting;
 
 import com.tacz.guns.init.ModRecipe;
-import com.tacz.guns.resource_new.pojo.data.recipe.TableRecipe;
+import com.tacz.guns.resource.pojo.data.recipe.TableRecipe;
 import net.minecraft.core.RegistryAccess;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;

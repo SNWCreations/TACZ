@@ -1,8 +1,8 @@
 package com.tacz.guns.crafting;
 
 import com.google.gson.JsonObject;
-import com.tacz.guns.resource.CommonGunPackLoader;
-import com.tacz.guns.resource_new.pojo.data.recipe.TableRecipe;
+import com.tacz.guns.resource_legacy.CommonGunPackLoader;
+import com.tacz.guns.resource.pojo.data.recipe.TableRecipe;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;

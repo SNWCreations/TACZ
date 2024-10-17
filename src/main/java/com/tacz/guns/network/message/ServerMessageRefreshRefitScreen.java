@@ -1,7 +1,7 @@
 package com.tacz.guns.network.message;
 
 import com.tacz.guns.client.gui.GunRefitScreen;
-import com.tacz.guns.resource_new.modifier.AttachmentPropertyManager;
+import com.tacz.guns.resource.modifier.AttachmentPropertyManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.network.FriendlyByteBuf;

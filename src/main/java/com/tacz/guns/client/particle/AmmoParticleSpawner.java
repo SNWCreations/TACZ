@@ -2,7 +2,7 @@ package com.tacz.guns.client.particle;
 
 
 import com.tacz.guns.api.TimelessAPI;
-import com.tacz.guns.client.resource_new.pojo.display.ammo.AmmoParticle;
+import com.tacz.guns.client.resource.pojo.display.ammo.AmmoParticle;
 import com.tacz.guns.entity.EntityKineticBullet;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.particle.Particle;

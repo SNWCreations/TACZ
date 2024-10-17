@@ -1,6 +1,6 @@
 package com.tacz.guns.util;
 
-import com.tacz.guns.resource_new.CommonAssetsManager;
+import com.tacz.guns.resource.CommonAssetsManager;
 import net.minecraft.resources.ResourceLocation;
 
 import java.util.Set;

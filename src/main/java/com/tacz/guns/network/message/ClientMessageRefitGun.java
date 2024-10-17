@@ -3,7 +3,7 @@ package com.tacz.guns.network.message;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.attachment.AttachmentType;
 import com.tacz.guns.network.NetworkHandler;
-import com.tacz.guns.resource_new.modifier.AttachmentPropertyManager;
+import com.tacz.guns.resource.modifier.AttachmentPropertyManager;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Inventory;

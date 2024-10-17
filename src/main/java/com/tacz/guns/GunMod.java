@@ -4,7 +4,7 @@ import com.tacz.guns.config.ClientConfig;
 import com.tacz.guns.config.CommonConfig;
 import com.tacz.guns.config.ServerConfig;
 import com.tacz.guns.init.*;
-import com.tacz.guns.resource_new.modifier.AttachmentPropertyManager;
+import com.tacz.guns.resource.modifier.AttachmentPropertyManager;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;

@@ -7,7 +7,7 @@ import com.tacz.guns.client.animation.statemachine.GunAnimationConstant;
 import com.tacz.guns.client.sound.SoundPlayManager;
 import com.tacz.guns.network.NetworkHandler;
 import com.tacz.guns.network.message.ClientMessagePlayerBoltGun;
-import com.tacz.guns.resource_new.pojo.data.gun.Bolt;
+import com.tacz.guns.resource.pojo.data.gun.Bolt;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
