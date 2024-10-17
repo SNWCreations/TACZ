@@ -31,6 +31,7 @@ import org.apache.maven.artifact.versioning.VersionRange;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -38,11 +39,10 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.function.Consumer;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 import static com.tacz.guns.resource_legacy.CommonGunPackLoader.GSON;
 
@@ -90,10 +90,6 @@ public enum GunPackLoader implements RepositorySource {
         this.extensionsPack = Pack.readMetaAndCreate("tacz_resources", Component.literal("TACZ Resources"), true, (id) -> {
             return new DelegatingPackResources(id, false, new PackMetadataSection(Component.translatable("tacz.resources.modresources"),
                     SharedConstants.getCurrentVersion().getPackVersion(packType)), extensionPacks) {
-                public boolean isHidden() {
-                    return false;
-                }
-
                 public IoSupplier<InputStream> getRootResource(String... paths) {
                     if (paths.length == 1 && paths[0].equals("pack.png")) {
                         Path logoPath = getModIcon("tacz");
@@ -146,34 +142,55 @@ public enum GunPackLoader implements RepositorySource {
         return null;
     }
 
+    static GunPack fromZipPath(Path path)  {
+        try(ZipFile zipFile = new ZipFile(path.toFile())){
+            ZipEntry extDescriptorEntry = zipFile.getEntry("gunpack.meta.json");
+            if (extDescriptorEntry == null) {
+                GunMod.LOGGER.error(MARKER,"Failed to load extension from ZIP {}. Error: {}", path, "No gunpack.meta.json found");
+                return null;
+            }
+
+            try (InputStream stream = zipFile.getInputStream(extDescriptorEntry)) {
+                PackMeta info = GSON.fromJson(new InputStreamReader(stream, StandardCharsets.UTF_8), PackMeta.class);
+
+                if (info == null) {
+                    GunMod.LOGGER.warn(MARKER, "Failed to read info json: {}", path);
+                    return null;
+                }
+
+                if (info.dependencies !=null && !modVersionAllMatch(info)) {
+                    GunMod.LOGGER.warn(MARKER, "Mod version mismatch: {}", path);
+                    return null;
+                }
+
+                return new GunPack(path, info.getName());
+            } catch (IOException | JsonSyntaxException | JsonIOException | InvalidVersionSpecificationException e) {
+                GunMod.LOGGER.error(MARKER,"Failed to load extension from ZIP {}. Error: {}", path, e);
+                return null;
+            }
+        } catch (IOException e) {
+            GunMod.LOGGER.error(MARKER,"Failed to load extension from ZIP {}. Error: {}", path, e);
+            return null;
+        }
+    }
+
     private static List<GunPack> scanExtensions(Path extensionsPath) {
         List<GunPack> gunPacks = new ArrayList<>();
 
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(extensionsPath)){
             for (Path entry : stream) {
-                GunPack gunPack;
+                GunPack gunPack = null;
                 if (Files.isDirectory(entry)) {
-                    try {
-                        gunPack = fromDirPath(entry);
-                        if (gunPack != null) {
-                            gunPacks.add(gunPack);
-                        }
-                    } catch (Exception var8) {
-                        //                            throw new InvalidExtensionException(entry, re);
-                    }
+                    gunPack = fromDirPath(entry);
                 } else if (entry.toString().endsWith(".zip")) {
-                    try {
-//                            extension = ExtensionRegistry.Extension.fromZipPath(entry);
-//                            if (extension != null) {
-//                                extensions.add(extension);
-//                            }
-                    } catch (Exception var7) {
-                        //                            throw new InvalidExtensionException(entry, re);
-                    }
+                    gunPack = fromZipPath(entry);
+                }
+                if (gunPack != null) {
+                    gunPacks.add(gunPack);
                 }
             }
-        } catch (IOException var10) {
-            var10.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         return gunPacks;
