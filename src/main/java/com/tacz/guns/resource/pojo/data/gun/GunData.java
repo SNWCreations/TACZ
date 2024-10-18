@@ -12,6 +12,7 @@ import com.tacz.guns.resource.pojo.data.attachment.AttachmentData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.LivingEntity;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
@@ -111,7 +112,7 @@ public class GunData {
         return bolt;
     }
 
-    @Deprecated
+    @ApiStatus.Internal
     public int getRoundsPerMinute() {
         return roundsPerMinute;
     }

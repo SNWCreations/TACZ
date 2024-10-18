@@ -1,6 +1,8 @@
 package com.tacz.guns.resource.network;
 
+import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
+import com.tacz.guns.GunMod;
 import com.tacz.guns.resource.index.CommonAmmoIndex;
 import com.tacz.guns.resource.index.CommonAttachmentIndex;
 import com.tacz.guns.resource.index.CommonBlockIndex;
@@ -153,15 +155,19 @@ public enum CommonNetworkCache implements ICommonResourceProvider {
 
     private void fromNetwork(DataType type, Map<ResourceLocation, String> data) {
         for (Map.Entry<ResourceLocation, String> entry : data.entrySet()) {
-            switch (type) {
-                case GUN_DATA -> gunData.put(entry.getKey(), parse(entry.getValue(), GunData.class));
-                case GUN_INDEX -> gunIndex.put(entry.getKey(), parse(entry.getValue(), CommonGunIndex.class));
-                case AMMO_INDEX -> ammoIndex.put(entry.getKey(), parse(entry.getValue(), CommonAmmoIndex.class));
-                case ATTACHMENT_DATA -> attachmentData.put(entry.getKey(), parse(entry.getValue(), AttachmentData.class));
-                case ATTACHMENT_INDEX -> attachmentIndex.put(entry.getKey(), parse(entry.getValue(), CommonAttachmentIndex.class));
-                case ATTACHMENT_TAGS -> resolveAttachmentTags(data);
-                case BLOCK_INDEX -> blockIndex.put(entry.getKey(), parse(entry.getValue(), CommonBlockIndex.class));
-                case BLOCK_DATA -> blockData.put(entry.getKey(), parse(entry.getValue(), BlockData.class));
+            try {
+                switch (type) {
+                    case GUN_DATA -> gunData.put(entry.getKey(), parse(entry.getValue(), GunData.class));
+                    case GUN_INDEX -> gunIndex.put(entry.getKey(), parse(entry.getValue(), CommonGunIndex.class));
+                    case AMMO_INDEX -> ammoIndex.put(entry.getKey(), parse(entry.getValue(), CommonAmmoIndex.class));
+                    case ATTACHMENT_DATA -> attachmentData.put(entry.getKey(), parse(entry.getValue(), AttachmentData.class));
+                    case ATTACHMENT_INDEX -> attachmentIndex.put(entry.getKey(), parse(entry.getValue(), CommonAttachmentIndex.class));
+                    case ATTACHMENT_TAGS -> resolveAttachmentTags(data);
+                    case BLOCK_INDEX -> blockIndex.put(entry.getKey(), parse(entry.getValue(), CommonBlockIndex.class));
+                    case BLOCK_DATA -> blockData.put(entry.getKey(), parse(entry.getValue(), BlockData.class));
+                }
+            } catch (IllegalArgumentException | JsonParseException exception) {
+                GunMod.LOGGER.warn("Failed to parse data from network for {} with id {}", type, entry.getKey(), exception);
             }
         }
     }
