@@ -32,7 +32,7 @@ public class GunSmithTableMenu extends AbstractContainerMenu {
     });
 
     private final ResourceLocation blockId;
-    private RecipeFilter filter;
+    private final RecipeFilter filter;
 
     public GunSmithTableMenu(int id, Inventory inventory, @Nullable ResourceLocation resourceLocation) {
         super(TYPE, id);
@@ -63,13 +63,11 @@ public class GunSmithTableMenu extends AbstractContainerMenu {
         if (filter != null && !filter.contains(recipeId)) {
             return null;
         }
-        return TimelessAPI.getRecipe(recipeId).orElseGet(()->{
-            Recipe<?> recipe = recipeManager.byKey(recipeId).orElse(null);
-            if (recipe instanceof GunSmithTableRecipe) {
-                return (GunSmithTableRecipe) recipe;
-            }
-            return null;
-        });
+        Recipe<?> recipe = recipeManager.byKey(recipeId).orElse(null);
+        if (recipe instanceof GunSmithTableRecipe) {
+            return (GunSmithTableRecipe) recipe;
+        }
+        return null;
     }
 
     public void doCraft(ResourceLocation recipeId, Player player) {

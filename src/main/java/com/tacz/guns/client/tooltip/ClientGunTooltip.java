@@ -4,7 +4,7 @@ import com.tacz.guns.api.TimelessAPI;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.builder.AmmoItemBuilder;
 import com.tacz.guns.client.input.RefitKey;
-import com.tacz.guns.client.resource_legacy.ClientAssetManager;
+import com.tacz.guns.client.resource.ClientAssetsManager;
 import com.tacz.guns.client.resource.index.ClientGunIndex;
 import com.tacz.guns.client.resource.pojo.PackInfo;
 import com.tacz.guns.client.resource.pojo.display.gun.AmmoCountStyle;
@@ -218,7 +218,7 @@ public class ClientGunTooltip implements ClientTooltipComponent {
 
         if (shouldShow(GunTooltipPart.PACK_INFO)) {
             ResourceLocation gunId = iGun.getGunId(gun);
-            PackInfo packInfoObject = ClientAssetManager.INSTANCE.getPackInfo(gunId);
+            PackInfo packInfoObject = ClientAssetsManager.INSTANCE.getPackInfo(gunId);
             if (packInfoObject != null) {
                 packInfo = Component.translatable(packInfoObject.getName()).withStyle(ChatFormatting.BLUE).withStyle(ChatFormatting.ITALIC);
                 this.maxWidth = Math.max(font.width(this.packInfo), this.maxWidth);

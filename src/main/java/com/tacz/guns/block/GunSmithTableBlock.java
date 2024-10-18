@@ -92,4 +92,9 @@ public class GunSmithTableBlock extends AbstractGunSmithTableBlock {
     public boolean isRoot(BlockState blockState) {
         return blockState.getValue(PART).equals(BedPart.FOOT);
     }
+
+    @Override
+    public float parseRotation(Direction direction) {
+        return 90 - 90 * direction.get2DDataValue();
+    }
 }
