@@ -5,7 +5,6 @@ import com.tacz.guns.crafting.GunSmithTableIngredient;
 import com.tacz.guns.crafting.GunSmithTableRecipe;
 import com.tacz.guns.network.NetworkHandler;
 import com.tacz.guns.network.message.ServerMessageCraft;
-import com.tacz.guns.resource_legacy.CommonAssetManager;
 import com.tacz.guns.resource.filter.RecipeFilter;
 import com.tacz.guns.resource.pojo.data.block.BlockData;
 import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
@@ -39,7 +38,7 @@ public class GunSmithTableMenu extends AbstractContainerMenu {
         this.blockId = resourceLocation;
         this.filter = TimelessAPI.getCommonBlockIndex(getBlockId()).map(blockIndex -> {
             BlockData data = blockIndex.getData();
-            return CommonAssetManager.INSTANCE.getRecipeFilter(data.getFilter());
+            return data.getFilter();
         }).orElse(null);
     }
 

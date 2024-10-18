@@ -134,8 +134,7 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
 
         TimelessAPI.getCommonBlockIndex(menu.getBlockId()).map(blockIndex -> {
             BlockData data = blockIndex.getData();
-//            RecipeFilter filter = CommonAssetsManager.INSTANCE.getRecipeFilter(data.getFilter());
-            RecipeFilter filter = null;
+            RecipeFilter filter = data.getFilter();
             if (filter != null) {
                 return filter.filter(recipeIds, Pair::value);
             }
