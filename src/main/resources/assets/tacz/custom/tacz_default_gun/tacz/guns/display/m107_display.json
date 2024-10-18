@@ -23,6 +23,10 @@
   "sounds": {
     "shoot": "tacz:m107/m107_shoot",
     "shoot_3p": "tacz:m107/m107_shoot_3p",
+    "silence": "tacz:m107/m107_silence",
+    "silence_3p": "tacz:m107/m107_silence_3p",
+    "draw": "tacz:m107/m107_draw",
+    "put_away": "tacz:m107/m107_put_away",
     "melee_push": "tacz:melee_stock/melee_stock_02",
     "melee_stock": "tacz:melee_stock/melee_stock_03"
   },
