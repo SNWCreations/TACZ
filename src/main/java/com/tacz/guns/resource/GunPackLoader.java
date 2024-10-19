@@ -1,9 +1,7 @@
 package com.tacz.guns.resource;
 
-import com.google.common.collect.Maps;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
-import com.google.gson.annotations.SerializedName;
 import com.tacz.guns.GunMod;
 import cpw.mods.jarhandling.SecureJar;
 import net.minecraft.SharedConstants;
@@ -31,7 +29,6 @@ import org.apache.maven.artifact.versioning.VersionRange;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -39,7 +36,10 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -129,7 +129,7 @@ public enum GunPackLoader implements RepositorySource {
                 return null;
             }
 
-            if (info.dependencies !=null && !modVersionAllMatch(info)) {
+            if (info.getDependencies() !=null && !modVersionAllMatch(info)) {
                 GunMod.LOGGER.warn(MARKER, "Mod version mismatch: {}", packInfoFilePath);
                 return null;
             }
@@ -158,7 +158,7 @@ public enum GunPackLoader implements RepositorySource {
                     return null;
                 }
 
-                if (info.dependencies !=null && !modVersionAllMatch(info)) {
+                if (info.getDependencies() !=null && !modVersionAllMatch(info)) {
                     GunMod.LOGGER.warn(MARKER, "Mod version mismatch: {}", path);
                     return null;
                 }
@@ -212,22 +212,6 @@ public enum GunPackLoader implements RepositorySource {
             ArtifactVersion modVersion = mod.getModInfo().getVersion();
             return versionRange.containsVersion(modVersion);
         }).orElse(false);
-    }
-
-    private static class PackMeta {
-        @SerializedName("namespace")
-        private String name;
-
-        @SerializedName("dependencies")
-        private HashMap<String, String> dependencies = Maps.newHashMap();
-
-        public HashMap<String, String> getDependencies() {
-            return dependencies;
-        }
-
-        public String getName() {
-            return name;
-        }
     }
 
     public record GunPack(Path path, String name) {

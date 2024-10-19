@@ -100,7 +100,7 @@ public class AttachmentDisplay implements IDisplay {
         if (texture != null) {
             texture = converter.idToFile(texture);
         }
-        if (attachmentLod != null) {
+        if (attachmentLod != null && attachmentLod.modelTexture != null) {
             attachmentLod.modelTexture = converter.idToFile(attachmentLod.modelTexture);
         }
     }
