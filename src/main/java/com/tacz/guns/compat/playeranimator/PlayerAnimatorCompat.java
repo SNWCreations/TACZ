@@ -8,11 +8,13 @@ import com.tacz.guns.compat.playeranimator.animation.PlayerAnimatorAssetManager;
 import com.tacz.guns.compat.playeranimator.animation.PlayerAnimatorLoader;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.ModList;
 
 import java.io.File;
+import java.util.function.Consumer;
 import java.util.zip.ZipFile;
 
 public class PlayerAnimatorCompat {
@@ -47,7 +49,7 @@ public class PlayerAnimatorCompat {
 
     public static void clearAllAnimationCache() {
         if (isInstalled()) {
-            PlayerAnimatorAssetManager.INSTANCE.clearAll();
+            PlayerAnimatorAssetManager.get().clearAll();
         }
     }
 
@@ -74,5 +76,11 @@ public class PlayerAnimatorCompat {
 
     public static boolean isInstalled() {
         return INSTALLED;
+    }
+
+    public static void registerReloadListener(Consumer<PreparableReloadListener> register) {
+        if (isInstalled()) {
+            register.accept(PlayerAnimatorAssetManager.get());
+        }
     }
 }

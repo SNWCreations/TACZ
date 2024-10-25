@@ -43,7 +43,7 @@ import java.util.function.Consumer;
 
 @Mod.EventBusSubscriber
 public class CommonAssetsManager implements ICommonResourceProvider {
-    public static CommonAssetsManager INSTANCE;
+    private static CommonAssetsManager INSTANCE;
     public static final Gson GSON = new GsonBuilder()
             .registerTypeAdapter(ResourceLocation.class, new ResourceLocation.Serializer())
             .registerTypeAdapter(Pair.class, new PairSerializer())

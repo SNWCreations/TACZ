@@ -40,7 +40,7 @@ public class GunMod {
         ModParticles.PARTICLE_TYPES.register(bus);
         ModAttributes.ATTRIBUTES.register(bus);
 
-        registerDefaultExtraGunPack();
+//        registerDefaultExtraGunPack();
         AttachmentPropertyManager.registerModifier();
     }
 

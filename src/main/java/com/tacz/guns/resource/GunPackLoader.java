@@ -70,6 +70,12 @@ public enum GunPackLoader implements RepositorySource {
             }
         }
 
+//        if (!OtherConfig.DEFAULT_PACK_DEBUG.get()) {
+//            for (ResourceManager.ExtraEntry entry : ResourceManager.EXTRA_ENTRIES) {
+//                GetJarResources.copyModDirectory(entry.modMainClass(), entry.srcPath(), resourcePacksPath, entry.extraDirName());
+//            }
+//        }
+
         this.gunPacks = scanExtensions(resourcePacksPath);
         List<PathPackResources> extensionPacks = new ArrayList<>();
 
