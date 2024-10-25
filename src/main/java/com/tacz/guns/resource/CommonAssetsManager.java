@@ -4,25 +4,25 @@ import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.tacz.guns.crafting.GunSmithTableIngredient;
-import com.tacz.guns.crafting.GunSmithTableResult;
+import com.tacz.guns.crafting.result.GunSmithTableResult;
 import com.tacz.guns.network.NetworkHandler;
 import com.tacz.guns.network.message.ServerMessageSyncGunPack;
-import com.tacz.guns.resource.index.CommonBlockIndex;
 import com.tacz.guns.resource.filter.RecipeFilter;
 import com.tacz.guns.resource.index.CommonAmmoIndex;
 import com.tacz.guns.resource.index.CommonAttachmentIndex;
+import com.tacz.guns.resource.index.CommonBlockIndex;
 import com.tacz.guns.resource.index.CommonGunIndex;
 import com.tacz.guns.resource.manager.AttachmentDataManager;
 import com.tacz.guns.resource.manager.AttachmentsTagManager;
+import com.tacz.guns.resource.manager.CommonDataManager;
 import com.tacz.guns.resource.manager.INetworkCacheReloadListener;
+import com.tacz.guns.resource.network.CommonNetworkCache;
+import com.tacz.guns.resource.network.DataType;
 import com.tacz.guns.resource.pojo.data.attachment.AttachmentData;
 import com.tacz.guns.resource.pojo.data.block.BlockData;
 import com.tacz.guns.resource.pojo.data.gun.ExtraDamage;
 import com.tacz.guns.resource.pojo.data.gun.GunData;
 import com.tacz.guns.resource.pojo.data.gun.Ignite;
-import com.tacz.guns.resource.manager.CommonDataManager;
-import com.tacz.guns.resource.network.CommonNetworkCache;
-import com.tacz.guns.resource.network.DataType;
 import com.tacz.guns.resource.serialize.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
@@ -35,7 +35,10 @@ import net.minecraftforge.fml.common.Mod;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 
 @Mod.EventBusSubscriber
@@ -192,6 +195,24 @@ public class CommonAssetsManager implements ICommonResourceProvider {
         INSTANCE = new CommonAssetsManager();
         INSTANCE.reloadAndRegister(event::addListener);
     }
+
+    /**
+     * 这个事件理论上会在server resource已经完成重载和传输到客户端之前触发<br/>
+     * 尝试根据common data初始化延迟加载的配方
+     * @param event
+     */
+//    @SubscribeEvent
+//    public static void onReload(TagsUpdatedEvent event) {
+//        if (event.getUpdateCause() == TagsUpdatedEvent.UpdateCause.SERVER_DATA_LOAD){
+//            MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+//            if (server != null) {
+//                List<GunSmithTableRecipe> recipes = server.getRecipeManager().getAllRecipesFor(ModRecipe.GUN_SMITH_TABLE_CRAFTING.get());
+//                for (GunSmithTableRecipe recipe : recipes) {
+//                    recipe.init();
+//                }
+//            }
+//        }
+//    }
 
     @SubscribeEvent
     public static void onServerStopped(ServerStoppedEvent event) {

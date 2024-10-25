@@ -22,10 +22,9 @@ import org.apache.commons.lang3.time.StopWatch;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileAlreadyExistsException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -59,8 +58,21 @@ public class PlayerEnterWorld {
     public static void convert() {
         Player player = Minecraft.getInstance().player;
         if (player == null) return;
-        List<LegacyPack> list = new ArrayList<>();
+
+        Path resourcePacksPath = FMLPaths.GAMEDIR.get().resolve("tacz");
+        File folder = resourcePacksPath.toFile();
+        if (!folder.isDirectory()) {
+            try {
+                Files.createDirectories(folder.toPath());
+            } catch (Exception e) {
+                player.sendSystemMessage(Component.literal("[TACZ] 初始化枪包文件夹失败! 请检查日志!"));
+                GunMod.LOGGER.error("Failed to init tacz directory...", e);
+                return;
+            }
+        }
+
         File[] files = FOLDER.toFile().listFiles();
+        int cnt = 0;
         if (files != null && files.length > 0) {
             StopWatch watch = StopWatch.createStarted();
             {
@@ -76,6 +88,7 @@ public class PlayerEnterWorld {
                                 player.sendSystemMessage(Component.literal("[TACZ] 目标文件已存在! 跳过..."));
                                 continue;
                             }
+                            cnt++;
                             player.sendSystemMessage(Component.literal("[TACZ] " + file.getName() + " 转换完成! "));
                         }
                     }
@@ -83,7 +96,7 @@ public class PlayerEnterWorld {
             }
             watch.stop();
             double time = watch.getTime(TimeUnit.MICROSECONDS) / 1000.0;
-            player.sendSystemMessage(Component.literal("[TACZ] 转换结束! 总耗时: "+ time +" ms. 请重启游戏以加载新的枪包资源!"));
+            player.sendSystemMessage(Component.literal("[TACZ] 转换结束! 总耗时: "+ time +" ms. 总计枪包: " +cnt+ "个. 请重启游戏以加载新的枪包资源!"));
         }
     }
 

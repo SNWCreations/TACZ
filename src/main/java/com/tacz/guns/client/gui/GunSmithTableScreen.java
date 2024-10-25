@@ -19,7 +19,7 @@ import com.tacz.guns.client.resource.ClientAssetsManager;
 import com.tacz.guns.client.resource.pojo.PackInfo;
 import com.tacz.guns.crafting.GunSmithTableIngredient;
 import com.tacz.guns.crafting.GunSmithTableRecipe;
-import com.tacz.guns.crafting.GunSmithTableResult;
+import com.tacz.guns.crafting.result.GunSmithTableResult;
 import com.tacz.guns.init.ModCreativeTabs;
 import com.tacz.guns.init.ModRecipe;
 import com.tacz.guns.inventory.GunSmithTableMenu;
@@ -155,8 +155,8 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
 
     @Nullable
     private GunSmithTableRecipe getSelectedRecipe(ResourceLocation recipeId) {
-        if (minecraft !=null && minecraft.level != null) {
-            RecipeManager recipeManager = minecraft.level.getRecipeManager();
+        if (Minecraft.getInstance().level != null) {
+            RecipeManager recipeManager = Minecraft.getInstance().level.getRecipeManager();
             Recipe<?> recipe = recipeManager.byKey(recipeId).orElse(null);
             if (recipe instanceof GunSmithTableRecipe) {
                 return (GunSmithTableRecipe) recipe;

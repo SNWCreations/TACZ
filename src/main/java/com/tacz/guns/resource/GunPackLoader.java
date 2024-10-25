@@ -29,6 +29,7 @@ import org.apache.maven.artifact.versioning.VersionRange;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -59,6 +60,15 @@ public enum GunPackLoader implements RepositorySource {
 
     public void discoverExtensions(PackType packType) {
         Path resourcePacksPath = FMLPaths.GAMEDIR.get().resolve("tacz");
+        File folder = resourcePacksPath.toFile();
+        if (!folder.isDirectory()) {
+            try {
+                Files.createDirectories(folder.toPath());
+            } catch (Exception e) {
+                GunMod.LOGGER.warn(MARKER, "Failed to init tacz resource directory...", e);
+                return;
+            }
+        }
 
         this.gunPacks = scanExtensions(resourcePacksPath);
         List<PathPackResources> extensionPacks = new ArrayList<>();
