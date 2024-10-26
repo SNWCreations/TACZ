@@ -186,5 +186,7 @@
   "tacz.attachment.oem_stock_light.name": "Factory Issued light Stock",
   "tacz.attachment.oem_stock_tactical.name": "Factory Issued Tactical Stock",
 
-  "tacz.block.gun_smith_table": "Gun Smith Table"
+  "tacz.block.gun_smith_table": "Gun Smith Table",
+  "config.tacz.client.render.enable_tooltip_id": "Display Ids in Tooltip",
+  "config.tacz.client.render.enable_tooltip_id.desc": "Display the gun/ammo/attachment id in item tooltip when advanced tooltip is on."
 }

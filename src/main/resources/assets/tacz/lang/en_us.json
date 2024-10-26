@@ -29,6 +29,7 @@
   "itemGroup.tab.tacz.ammo": "TAC | Ammo",
   "block.tacz.target": "Humanoid Target",
   "block.tacz.statue": "Stone Statue",
+  "block.tacz.gun_smith_table": "Gun Smith Table",
   "item.tacz.ammo_box.iron": "Iron Ammo Box",
   "item.tacz.ammo_box.gold": "Gold Ammo Box",
   "item.tacz.ammo_box.diamond": "Diamond Ammo Box",
@@ -222,5 +223,7 @@
   "config.tacz.common.other.target_sound_distance.desc": "The farthest sound distance of the target, including minecarts type",
   "death.attack.tacz.bullet": "%1$s was shot by %2$s",
   "death.attack.tacz.bullet.item": "%1$s was shot by %2$s using %3$s",
-  "tacz.resources.modresources": "TACZ Gunpacks Resources"
+  "tacz.resources.modresources": "TACZ Gunpacks Resources",
+  "config.tacz.client.render.enable_tooltip_id": "Display TACZ ID",
+  "config.tacz.client.render.enable_tooltip_id.desc": "Display the gun/ammo/attachment id in item tooltip when advanced tooltip(F3+H) is on."
 }
