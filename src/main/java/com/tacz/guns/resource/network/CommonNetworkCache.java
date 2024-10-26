@@ -3,6 +3,8 @@ package com.tacz.guns.resource.network;
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 import com.tacz.guns.GunMod;
+import com.tacz.guns.resource.CommonAssetsManager;
+import com.tacz.guns.resource.ICommonResourceProvider;
 import com.tacz.guns.resource.index.CommonAmmoIndex;
 import com.tacz.guns.resource.index.CommonAttachmentIndex;
 import com.tacz.guns.resource.index.CommonBlockIndex;
@@ -10,16 +12,10 @@ import com.tacz.guns.resource.index.CommonGunIndex;
 import com.tacz.guns.resource.pojo.data.attachment.AttachmentData;
 import com.tacz.guns.resource.pojo.data.block.BlockData;
 import com.tacz.guns.resource.pojo.data.gun.GunData;
-import com.tacz.guns.resource.CommonAssetsManager;
-import com.tacz.guns.resource.ICommonResourceProvider;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Map;
-import java.util.Set;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 
 /**
  * 网络位置的缓存<br/>
@@ -99,12 +95,12 @@ public enum CommonNetworkCache implements ICommonResourceProvider {
 
     @Override
     public Set<String> getAttachmentTags(ResourceLocation registryName) {
-        return Set.of();
+        return attachmentTags.get(registryName);
     }
 
     @Override
     public Set<String> getAllowAttachmentTags(ResourceLocation registryName) {
-        return Set.of();
+        return allowAttachmentTags.get(registryName);
     }
 
     public void fromNetwork(Map<DataType, Map<ResourceLocation, String>> cache) {

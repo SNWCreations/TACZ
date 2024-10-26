@@ -3,6 +3,8 @@ package com.tacz.guns.resource;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 import com.tacz.guns.GunMod;
+import com.tacz.guns.api.resource.ResourceManager;
+import com.tacz.guns.util.GetJarResources;
 import cpw.mods.jarhandling.SecureJar;
 import net.minecraft.SharedConstants;
 import net.minecraft.network.chat.Component;
@@ -29,10 +31,7 @@ import org.apache.maven.artifact.versioning.VersionRange;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -70,11 +69,11 @@ public enum GunPackLoader implements RepositorySource {
             }
         }
 
-//        if (!OtherConfig.DEFAULT_PACK_DEBUG.get()) {
-//            for (ResourceManager.ExtraEntry entry : ResourceManager.EXTRA_ENTRIES) {
-//                GetJarResources.copyModDirectory(entry.modMainClass(), entry.srcPath(), resourcePacksPath, entry.extraDirName());
-//            }
-//        }
+        if (checkConfig(resourcePacksPath).override()) {
+            for (ResourceManager.ExtraEntry entry : ResourceManager.EXTRA_ENTRIES) {
+                GetJarResources.copyModDirectory(entry.modMainClass(), entry.srcPath(), resourcePacksPath, entry.extraDirName());
+            }
+        }
 
         this.gunPacks = scanExtensions(resourcePacksPath);
         List<PathPackResources> extensionPacks = new ArrayList<>();
@@ -133,6 +132,27 @@ public enum GunPackLoader implements RepositorySource {
         }
 
         return null;
+    }
+
+    // 检查路径中的config.json是否存在和合法，否则新建一个
+    private static RepositoryConfig checkConfig(Path resourcePacksPath) {
+        Path configPath = resourcePacksPath.resolve("config.json");
+        if (Files.exists(configPath)) {
+            try (InputStream stream = Files.newInputStream(configPath)) {
+                return GSON.fromJson(new InputStreamReader(stream, StandardCharsets.UTF_8), RepositoryConfig.class);
+            } catch (IOException | JsonSyntaxException | JsonIOException e) {
+                GunMod.LOGGER.warn(MARKER, "Failed to read config json: {}", configPath);
+            }
+        }
+
+        RepositoryConfig config = new RepositoryConfig(true);
+        // 使用Gson写文件
+        try (BufferedWriter writer = Files.newBufferedWriter(configPath, StandardCharsets.UTF_8)) {
+            GSON.toJson(config, writer);
+        } catch (IOException e) {
+            GunMod.LOGGER.warn(MARKER, "Failed to init config json: {}", configPath);
+        }
+        return config;
     }
 
     private static GunPack fromDirPath(Path path) throws IOException {
@@ -228,6 +248,9 @@ public enum GunPackLoader implements RepositorySource {
             ArtifactVersion modVersion = mod.getModInfo().getVersion();
             return versionRange.containsVersion(modVersion);
         }).orElse(false);
+    }
+
+    public record RepositoryConfig(boolean override){
     }
 
     public record GunPack(Path path, String name) {
