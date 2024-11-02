@@ -57,6 +57,7 @@ public class CommonGunPackLoader {
             .registerTypeAdapter(Vec3.class, new Vec3Serializer())
             .registerTypeAdapter(Ignite.class, new IgniteSerializer())
             .registerTypeAdapter(RecipeFilter.class, new RecipeFilter.Deserializer())
+            .setPrettyPrinting()
             .create();
     /**
      * 放置自定义枪械模型的目录

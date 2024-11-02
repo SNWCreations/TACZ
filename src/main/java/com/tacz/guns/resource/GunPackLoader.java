@@ -79,7 +79,7 @@ public enum GunPackLoader implements RepositorySource {
         List<PathPackResources> extensionPacks = new ArrayList<>();
 
         for(GunPack gunPack : gunPacks) {
-            extensionPacks.add(new PathPackResources(gunPack.name, false, gunPack.path) {
+            PathPackResources packResources = new PathPackResources(gunPack.name, false, gunPack.path) {
                 private final SecureJar secureJar = SecureJar.from(gunPack.path);
 
                 @NotNull
@@ -98,7 +98,8 @@ public enum GunPackLoader implements RepositorySource {
                 public void listResources(PackType type, String namespace, String path, PackResources.ResourceOutput resourceOutput) {
                     super.listResources(type, namespace, path, resourceOutput);
                 }
-            });
+            };
+            extensionPacks.add(packResources);
         }
 
 
@@ -134,7 +135,7 @@ public enum GunPackLoader implements RepositorySource {
         return null;
     }
 
-    // 检查路径中的config.json是否存在和合法，否则新建一个
+    // 检查路径中的config.json
     private static RepositoryConfig checkConfig(Path resourcePacksPath) {
         Path configPath = resourcePacksPath.resolve("config.json");
         if (Files.exists(configPath)) {
@@ -144,7 +145,7 @@ public enum GunPackLoader implements RepositorySource {
                 GunMod.LOGGER.warn(MARKER, "Failed to read config json: {}", configPath);
             }
         }
-
+        // 不存在或者出问题了，新建一个
         RepositoryConfig config = new RepositoryConfig(true);
         // 使用Gson写文件
         try (BufferedWriter writer = Files.newBufferedWriter(configPath, StandardCharsets.UTF_8)) {
@@ -178,7 +179,7 @@ public enum GunPackLoader implements RepositorySource {
         return null;
     }
 
-    static GunPack fromZipPath(Path path)  {
+    private static GunPack fromZipPath(Path path)  {
         try(ZipFile zipFile = new ZipFile(path.toFile())){
             ZipEntry extDescriptorEntry = zipFile.getEntry("gunpack.meta.json");
             if (extDescriptorEntry == null) {
@@ -226,7 +227,7 @@ public enum GunPackLoader implements RepositorySource {
                 }
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            GunMod.LOGGER.error(MARKER,"Failed to scan extensions from {}. Error: {}", extensionsPath, e);
         }
 
         return gunPacks;

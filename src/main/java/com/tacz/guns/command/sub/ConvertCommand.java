@@ -3,7 +3,7 @@ package com.tacz.guns.command.sub;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
-import com.tacz.guns.client.event.PlayerEnterWorld;
+import com.tacz.guns.resource.PackConvertor;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraftforge.api.distmarker.Dist;
@@ -19,7 +19,7 @@ public class ConvertCommand {
     }
 
     private static int convert(CommandContext<CommandSourceStack> context) {
-        DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> PlayerEnterWorld::convert);
+        DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> () -> PackConvertor.convert(context.getSource()));
         return Command.SINGLE_SUCCESS;
     }
 }
