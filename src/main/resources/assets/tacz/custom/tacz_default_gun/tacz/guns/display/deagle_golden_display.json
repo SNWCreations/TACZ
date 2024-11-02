@@ -46,6 +46,7 @@
     "inspect": "tacz:deagle/deagle_inspect",
     "inspect_empty": "tacz:deagle/deagle_inspect_empty",
     "draw": "tacz:deagle/deagle_draw",
+    "put_away": "tacz:deagle/deagle_put_away",
     "shoot": "tacz:deagle/deagle_shoot",
     "shoot_3p": "tacz:deagle/deagle_shoot_3p",
     "silence": "tacz:deagle/deagle_silence",

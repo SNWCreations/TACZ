@@ -120,6 +120,14 @@
 							"lerp_mode": "catmullrom"
 						}
 					}
+				},
+				"striker": {
+					"position": {
+						"0.0": [0, 0, 0],
+						"0.0333": [0, 0, -0.17187],
+						"0.6667": [0, 0, -0.17187],
+						"0.7": [0, 0, 0]
+					}
 				}
 			}
 		},
@@ -1197,6 +1205,12 @@
 							"lerp_mode": "catmullrom"
 						}
 					}
+				},
+				"striker": {
+					"position": {
+						"0.0": [0, 0, -0.17187],
+						"0.45": [0, 0, 0]
+					}
 				}
 			},
 			"sound_effects": {
@@ -1890,6 +1904,18 @@
 				},
 				"3.8": {
 					"effect": "tacz:m700/m700_inspect_end"
+				}
+			}
+		},
+		"static_bolt_caught": {
+			"loop": true,
+			"bones": {
+				"constraint": {
+					"rotation": [0.6, 0.6, 0.55],
+					"position": [0.6, 0.6, 0.55]
+				},
+				"striker": {
+					"position": [0, 0, -0.17187]
 				}
 			}
 		}
