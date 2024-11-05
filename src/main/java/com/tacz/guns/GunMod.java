@@ -1,5 +1,6 @@
 package com.tacz.guns;
 
+import com.tacz.guns.api.resource.ResourceManager;
 import com.tacz.guns.config.ClientConfig;
 import com.tacz.guns.config.CommonConfig;
 import com.tacz.guns.config.ServerConfig;
@@ -40,12 +41,12 @@ public class GunMod {
         ModParticles.PARTICLE_TYPES.register(bus);
         ModAttributes.ATTRIBUTES.register(bus);
 
-//        registerDefaultExtraGunPack();
+        registerDefaultExtraGunPack();
         AttachmentPropertyManager.registerModifier();
     }
 
     private static void registerDefaultExtraGunPack() {
         String jarDefaultPackPath = String.format("/assets/%s/custom/%s", GunMod.MOD_ID, DEFAULT_GUN_PACK_NAME);
-//        ResourceManager.registerExtraGunPack(GunMod.class, jarDefaultPackPath);
+        ResourceManager.registerExportResource(GunMod.class, jarDefaultPackPath);
     }
 }

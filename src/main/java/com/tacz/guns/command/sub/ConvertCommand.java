@@ -19,7 +19,7 @@ public class ConvertCommand {
     }
 
     private static int convert(CommandContext<CommandSourceStack> context) {
-        DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> () -> PackConvertor.convert(context.getSource()));
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> PackConvertor.convert(context.getSource()));
         return Command.SINGLE_SUCCESS;
     }
 }

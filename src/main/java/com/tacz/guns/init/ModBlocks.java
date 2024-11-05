@@ -18,10 +18,11 @@ public class ModBlocks {
     public static final DeferredRegister<Block> BLOCKS = DeferredRegister.create(ForgeRegistries.BLOCKS, GunMod.MOD_ID);
     public static final DeferredRegister<BlockEntityType<?>> TILE_ENTITIES = DeferredRegister.create(ForgeRegistries.BLOCK_ENTITY_TYPES, GunMod.MOD_ID);
 
-//    public static RegistryObject<Block> GUN_SMITH_TABLE = BLOCKS.register("gun_smith_table", GunSmithTableBlock::new);
-    public static RegistryObject<Block> GUN_SMITH_TABLE = BLOCKS.register("gun_smith_table", GunSmithTableBlock::new);
-    public static RegistryObject<Block> GUN_SMITH_TABLE_A = BLOCKS.register("gun_smith_table_a", GunSmithTableBlockA::new);
-    public static RegistryObject<Block> GUN_SMITH_TABLE_B = BLOCKS.register("gun_smith_table_b", GunSmithTableBlockB::new);
+    // 旧方块就让他独占一个了
+    public static RegistryObject<Block> GUN_SMITH_TABLE = BLOCKS.register("gun_smith_table", GunSmithTableBlockB::new);
+    public static RegistryObject<Block> WORKBENCH_111 = BLOCKS.register("workbench_a", GunSmithTableBlockA::new);
+    public static RegistryObject<Block> WORKBENCH_211 = BLOCKS.register("workbench_b", GunSmithTableBlockB::new);
+    public static RegistryObject<Block> WORKBENCH_121 = BLOCKS.register("workbench_c", GunSmithTableBlockC::new);
 
     public static RegistryObject<Block> TARGET = BLOCKS.register("target", TargetBlock::new);
     public static RegistryObject<Block> STATUE = BLOCKS.register("statue", StatueBlock::new);
