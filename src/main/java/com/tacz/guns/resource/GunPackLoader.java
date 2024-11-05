@@ -4,6 +4,7 @@ import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 import com.tacz.guns.GunMod;
 import com.tacz.guns.api.resource.ResourceManager;
+import com.tacz.guns.config.PreLoadConfig;
 import com.tacz.guns.util.GetJarResources;
 import cpw.mods.jarhandling.SecureJar;
 import net.minecraft.SharedConstants;
@@ -31,7 +32,10 @@ import org.apache.maven.artifact.versioning.VersionRange;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -69,7 +73,10 @@ public enum GunPackLoader implements RepositorySource {
             }
         }
 
-        if (checkConfig(resourcePacksPath).override()) {
+        // 确保配置文件加载，这个阶段将比标准的forge配置文件加载早
+        PreLoadConfig.load(resourcePacksPath);
+
+        if (!PreLoadConfig.override.get()) {
             for (ResourceManager.ExtraEntry entry : ResourceManager.EXTRA_ENTRIES) {
                 GetJarResources.copyModDirectory(entry.modMainClass(), entry.srcPath(), resourcePacksPath, entry.extraDirName());
             }
@@ -136,25 +143,26 @@ public enum GunPackLoader implements RepositorySource {
     }
 
     // 检查路径中的config.json
-    private static RepositoryConfig checkConfig(Path resourcePacksPath) {
-        Path configPath = resourcePacksPath.resolve("config.json");
-        if (Files.exists(configPath)) {
-            try (InputStream stream = Files.newInputStream(configPath)) {
-                return GSON.fromJson(new InputStreamReader(stream, StandardCharsets.UTF_8), RepositoryConfig.class);
-            } catch (IOException | JsonSyntaxException | JsonIOException e) {
-                GunMod.LOGGER.warn(MARKER, "Failed to read config json: {}", configPath);
-            }
-        }
-        // 不存在或者出问题了，新建一个
-        RepositoryConfig config = new RepositoryConfig(true);
-        // 使用Gson写文件
-        try (BufferedWriter writer = Files.newBufferedWriter(configPath, StandardCharsets.UTF_8)) {
-            GSON.toJson(config, writer);
-        } catch (IOException e) {
-            GunMod.LOGGER.warn(MARKER, "Failed to init config json: {}", configPath);
-        }
-        return config;
-    }
+    // 应该不会在用这个了，先保留
+//    private static RepositoryConfig checkConfig(Path resourcePacksPath) {
+//        Path configPath = resourcePacksPath.resolve("config.json");
+//        if (Files.exists(configPath)) {
+//            try (InputStream stream = Files.newInputStream(configPath)) {
+//                return GSON.fromJson(new InputStreamReader(stream, StandardCharsets.UTF_8), RepositoryConfig.class);
+//            } catch (IOException | JsonSyntaxException | JsonIOException e) {
+//                GunMod.LOGGER.warn(MARKER, "Failed to read config json: {}", configPath);
+//            }
+//        }
+//        // 不存在或者出问题了，新建一个
+//        RepositoryConfig config = new RepositoryConfig(true);
+//        // 使用Gson写文件
+//        try (BufferedWriter writer = Files.newBufferedWriter(configPath, StandardCharsets.UTF_8)) {
+//            GSON.toJson(config, writer);
+//        } catch (IOException e) {
+//            GunMod.LOGGER.warn(MARKER, "Failed to init config json: {}", configPath);
+//        }
+//        return config;
+//    }
 
     private static GunPack fromDirPath(Path path) throws IOException {
         Path packInfoFilePath = path.resolve("gunpack.meta.json");
@@ -251,8 +259,6 @@ public enum GunPackLoader implements RepositorySource {
         }).orElse(false);
     }
 
-    public record RepositoryConfig(boolean override){
-    }
 
     public record GunPack(Path path, String name) {
     }
