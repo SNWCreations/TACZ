@@ -15,8 +15,11 @@ public class PreLoadConfig {
 
     static {
         ForgeConfigSpec.Builder builder = new ForgeConfigSpec.Builder();
-        builder.comment("When enabled, the reload command will not overwrite the default model file under config");
+        builder.push("gunpack");
+        builder.comment("When enabled, the mod will not try to overwrite the default pack under .minecraft/tacz\n" +
+                "Since 1.0.4, the overwriting will only run when you start client or a dedicated server");
         override = builder.define("DefaultPackDebug", false);
+        builder.pop();
         spec = builder.build();
     }
 

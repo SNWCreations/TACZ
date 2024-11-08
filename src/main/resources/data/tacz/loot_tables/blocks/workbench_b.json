@@ -30,10 +30,13 @@
           "conditions": [
             {
               "condition": "minecraft:block_state_property",
-              "block": "tacz:gun_smith_table_a"
+              "block": "tacz:workbench_a",
+              "properties": {
+                "part": "head"
+              }
             }
           ],
-          "name": "tacz:gun_smith_table_a"
+          "name": "tacz:workbench_a"
         }
       ],
       "rolls": 1

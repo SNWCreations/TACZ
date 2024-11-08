@@ -19,6 +19,7 @@ import net.minecraft.server.packs.repository.RepositorySource;
 import net.minecraft.server.packs.resources.IoSupplier;
 import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModList;
+import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.forgespi.language.IModInfo;
 import net.minecraftforge.forgespi.locating.IModFile;
@@ -76,9 +77,12 @@ public enum GunPackLoader implements RepositorySource {
         // 确保配置文件加载，这个阶段将比标准的forge配置文件加载早
         PreLoadConfig.load(resourcePacksPath);
 
-        if (!PreLoadConfig.override.get()) {
-            for (ResourceManager.ExtraEntry entry : ResourceManager.EXTRA_ENTRIES) {
-                GetJarResources.copyModDirectory(entry.modMainClass(), entry.srcPath(), resourcePacksPath, entry.extraDirName());
+        // 避免单人游戏进入世界时的覆盖，这是无意义的重复劳动
+        if (packType == PackType.CLIENT_RESOURCES || FMLEnvironment.dist.isDedicatedServer()) {
+            if (!PreLoadConfig.override.get()) {
+                for (ResourceManager.ExtraEntry entry : ResourceManager.EXTRA_ENTRIES) {
+                    GetJarResources.copyModDirectory(entry.modMainClass(), entry.srcPath(), resourcePacksPath, entry.extraDirName());
+                }
             }
         }
 
