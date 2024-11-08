@@ -25,7 +25,7 @@ import java.util.Map;
 
 public class ScriptManager extends SimplePreparableReloadListener<Map<ResourceLocation, LuaTable>> {
     private static final Marker MARKER = MarkerManager.getMarker("ScriptLoader");
-    private static final Globals globals = JsePlatform.standardGlobals();
+    private static Globals globals = JsePlatform.standardGlobals();
     static {
         // 装载 lib
         new LuaAnimationConstant().install(globals);
@@ -58,6 +58,12 @@ public class ScriptManager extends SimplePreparableReloadListener<Map<ResourceLo
     protected void apply(Map<ResourceLocation, LuaTable> pObject, ResourceManager pResourceManager, ProfilerFiller pProfiler) {
         dataMap.clear();
         dataMap.putAll(pObject);
+    }
+
+    public static void reloadGlobal() {
+        globals = JsePlatform.standardGlobals();
+        new LuaAnimationConstant().install(globals);
+        new LuaGunAnimationConstant().install(globals);
     }
 
     public LuaTable getScript(ResourceLocation id) {
