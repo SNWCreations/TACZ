@@ -16,6 +16,7 @@ import dev.kosmx.playerAnim.api.layered.ModifierLayer;
 import dev.kosmx.playerAnim.api.layered.modifier.AbstractFadeModifier;
 import dev.kosmx.playerAnim.core.util.Ease;
 import dev.kosmx.playerAnim.minecraftApi.PlayerAnimationAccess;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.AbstractClientPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
@@ -29,7 +30,7 @@ public class AnimationManager {
         if (location == null) {
             return false;
         }
-        return PlayerAnimatorAssetManager.INSTANCE.containsKey(location);
+        return PlayerAnimatorAssetManager.get().containsKey(location);
     }
 
     public static boolean isFlying(AbstractClientPlayer player) {
@@ -43,10 +44,10 @@ public class AnimationManager {
         if (animator3rd == null) {
             return;
         }
-        if (!PlayerAnimatorAssetManager.INSTANCE.containsKey(animator3rd)) {
+        if (!PlayerAnimatorAssetManager.get().containsKey(animator3rd)) {
             return;
         }
-        PlayerAnimatorAssetManager.INSTANCE.getAnimations(animator3rd, animationName).ifPresent(keyframeAnimation -> {
+        PlayerAnimatorAssetManager.get().getAnimations(animator3rd, animationName).ifPresent(keyframeAnimation -> {
             var associatedData = PlayerAnimationAccess.getPlayerAssociatedData(player);
             var modifierLayer = (ModifierLayer<IAnimation>) associatedData.get(dataId);
             if (modifierLayer == null) {
@@ -151,10 +152,10 @@ public class AnimationManager {
         if (animator3rd == null) {
             return;
         }
-        if (!PlayerAnimatorAssetManager.INSTANCE.containsKey(animator3rd)) {
+        if (!PlayerAnimatorAssetManager.get().containsKey(animator3rd)) {
             return;
         }
-        PlayerAnimatorAssetManager.INSTANCE.getAnimations(animator3rd, animationName).ifPresent(keyframeAnimation -> {
+        PlayerAnimatorAssetManager.get().getAnimations(animator3rd, animationName).ifPresent(keyframeAnimation -> {
             var associatedData = PlayerAnimationAccess.getPlayerAssociatedData(player);
             var modifierLayer = (ModifierLayer<IAnimation>) associatedData.get(dataId);
             if (modifierLayer == null) {
@@ -179,10 +180,10 @@ public class AnimationManager {
         if (animator3rd == null) {
             return;
         }
-        if (!PlayerAnimatorAssetManager.INSTANCE.containsKey(animator3rd)) {
+        if (!PlayerAnimatorAssetManager.get().containsKey(animator3rd)) {
             return;
         }
-        PlayerAnimatorAssetManager.INSTANCE.getAnimations(animator3rd, animationName).ifPresent(keyframeAnimation -> {
+        PlayerAnimatorAssetManager.get().getAnimations(animator3rd, animationName).ifPresent(keyframeAnimation -> {
             var associatedData = PlayerAnimationAccess.getPlayerAssociatedData(player);
             var modifierLayer = (ModifierLayer<IAnimation>) associatedData.get(dataId);
             if (modifierLayer == null) {
@@ -227,6 +228,9 @@ public class AnimationManager {
         if (!(shooter instanceof AbstractClientPlayer player)) {
             return;
         }
+        if (Minecraft.getInstance().player != null && Minecraft.getInstance().player == player) {
+            if (Minecraft.getInstance().options.getCameraType().isFirstPerson()) return;
+        }
         ItemStack gunItemStack = event.getGunItemStack();
         IGun iGun = IGun.getIGunOrNull(gunItemStack);
         if (iGun == null) {
@@ -260,6 +264,9 @@ public class AnimationManager {
         if (!(shooter instanceof AbstractClientPlayer player)) {
             return;
         }
+        if (Minecraft.getInstance().player != null && Minecraft.getInstance().player == player) {
+            if (Minecraft.getInstance().options.getCameraType().isFirstPerson()) return;
+        }
         ItemStack gunItemStack = event.getGunItemStack();
         IGun iGun = IGun.getIGunOrNull(gunItemStack);
         if (iGun == null) {
@@ -283,6 +290,9 @@ public class AnimationManager {
         if (!(shooter instanceof AbstractClientPlayer player)) {
             return;
         }
+        if (Minecraft.getInstance().player != null && Minecraft.getInstance().player == player) {
+            if (Minecraft.getInstance().options.getCameraType().isFirstPerson()) return;
+        }
         ItemStack gunItemStack = event.getGunItemStack();
         IGun iGun = IGun.getIGunOrNull(gunItemStack);
         if (iGun == null) {
@@ -305,6 +315,9 @@ public class AnimationManager {
         LivingEntity entity = event.getEntity();
         if (!(entity instanceof AbstractClientPlayer player)) {
             return;
+        }
+        if (Minecraft.getInstance().player != null && Minecraft.getInstance().player == player) {
+            if (Minecraft.getInstance().options.getCameraType().isFirstPerson()) return;
         }
         ItemStack currentGunItem = event.getCurrentGunItem();
         ItemStack previousGunItem = event.getPreviousGunItem();

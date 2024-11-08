@@ -2,8 +2,8 @@ package com.tacz.guns.resource.index;
 
 import com.google.common.base.Preconditions;
 import com.tacz.guns.api.item.gun.FireMode;
-import com.tacz.guns.resource.CommonAssetManager;
 import com.tacz.guns.resource.pojo.GunIndexPOJO;
+import com.tacz.guns.resource.CommonAssetsManager;
 import com.tacz.guns.resource.pojo.data.gun.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
@@ -39,7 +39,7 @@ public class CommonGunIndex {
     private static void checkData(GunIndexPOJO gunIndexPOJO, CommonGunIndex index) {
         ResourceLocation pojoData = gunIndexPOJO.getData();
         Preconditions.checkArgument(pojoData != null, "index object missing pojoData field");
-        GunData data = CommonAssetManager.INSTANCE.getGunData(pojoData);
+        GunData data = CommonAssetsManager.get().getGunData(pojoData);
         Preconditions.checkArgument(data != null, "there is no corresponding data file");
         Preconditions.checkArgument(data.getAmmoId() != null, "ammo id is empty");
         Preconditions.checkArgument(data.getAmmoAmount() >= 1, "ammo count must >= 1");

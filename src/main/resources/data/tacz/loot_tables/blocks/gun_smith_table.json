@@ -8,22 +8,6 @@
           "condition": "minecraft:survives_explosion"
         }
       ],
-      "functions": [
-        {
-          "function": "minecraft:copy_nbt",
-          "ops": [
-            {
-              "op": "replace",
-              "source": "BlockId",
-              "target": "BlockId"
-            }
-          ],
-          "source": {
-            "type": "context",
-            "target": "block_entity"
-          }
-        }
-      ],
       "entries": [
         {
           "type": "minecraft:item",

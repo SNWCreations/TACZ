@@ -1,0 +1,11 @@
+{
+  // 配方过滤器
+  "filter": {
+    "whitelist": [
+      "^.*$"
+    ],
+    "blacklist": [
+      "tacz:test"
+    ]
+  }
+}

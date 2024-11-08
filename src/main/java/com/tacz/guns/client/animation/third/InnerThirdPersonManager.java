@@ -18,6 +18,9 @@ public class InnerThirdPersonManager {
         if (Minecraft.getInstance().isPaused()) {
             return;
         }
+        if (Minecraft.getInstance().player != null && Minecraft.getInstance().player == entityIn) {
+            if (Minecraft.getInstance().options.getCameraType().isFirstPerson()) return;
+        }
         if (entityIn instanceof IGunOperator operator) {
             ItemStack mainHandItem = entityIn.getMainHandItem();
             IGun iGun = IGun.getIGunOrNull(mainHandItem);

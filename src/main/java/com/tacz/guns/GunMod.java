@@ -47,6 +47,6 @@ public class GunMod {
 
     private static void registerDefaultExtraGunPack() {
         String jarDefaultPackPath = String.format("/assets/%s/custom/%s", GunMod.MOD_ID, DEFAULT_GUN_PACK_NAME);
-        ResourceManager.registerExtraGunPack(GunMod.class, jarDefaultPackPath);
+        ResourceManager.registerExportResource(GunMod.class, jarDefaultPackPath);
     }
 }

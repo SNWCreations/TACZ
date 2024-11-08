@@ -1,11 +1,17 @@
 package com.tacz.guns.resource.pojo.data.block;
 
-import net.minecraft.resources.ResourceLocation;
+import com.google.gson.annotations.SerializedName;
+import com.tacz.guns.resource.filter.RecipeFilter;
+
+import javax.annotation.Nullable;
 
 public class BlockData {
-    private ResourceLocation filter;
+    @Nullable
+    @SerializedName("filter")
+    private RecipeFilter filter;
 
-    public ResourceLocation getFilter() {
+    @Nullable
+    public RecipeFilter getFilter() {
         return filter;
     }
 }

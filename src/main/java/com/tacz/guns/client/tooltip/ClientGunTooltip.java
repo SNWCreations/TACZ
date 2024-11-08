@@ -4,7 +4,7 @@ import com.tacz.guns.api.TimelessAPI;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.builder.AmmoItemBuilder;
 import com.tacz.guns.client.input.RefitKey;
-import com.tacz.guns.client.resource.ClientAssetManager;
+import com.tacz.guns.client.resource.ClientAssetsManager;
 import com.tacz.guns.client.resource.index.ClientGunIndex;
 import com.tacz.guns.client.resource.pojo.PackInfo;
 import com.tacz.guns.client.resource.pojo.display.gun.AmmoCountStyle;
@@ -13,7 +13,10 @@ import com.tacz.guns.config.sync.SyncConfig;
 import com.tacz.guns.inventory.tooltip.GunTooltip;
 import com.tacz.guns.item.GunTooltipPart;
 import com.tacz.guns.resource.index.CommonGunIndex;
-import com.tacz.guns.resource.pojo.data.gun.*;
+import com.tacz.guns.resource.pojo.data.gun.Bolt;
+import com.tacz.guns.resource.pojo.data.gun.BulletData;
+import com.tacz.guns.resource.pojo.data.gun.ExtraDamage;
+import com.tacz.guns.resource.pojo.data.gun.GunData;
 import com.tacz.guns.util.AttachmentDataUtils;
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
@@ -215,7 +218,7 @@ public class ClientGunTooltip implements ClientTooltipComponent {
 
         if (shouldShow(GunTooltipPart.PACK_INFO)) {
             ResourceLocation gunId = iGun.getGunId(gun);
-            PackInfo packInfoObject = ClientAssetManager.INSTANCE.getPackInfo(gunId);
+            PackInfo packInfoObject = ClientAssetsManager.INSTANCE.getPackInfo(gunId);
             if (packInfoObject != null) {
                 packInfo = Component.translatable(packInfoObject.getName()).withStyle(ChatFormatting.BLUE).withStyle(ChatFormatting.ITALIC);
                 this.maxWidth = Math.max(font.width(this.packInfo), this.maxWidth);

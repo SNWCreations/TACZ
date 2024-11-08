@@ -3,6 +3,7 @@ package com.tacz.guns.client.resource.pojo.display.gun;
 import com.google.common.collect.Maps;
 import com.google.gson.annotations.SerializedName;
 import com.tacz.guns.api.item.gun.FireMode;
+import com.tacz.guns.client.resource.pojo.display.IDisplay;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.NotNull;
 
@@ -10,7 +11,7 @@ import javax.annotation.Nullable;
 import java.util.EnumMap;
 import java.util.Map;
 
-public class GunDisplay {
+public class GunDisplay implements IDisplay {
     @SerializedName("model")
     private ResourceLocation modelLocation;
     @SerializedName("texture")
@@ -186,5 +187,28 @@ public class GunDisplay {
 
     public @NotNull DamageStyle getDamageStyle() {
         return damageStyle;
+    }
+
+
+    @Override
+    public void init() {
+        if (modelTexture != null) {
+            modelTexture = converter.idToFile(modelTexture);
+        }
+        if (hudTextureLocation != null) {
+            hudTextureLocation = converter.idToFile(hudTextureLocation);
+        }
+        if (hudEmptyTextureLocation != null) {
+            hudEmptyTextureLocation = converter.idToFile(hudEmptyTextureLocation);
+        }
+        if (slotTextureLocation != null) {
+            slotTextureLocation = converter.idToFile(slotTextureLocation);
+        }
+        if (gunLod != null && gunLod.modelTexture != null) {
+            gunLod.modelTexture = converter.idToFile(gunLod.modelTexture);
+        }
+        if (muzzleFlash != null && muzzleFlash.texture != null) {
+            muzzleFlash.texture = converter.idToFile(muzzleFlash.texture);
+        }
     }
 }
