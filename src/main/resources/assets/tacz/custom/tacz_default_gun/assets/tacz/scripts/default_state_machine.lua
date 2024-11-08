@@ -87,10 +87,6 @@ function bolt_caught_states.bolt_caught.entry(context)
     context:runAnimation("static_bolt_caught", context:getTrack(STATIC_TRACK_LINE, BOLT_CAUGHT_TRACK), false, LOOP, 0)
 end
 
-function bolt_caught_states.bolt_caught.exit(context)
-    context:stopAnimation(context:getTrack(STATIC_TRACK_LINE, BOLT_CAUGHT_TRACK))
-end
-
 function bolt_caught_states.bolt_caught.update(context)
     if (not isNoAmmo(context)) then
         context:trigger(bolt_caught_states.normal.input)
@@ -99,6 +95,7 @@ end
 
 function bolt_caught_states.bolt_caught.transition(context, input)
     if (input == bolt_caught_states.normal.input) then
+        context:stopAnimation(context:getTrack(STATIC_TRACK_LINE, BOLT_CAUGHT_TRACK))
         return bolt_caught_states.normal
     end
 end

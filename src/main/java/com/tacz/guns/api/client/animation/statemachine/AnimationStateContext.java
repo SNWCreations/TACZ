@@ -218,7 +218,7 @@ public class AnimationStateContext {
         var stateMachine = checkStateMachine();
         ObjectAnimationRunner runner = stateMachine.getAnimationController().getAnimation(track);
         if (runner != null) {
-            if (runner.isRunning()) {
+            if (runner.isRunning() || runner.isPausing()) {
                 if (normalization) {
                     progress = runner.getAnimation().getMaxEndTimeS() * progress;
                 }
