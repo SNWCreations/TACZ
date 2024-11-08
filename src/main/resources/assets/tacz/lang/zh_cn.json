@@ -1,6 +1,7 @@
 {
   "block.tacz.statue": "石像",
   "block.tacz.target": "人形标靶",
+  "block.tacz.gun_smith_table": "枪械工作台",
   "commands.tacz.reload.backup": "§a§l●§r You can find the overwritten files in the §c§nconfig/tacz/backup§r folder",
   "commands.tacz.reload.overwrite_command.off": "§a§l●§r 你可以使用指令 §c§n/tacz overwrite true§r 来启用覆盖功能。",
   "commands.tacz.reload.overwrite_command.on": "§a§l●§r 你可以使用指令 §c§n/tacz overwrite false§r 来禁用覆盖功能。",
@@ -46,6 +47,8 @@
   "config.tacz.client.zoom.zoom_sensitivity_base_multiplier.desc": "开镜灵敏度最终会乘上这个系数",
   "config.tacz.client.render.disable_movement_fov": "禁用移速FOV效果",
   "config.tacz.client.render.disable_movement_fov.desc": "持枪时完全屏蔽移速属性带来的fov变化",
+  "config.tacz.client.render.enable_tooltip_id": "显示tacz的物品ID",
+  "config.tacz.client.render.enable_tooltip_id.desc": "当高级提示框(F3+H)开启时，在tooltips中显示tacz的枪械/弹药/配件ID",
   "config.tacz.common.ammo": "弹药",
   "config.tacz.common.ammo.destroy_glass": "破坏玻璃",
   "config.tacz.common.ammo.destroy_glass.desc": "子弹是否可以摧毁玻璃（因为玻璃的性质无法掉落）",
@@ -221,5 +224,6 @@
   "tooltip.tacz.gun.type": "枪种：",
   "tooltip.tacz.page.next": "下一页",
   "tooltip.tacz.page.previous": "上一页",
-  "tooltip.tacz.refit.unload": "卸载"
+  "tooltip.tacz.refit.unload": "卸载",
+  "tacz.resources.modresources": "永恒枪械工坊：Zero 枪包资源集"
 }

@@ -15,16 +15,17 @@ import com.tacz.guns.api.client.animation.statemachine.LuaStateMachineFactory;
 import com.tacz.guns.api.item.gun.FireMode;
 import com.tacz.guns.client.animation.statemachine.GunAnimationStateContext;
 import com.tacz.guns.client.model.BedrockGunModel;
-import com.tacz.guns.client.resource.ClientAssetManager;
+import com.tacz.guns.client.resource_legacy.ClientAssetManager;
 import com.tacz.guns.client.resource.InternalAssetLoader;
+import com.tacz.guns.client.resource.ClientAssetsManager;
 import com.tacz.guns.client.resource.pojo.animation.bedrock.BedrockAnimationFile;
 import com.tacz.guns.client.resource.pojo.display.ammo.AmmoParticle;
 import com.tacz.guns.client.resource.pojo.display.gun.*;
 import com.tacz.guns.client.resource.pojo.model.BedrockModelPOJO;
 import com.tacz.guns.client.resource.pojo.model.BedrockVersion;
-import com.tacz.guns.resource.CommonAssetManager;
 import com.tacz.guns.resource.pojo.GunIndexPOJO;
 import com.tacz.guns.resource.pojo.data.gun.GunData;
+import com.tacz.guns.resource.CommonAssetsManager;
 import com.tacz.guns.sound.SoundManager;
 import com.tacz.guns.util.ColorHex;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
@@ -118,7 +119,7 @@ public class ClientGunIndex {
     private static void checkData(GunIndexPOJO gunIndexPOJO, ClientGunIndex index) {
         ResourceLocation pojoData = gunIndexPOJO.getData();
         Preconditions.checkArgument(pojoData != null, "index object missing pojoData field");
-        GunData data = CommonAssetManager.INSTANCE.getGunData(pojoData);
+        GunData data = CommonAssetsManager.get().getGunData(pojoData);
         Preconditions.checkArgument(data != null, "there is no corresponding data file");
         // 剩下的不需要校验了，Common的读取逻辑中已经校验过了
         index.gunData = data;
@@ -156,7 +157,7 @@ public class ClientGunIndex {
         // 检查模型
         ResourceLocation modelLocation = display.getModelLocation();
         Preconditions.checkArgument(modelLocation != null, "display object missing model field");
-        BedrockModelPOJO modelPOJO = ClientAssetManager.INSTANCE.getModels(modelLocation);
+        BedrockModelPOJO modelPOJO = ClientAssetsManager.INSTANCE.getBedrockModelPOJO(modelLocation);
         Preconditions.checkArgument(modelPOJO != null, "there is no corresponding model file");
         // 检查默认材质是否存在
         ResourceLocation textureLocation = display.getModelTexture();
@@ -183,7 +184,7 @@ public class ClientGunIndex {
             if (texture == null) {
                 return;
             }
-            BedrockModelPOJO modelPOJO = ClientAssetManager.INSTANCE.getModels(gunLod.getModelLocation());
+            BedrockModelPOJO modelPOJO = ClientAssetsManager.INSTANCE.getBedrockModelPOJO(gunLod.getModelLocation());
             if (modelPOJO == null) {
                 return;
             }
@@ -206,8 +207,8 @@ public class ClientGunIndex {
         if (location == null) {
             controller = new AnimationController(Lists.newArrayList(), index.gunModel);
         } else {
-            AnimationStructure gltfAnimations = ClientAssetManager.INSTANCE.getGltfAnimations(location);
-            BedrockAnimationFile bedrockAnimationFile = ClientAssetManager.INSTANCE.getBedrockAnimations(location);
+            AnimationStructure gltfAnimations = ClientAssetsManager.INSTANCE.getGltfAnimation(location);
+            BedrockAnimationFile bedrockAnimationFile = ClientAssetsManager.INSTANCE.getBedrockAnimations(location);
             if (bedrockAnimationFile != null) {
                 // 用 bedrock 动画资源创建动画控制器
                 controller = Animations.createControllerFromBedrock(bedrockAnimationFile, index.gunModel);

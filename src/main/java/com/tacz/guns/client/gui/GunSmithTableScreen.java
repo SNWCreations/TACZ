@@ -1,6 +1,5 @@
 package com.tacz.guns.client.gui;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.mojang.blaze3d.platform.GlStateManager;
@@ -16,17 +15,16 @@ import com.tacz.guns.api.item.IAttachment;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.client.gui.components.smith.ResultButton;
 import com.tacz.guns.client.gui.components.smith.TypeButton;
-import com.tacz.guns.client.resource.ClientAssetManager;
+import com.tacz.guns.client.resource.ClientAssetsManager;
 import com.tacz.guns.client.resource.pojo.PackInfo;
 import com.tacz.guns.crafting.GunSmithTableIngredient;
 import com.tacz.guns.crafting.GunSmithTableRecipe;
-import com.tacz.guns.crafting.GunSmithTableResult;
+import com.tacz.guns.crafting.result.GunSmithTableResult;
 import com.tacz.guns.init.ModCreativeTabs;
 import com.tacz.guns.init.ModRecipe;
 import com.tacz.guns.inventory.GunSmithTableMenu;
 import com.tacz.guns.network.NetworkHandler;
 import com.tacz.guns.network.message.ClientMessageCraft;
-import com.tacz.guns.resource.CommonAssetManager;
 import com.tacz.guns.resource.filter.RecipeFilter;
 import com.tacz.guns.resource.pojo.data.block.BlockData;
 import com.tacz.guns.util.RenderDistance;
@@ -63,7 +61,6 @@ import org.jetbrains.annotations.NotNull;
 import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
-import java.util.WeakHashMap;
 
 public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMenu> {
     private static final ResourceLocation TEXTURE = new ResourceLocation(GunMod.MOD_ID, "textures/gui/gun_smith_table.png");
@@ -123,15 +120,6 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
 
         List<Pair<String, ResourceLocation>> recipeIds = Lists.newArrayList();
 
-        TimelessAPI.getAllRecipes().forEach((id, recipe) -> {
-            if (recipe instanceof GunSmithTableRecipe) {
-                String groupName = recipe.getResult().getGroup();
-                if (this.recipeKeys.contains(groupName)) {
-                    recipeIds.add(Pair.of(groupName, id));
-                }
-            }
-        });
-
         if (Minecraft.getInstance().level != null) {
             RecipeManager recipeManager = Minecraft.getInstance().level.getRecipeManager();
             List<GunSmithTableRecipe> recipeList = recipeManager.getAllRecipesFor(ModRecipe.GUN_SMITH_TABLE_CRAFTING.get());
@@ -146,7 +134,7 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
 
         TimelessAPI.getCommonBlockIndex(menu.getBlockId()).map(blockIndex -> {
             BlockData data = blockIndex.getData();
-            RecipeFilter filter = CommonAssetManager.INSTANCE.getRecipeFilter(data.getFilter());
+            RecipeFilter filter = data.getFilter();
             if (filter != null) {
                 return filter.filter(recipeIds, Pair::value);
             }
@@ -167,21 +155,19 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
 
     @Nullable
     private GunSmithTableRecipe getSelectedRecipe(ResourceLocation recipeId) {
-        return TimelessAPI.getRecipe(recipeId).orElseGet(()->{
-            if (minecraft !=null && minecraft.level != null) {
-                RecipeManager recipeManager = minecraft.level.getRecipeManager();
-                Recipe<?> recipe = recipeManager.byKey(recipeId).orElse(null);
-                if (recipe instanceof GunSmithTableRecipe) {
-                    return (GunSmithTableRecipe) recipe;
-                }
+        if (Minecraft.getInstance().level != null) {
+            RecipeManager recipeManager = Minecraft.getInstance().level.getRecipeManager();
+            Recipe<?> recipe = recipeManager.byKey(recipeId).orElse(null);
+            if (recipe instanceof GunSmithTableRecipe) {
+                return (GunSmithTableRecipe) recipe;
             }
-            return null;
-        });
+        }
+        return null;
     }
 
     private void getPlayerIngredientCount(GunSmithTableRecipe recipe) {
         LocalPlayer player = Minecraft.getInstance().player;
-        if (player == null) {
+        if (player == null || recipe == null) {
             return;
         }
         List<GunSmithTableIngredient> ingredients = recipe.getInputs();
@@ -258,7 +244,7 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
                     return;
                 }
 
-                PackInfo packInfo = ClientAssetManager.INSTANCE.getPackInfo(id);
+                PackInfo packInfo = ClientAssetsManager.INSTANCE.getPackInfo(id);
                 if (packInfo == null) {
                     return;
                 }
@@ -414,7 +400,7 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
             return;
         }
 
-        PackInfo packInfo = ClientAssetManager.INSTANCE.getPackInfo(id);
+        PackInfo packInfo = ClientAssetsManager.INSTANCE.getPackInfo(id);
         PoseStack poseStack = gui.pose();
         if (packInfo != null) {
             poseStack.pushPose();
@@ -466,7 +452,7 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
             ResourceLocation recipeId = recipe.getId();
             gui.drawString(font, Component.translatable("gui.tacz.gun_smith_table.error").withStyle(ChatFormatting.DARK_RED), leftPos + 6, topPos + 122, 0xAF0000, false);
             gui.drawString(font, Component.translatable("gui.tacz.gun_smith_table.error.id", recipeId.toString()).withStyle(ChatFormatting.DARK_RED), leftPos + 6, topPos + 134, 0xFFFFFF, false);
-            PackInfo errorPackInfo = ClientAssetManager.INSTANCE.getPackInfo(recipeId);
+            PackInfo errorPackInfo = ClientAssetsManager.INSTANCE.getPackInfo(id);
             if (errorPackInfo != null) {
                 gui.drawString(font, Component.translatable(errorPackInfo.getName()).withStyle(ChatFormatting.DARK_RED), leftPos + 6, topPos + 146, 0xAF0000, false);
             }

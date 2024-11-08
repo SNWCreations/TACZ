@@ -84,4 +84,8 @@ public abstract class AbstractGunSmithTableBlock extends BaseEntityBlock {
     }
 
     public abstract boolean isRoot(BlockState blockState);
+
+    public float parseRotation(Direction direction) {
+        return 90.0F * (3-direction.get2DDataValue()) - 90;
+    }
 }

@@ -53,17 +53,19 @@ public class GunSmithTableRenderer implements BlockEntityRenderer<GunSmithTableB
                 return;
             }
             BlockState blockState = blockEntity.getBlockState();
-            if (blockState.getBlock() instanceof AbstractGunSmithTableBlock block && !block.isRoot(blockState)) {
-                return;
+            if (blockState.getBlock() instanceof AbstractGunSmithTableBlock block) {
+                if (!block.isRoot(blockState)) {
+                    return;
+                }
+                Direction facing = blockState.getValue(AbstractGunSmithTableBlock.FACING);
+                poseStack.pushPose();
+                poseStack.translate(0.5, 1.5, 0.5);
+                poseStack.mulPose(Axis.ZN.rotationDegrees(180));
+                poseStack.mulPose(Axis.YN.rotationDegrees(block.parseRotation(facing)));
+                RenderType renderType = RenderType.entityTranslucent(texture);
+                model.render(poseStack, ItemDisplayContext.NONE, renderType, combinedLightIn, combinedOverlayIn);
+                poseStack.popPose();
             }
-            Direction facing = blockState.getValue(AbstractGunSmithTableBlock.FACING);
-            poseStack.pushPose();
-            poseStack.translate(0.5, 1.5, 0.5);
-            poseStack.mulPose(Axis.ZN.rotationDegrees(180));
-            poseStack.mulPose(Axis.YN.rotationDegrees(90 - facing.get2DDataValue() * 90));
-            RenderType renderType = RenderType.entityTranslucent(texture);
-            model.render(poseStack, ItemDisplayContext.NONE, renderType, combinedLightIn, combinedOverlayIn);
-            poseStack.popPose();
         });
     }
 

@@ -1,7 +1,8 @@
 package com.tacz.guns.client.sound;
 
 import com.mojang.blaze3d.audio.SoundBuffer;
-import com.tacz.guns.client.resource.ClientAssetManager;
+import com.tacz.guns.client.resource.ClientAssetsManager;
+import com.tacz.guns.client.resource.manager.SoundAssetsManager;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.resources.sounds.EntityBoundSoundInstance;
@@ -35,7 +36,7 @@ public class GunSoundInstance extends EntityBoundSoundInstance {
 
     @Nullable
     public SoundBuffer getSoundBuffer() {
-        ClientAssetManager.SoundData soundData = ClientAssetManager.INSTANCE.getSoundBuffers(this.registryName);
+        SoundAssetsManager.SoundData soundData = ClientAssetsManager.INSTANCE.getSoundBuffers(this.registryName);
         if (soundData == null) {
             return null;
         }

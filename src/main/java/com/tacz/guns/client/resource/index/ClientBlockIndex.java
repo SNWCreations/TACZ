@@ -2,7 +2,7 @@ package com.tacz.guns.client.resource.index;
 
 import com.google.common.base.Preconditions;
 import com.tacz.guns.client.model.bedrock.BedrockModel;
-import com.tacz.guns.client.resource.ClientAssetManager;
+import com.tacz.guns.client.resource.ClientAssetsManager;
 import com.tacz.guns.client.resource.pojo.display.block.BlockDisplay;
 import com.tacz.guns.client.resource.pojo.model.BedrockModelPOJO;
 import com.tacz.guns.client.resource.pojo.model.BedrockVersion;
@@ -16,6 +16,7 @@ public class ClientBlockIndex {
     private ResourceLocation texture;
     private String name;
     private ItemTransforms transforms;
+    private String tooltipKey;
 
     public static ClientBlockIndex getInstance(BlockIndexPOJO pojo) {
         ClientBlockIndex index = new ClientBlockIndex();
@@ -29,6 +30,7 @@ public class ClientBlockIndex {
 
     private static void checkIndex(BlockIndexPOJO blockIndexPOJO, ClientBlockIndex index) {
         Preconditions.checkArgument(blockIndexPOJO != null, "index object file is empty");
+        index.tooltipKey = blockIndexPOJO.getTooltip();
     }
 
     private static void checkName(BlockIndexPOJO blockIndexPOJO, ClientBlockIndex index) {
@@ -41,7 +43,7 @@ public class ClientBlockIndex {
     private static BlockDisplay checkDisplay(BlockIndexPOJO pojo, ClientBlockIndex index) {
         ResourceLocation display = pojo.getDisplay();
         Preconditions.checkArgument(display != null, "index object missing display field");
-        BlockDisplay blockDisplay = ClientAssetManager.INSTANCE.getBlockDisplays(pojo.getDisplay());
+        BlockDisplay blockDisplay = ClientAssetsManager.INSTANCE.getBlockDisplay(pojo.getDisplay());
         Preconditions.checkArgument(blockDisplay != null, "there is no corresponding display file");
         return blockDisplay;
     }
@@ -49,7 +51,7 @@ public class ClientBlockIndex {
     private static void checkModel(BlockDisplay display, ClientBlockIndex index) {
         ResourceLocation modelLocation = display.getModelLocation();
         Preconditions.checkArgument(modelLocation != null, "display object missing model field");
-        BedrockModelPOJO modelPOJO = ClientAssetManager.INSTANCE.getModels(modelLocation);
+        BedrockModelPOJO modelPOJO = ClientAssetsManager.INSTANCE.getBedrockModelPOJO(modelLocation);
         Preconditions.checkArgument(modelPOJO != null, "there is no corresponding model file");
 
         // 先判断是不是 1.10.0 版本基岩版模型文件
@@ -86,5 +88,9 @@ public class ClientBlockIndex {
 
     public ItemTransforms getTransforms() {
         return transforms;
+    }
+
+    public String getTooltipKey() {
+        return tooltipKey;
     }
 }

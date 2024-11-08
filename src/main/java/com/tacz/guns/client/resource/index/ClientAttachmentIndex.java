@@ -3,13 +3,14 @@ package com.tacz.guns.client.resource.index;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.tacz.guns.client.model.BedrockAttachmentModel;
-import com.tacz.guns.client.resource.ClientAssetManager;
+import com.tacz.guns.client.resource_legacy.ClientAssetManager;
+import com.tacz.guns.client.resource.ClientAssetsManager;
 import com.tacz.guns.client.resource.pojo.display.attachment.AttachmentDisplay;
 import com.tacz.guns.client.resource.pojo.display.attachment.AttachmentLod;
 import com.tacz.guns.client.resource.pojo.model.BedrockModelPOJO;
 import com.tacz.guns.client.resource.pojo.model.BedrockVersion;
 import com.tacz.guns.client.resource.pojo.skin.attachment.AttachmentSkin;
-import com.tacz.guns.resource.CommonAssetManager;
+import com.tacz.guns.resource.CommonAssetsManager;
 import com.tacz.guns.resource.pojo.AttachmentIndexPOJO;
 import com.tacz.guns.resource.pojo.data.attachment.AttachmentData;
 import net.minecraft.client.renderer.texture.MissingTextureAtlasSprite;
@@ -65,7 +66,7 @@ public class ClientAttachmentIndex {
     private static AttachmentDisplay checkDisplay(AttachmentIndexPOJO indexPOJO, ClientAttachmentIndex index) {
         ResourceLocation pojoDisplay = indexPOJO.getDisplay();
         Preconditions.checkArgument(pojoDisplay != null, "index object missing display field");
-        AttachmentDisplay display = ClientAssetManager.INSTANCE.getAttachmentDisplay(pojoDisplay);
+        AttachmentDisplay display = ClientAssetsManager.INSTANCE.getAttachmentDisplay(pojoDisplay);
         Preconditions.checkArgument(display != null, "there is no corresponding display file");
         Preconditions.checkArgument(display.getFov() > 0, "fov must > 0");
         index.fov = display.getFov();
@@ -87,7 +88,7 @@ public class ClientAttachmentIndex {
     private static void checkData(AttachmentIndexPOJO indexPOJO, ClientAttachmentIndex index) {
         ResourceLocation dataId = indexPOJO.getData();
         Preconditions.checkArgument(dataId != null, "index object missing pojoData field");
-        AttachmentData data = CommonAssetManager.INSTANCE.getAttachmentData(dataId);
+        AttachmentData data = CommonAssetsManager.get().getAttachmentData(dataId);
         Preconditions.checkArgument(data != null, "there is no corresponding data file");
         // 剩下的不需要校验了，Common的读取逻辑中已经校验过了
         index.data = data;
@@ -124,7 +125,7 @@ public class ClientAttachmentIndex {
             if (texture == null) {
                 return;
             }
-            BedrockModelPOJO modelPOJO = ClientAssetManager.INSTANCE.getModels(gunLod.getModelLocation());
+            BedrockModelPOJO modelPOJO = ClientAssetsManager.INSTANCE.getBedrockModelPOJO(gunLod.getModelLocation());
             if (modelPOJO == null) {
                 return;
             }

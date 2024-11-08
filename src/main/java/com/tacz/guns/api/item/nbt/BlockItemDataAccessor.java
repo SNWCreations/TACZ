@@ -22,7 +22,7 @@ public interface BlockItemDataAccessor extends IBlock {
             ResourceLocation gunId = ResourceLocation.tryParse(nbt.getString(BLOCK_ID));
             return Objects.requireNonNullElse(gunId, DefaultAssets.EMPTY_BLOCK_ID);
         }
-        return DefaultAssets.DEFAULT_BLOCK_ID;
+        return DefaultAssets.EMPTY_BLOCK_ID;
     }
 
     @Override
@@ -32,7 +32,7 @@ public interface BlockItemDataAccessor extends IBlock {
             nbt.putString(BLOCK_ID, blockId.toString());
             return;
         }
-        nbt.putString(BLOCK_ID, DefaultAssets.DEFAULT_BLOCK_ID.toString());
+        nbt.putString(BLOCK_ID, DefaultAssets.EMPTY_BLOCK_ID.toString());
     }
 
 }

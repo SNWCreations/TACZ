@@ -155,18 +155,20 @@ public class LocalPlayerShoot {
                 // 发送开火的数据包，通知服务器
                 NetworkHandler.CHANNEL.sendToServer(new ClientMessagePlayerShoot());
             }
-            // 触发击发事件
-            boolean fire = !MinecraftForge.EVENT_BUS.post(new GunFireEvent(player, mainhandItem, LogicalSide.CLIENT));
-            if (fire) {
-                // 动画和声音循环播放
-                AnimationStateMachine<?> animationStateMachine = gunIndex.getAnimationStateMachine();
-                if (animationStateMachine != null) {
-                    animationStateMachine.trigger(GunAnimationConstant.INPUT_SHOOT);
-                }
-                // 获取消音
-                final boolean useSilenceSound = this.useSilenceSound();
-                // 播放声音需要从异步线程上传到主线程执行。
-                Minecraft.getInstance().submitAsync(() -> {
+
+            // todo 需要检查
+            // 播放声音和状态机触发需要从异步线程上传到主线程执行，否则会引起cme
+            Minecraft.getInstance().submitAsync(() -> {
+                // 触发击发事件
+                boolean fire = !MinecraftForge.EVENT_BUS.post(new GunFireEvent(player, mainhandItem, LogicalSide.CLIENT));
+                if (fire) {
+                    // 动画和声音循环播放
+                    AnimationStateMachine<?> animationStateMachine = gunIndex.getAnimationStateMachine();
+                    if (animationStateMachine != null) {
+                        animationStateMachine.trigger(GunAnimationConstant.INPUT_SHOOT);
+                    }
+                    // 获取消音
+                    final boolean useSilenceSound = this.useSilenceSound();
                     // 开火需要打断检视
                     SoundPlayManager.stopPlayGunSound(gunIndex, SoundManager.INSPECT_SOUND);
                     if (useSilenceSound) {
@@ -174,8 +176,9 @@ public class LocalPlayerShoot {
                     } else {
                         SoundPlayManager.playShootSound(player, gunIndex);
                     }
-                });
-            }
+                }
+            });
+
             count.getAndIncrement();
         }, delay, period, TimeUnit.MILLISECONDS);
     }

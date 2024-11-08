@@ -5,10 +5,8 @@ import com.tacz.guns.crafting.GunSmithTableIngredient;
 import com.tacz.guns.crafting.GunSmithTableRecipe;
 import com.tacz.guns.network.NetworkHandler;
 import com.tacz.guns.network.message.ServerMessageCraft;
-import com.tacz.guns.resource.CommonAssetManager;
 import com.tacz.guns.resource.filter.RecipeFilter;
 import com.tacz.guns.resource.pojo.data.block.BlockData;
-import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -33,14 +31,14 @@ public class GunSmithTableMenu extends AbstractContainerMenu {
     });
 
     private final ResourceLocation blockId;
-    private RecipeFilter filter;
+    private final RecipeFilter filter;
 
     public GunSmithTableMenu(int id, Inventory inventory, @Nullable ResourceLocation resourceLocation) {
         super(TYPE, id);
         this.blockId = resourceLocation;
         this.filter = TimelessAPI.getCommonBlockIndex(getBlockId()).map(blockIndex -> {
             BlockData data = blockIndex.getData();
-            return CommonAssetManager.INSTANCE.getRecipeFilter(data.getFilter());
+            return data.getFilter();
         }).orElse(null);
     }
 
@@ -64,13 +62,11 @@ public class GunSmithTableMenu extends AbstractContainerMenu {
         if (filter != null && !filter.contains(recipeId)) {
             return null;
         }
-        return TimelessAPI.getRecipe(recipeId).orElseGet(()->{
-            Recipe<?> recipe = recipeManager.byKey(recipeId).orElse(null);
-            if (recipe instanceof GunSmithTableRecipe) {
-                return (GunSmithTableRecipe) recipe;
-            }
-            return null;
-        });
+        Recipe<?> recipe = recipeManager.byKey(recipeId).orElse(null);
+        if (recipe instanceof GunSmithTableRecipe) {
+            return (GunSmithTableRecipe) recipe;
+        }
+        return null;
     }
 
     public void doCraft(ResourceLocation recipeId, Player player) {

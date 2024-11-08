@@ -3,7 +3,7 @@ package com.tacz.guns.client.download;
 import com.google.common.collect.Maps;
 import com.tacz.guns.GunMod;
 import com.tacz.guns.client.gui.GunPackProgressScreen;
-import com.tacz.guns.client.resource.ClientReloadManager;
+import com.tacz.guns.client.resource_legacy.ClientReloadManager;
 import net.minecraft.SharedConstants;
 import net.minecraft.WorldVersion;
 import net.minecraft.client.Minecraft;
