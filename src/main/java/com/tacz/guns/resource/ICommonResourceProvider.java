@@ -9,6 +9,7 @@ import com.tacz.guns.resource.pojo.data.block.BlockData;
 import com.tacz.guns.resource.pojo.data.gun.GunData;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
+import org.luaj.vm2.LuaTable;
 
 import java.util.Map;
 import java.util.Set;
@@ -27,6 +28,8 @@ public interface ICommonResourceProvider {
     @Nullable CommonAttachmentIndex getAttachmentIndex(ResourceLocation attachmentId);
 
     @Nullable CommonBlockIndex getBlockIndex(ResourceLocation blockId);
+
+    @Nullable public LuaTable getScript(ResourceLocation scriptId);
 
     Set<Map.Entry<ResourceLocation, CommonGunIndex>> getAllGuns();
 

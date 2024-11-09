@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import com.tacz.guns.api.client.animation.gltf.AnimationStructure;
 import com.tacz.guns.client.model.BedrockAttachmentModel;
 import com.tacz.guns.client.model.BedrockGunModel;
+import com.tacz.guns.client.resource.ClientAssetsManager;
 import com.tacz.guns.client.resource.manager.SoundAssetsManager;
 import com.tacz.guns.client.resource.pojo.PackInfo;
 import com.tacz.guns.client.resource.pojo.animation.bedrock.BedrockAnimationFile;
@@ -14,7 +15,6 @@ import com.tacz.guns.client.resource.pojo.display.gun.GunDisplay;
 import com.tacz.guns.client.resource.pojo.model.BedrockModelPOJO;
 import com.tacz.guns.client.resource.pojo.model.BedrockVersion;
 import com.tacz.guns.client.resource.pojo.skin.attachment.AttachmentSkin;
-import com.tacz.guns.client.resource.ClientAssetsManager;
 import com.tacz.guns.compat.playeranimator.PlayerAnimatorCompat;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraftforge.api.distmarker.Dist;
@@ -26,6 +26,7 @@ import java.util.Map;
 
 /**
  * 缓存 Map 的键统一为 ResourceLocation，其 namespace 为枪包的根目录的下一级文件夹的名称， path 为资源对应的 id 。
+ * @deprecated 改用 {@link ClientAssetsManager}
  */
 @OnlyIn(Dist.CLIENT)
 @Deprecated

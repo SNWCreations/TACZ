@@ -12,10 +12,7 @@ import com.tacz.guns.resource.index.CommonAmmoIndex;
 import com.tacz.guns.resource.index.CommonAttachmentIndex;
 import com.tacz.guns.resource.index.CommonBlockIndex;
 import com.tacz.guns.resource.index.CommonGunIndex;
-import com.tacz.guns.resource.manager.AttachmentDataManager;
-import com.tacz.guns.resource.manager.AttachmentsTagManager;
-import com.tacz.guns.resource.manager.CommonDataManager;
-import com.tacz.guns.resource.manager.INetworkCacheReloadListener;
+import com.tacz.guns.resource.manager.*;
 import com.tacz.guns.resource.network.CommonNetworkCache;
 import com.tacz.guns.resource.network.DataType;
 import com.tacz.guns.resource.pojo.data.attachment.AttachmentData;
@@ -24,6 +21,7 @@ import com.tacz.guns.resource.pojo.data.gun.ExtraDamage;
 import com.tacz.guns.resource.pojo.data.gun.GunData;
 import com.tacz.guns.resource.pojo.data.gun.Ignite;
 import com.tacz.guns.resource.serialize.*;
+import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.world.phys.Vec3;
@@ -34,6 +32,7 @@ import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
+import org.luaj.vm2.LuaTable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,6 +67,7 @@ public class CommonAssetsManager implements ICommonResourceProvider {
     private CommonDataManager<CommonAttachmentIndex> attachmentIndex;
     private CommonDataManager<CommonBlockIndex> blockIndex;
     private AttachmentsTagManager attachmentsTagManager;
+    private final ScriptManager scriptManager = new ScriptManager(new FileToIdConverter("scripts/common", ".lua"));
 
     public void reloadAndRegister(Consumer<PreparableReloadListener> register) {
         // 这里会顺序重载，所以需要把index这种依赖data的放在后面
@@ -75,6 +75,7 @@ public class CommonAssetsManager implements ICommonResourceProvider {
         attachmentData = register(new AttachmentDataManager());
         attachmentsTagManager = register(new AttachmentsTagManager());
         blockData = register(new CommonDataManager<>(DataType.BLOCK_DATA, BlockData.class, GSON, "data/blocks", "BlockDataLoader"));
+        register.accept(scriptManager);
 
         ammoIndex = register(new CommonDataManager<>(DataType.AMMO_INDEX, CommonAmmoIndex.class, GSON, "index/ammo", "AmmoIndexLoader"));
         gunIndex = register(new CommonDataManager<>(DataType.GUN_INDEX, CommonGunIndex.class, GSON, "index/guns", "GunIndexLoader"));
@@ -146,6 +147,11 @@ public class CommonAssetsManager implements ICommonResourceProvider {
     @Override
     public Set<Map.Entry<ResourceLocation, CommonAttachmentIndex>> getAllAttachments() {
         return attachmentIndex.getAllData().entrySet();
+    }
+
+    @Override
+    public LuaTable getScript(ResourceLocation scriptId) {
+        return scriptManager.getScript(scriptId);
     }
 
     @Nullable

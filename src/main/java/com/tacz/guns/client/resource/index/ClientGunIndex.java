@@ -15,17 +15,17 @@ import com.tacz.guns.api.client.animation.statemachine.LuaStateMachineFactory;
 import com.tacz.guns.api.item.gun.FireMode;
 import com.tacz.guns.client.animation.statemachine.GunAnimationStateContext;
 import com.tacz.guns.client.model.BedrockGunModel;
-import com.tacz.guns.client.resource_legacy.ClientAssetManager;
-import com.tacz.guns.client.resource.InternalAssetLoader;
 import com.tacz.guns.client.resource.ClientAssetsManager;
+import com.tacz.guns.client.resource.InternalAssetLoader;
 import com.tacz.guns.client.resource.pojo.animation.bedrock.BedrockAnimationFile;
 import com.tacz.guns.client.resource.pojo.display.ammo.AmmoParticle;
 import com.tacz.guns.client.resource.pojo.display.gun.*;
 import com.tacz.guns.client.resource.pojo.model.BedrockModelPOJO;
 import com.tacz.guns.client.resource.pojo.model.BedrockVersion;
+import com.tacz.guns.client.resource_legacy.ClientAssetManager;
+import com.tacz.guns.resource.CommonAssetsManager;
 import com.tacz.guns.resource.pojo.GunIndexPOJO;
 import com.tacz.guns.resource.pojo.data.gun.GunData;
-import com.tacz.guns.resource.CommonAssetsManager;
 import com.tacz.guns.sound.SoundManager;
 import com.tacz.guns.util.ColorHex;
 import it.unimi.dsi.fastutil.ints.Int2ObjectArrayMap;
@@ -243,7 +243,7 @@ public class ClientGunIndex {
         }
         index.animationStateMachine = new LuaStateMachineFactory<GunAnimationStateContext>()
                 .setController(controller)
-                .setLuaScripts(ClientAssetManager.INSTANCE.getScript(stateMachineLocation))
+                .setLuaScripts(ClientAssetsManager.INSTANCE.getScript(stateMachineLocation))
                 .build();
         // 初始化第三人称动画
         if (StringUtils.isNoneBlank(display.getThirdPersonAnimation())) {

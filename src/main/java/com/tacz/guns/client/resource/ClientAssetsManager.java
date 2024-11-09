@@ -3,7 +3,10 @@ package com.tacz.guns.client.resource;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.tacz.guns.api.client.animation.gltf.AnimationStructure;
-import com.tacz.guns.client.resource.manager.*;
+import com.tacz.guns.client.resource.manager.DisplayManager;
+import com.tacz.guns.client.resource.manager.GltfManager;
+import com.tacz.guns.client.resource.manager.PackInfoManager;
+import com.tacz.guns.client.resource.manager.SoundAssetsManager;
 import com.tacz.guns.client.resource.pojo.CommonTransformObject;
 import com.tacz.guns.client.resource.pojo.PackInfo;
 import com.tacz.guns.client.resource.pojo.animation.bedrock.AnimationKeyframes;
@@ -20,6 +23,7 @@ import com.tacz.guns.client.resource.serialize.ItemStackSerializer;
 import com.tacz.guns.client.resource.serialize.SoundEffectKeyframesSerializer;
 import com.tacz.guns.client.resource.serialize.Vector3fSerializer;
 import com.tacz.guns.resource.manager.JsonDataManager;
+import com.tacz.guns.resource.manager.ScriptManager;
 import net.minecraft.client.renderer.block.model.ItemTransform;
 import net.minecraft.client.renderer.block.model.ItemTransforms;
 import net.minecraft.resources.FileToIdConverter;
@@ -87,7 +91,7 @@ public enum ClientAssetsManager {
             bedrockModel = register(new JsonDataManager<>(BedrockModelPOJO.class, GSON, "geo_models", "BedrockModelLoader"));
             bedrockAnimation = register(new JsonDataManager<>(BedrockAnimationFile.class, GSON, new FileToIdConverter("animations", ".animation.json"), "BedrockAnimationLoader"));
             gltfAnimation = register(new GltfManager());
-            scriptManager = register(new ScriptManager());
+            scriptManager = register(new ScriptManager(new FileToIdConverter("scripts/client", ".lua")));
             soundAssetsManager = register(new SoundAssetsManager());
             packInfo = register(new PackInfoManager());
         }

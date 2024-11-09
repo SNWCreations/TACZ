@@ -14,6 +14,7 @@ import com.tacz.guns.resource.pojo.data.block.BlockData;
 import com.tacz.guns.resource.pojo.data.gun.GunData;
 import net.minecraft.resources.ResourceLocation;
 import org.jetbrains.annotations.Nullable;
+import org.luaj.vm2.LuaTable;
 
 import java.util.*;
 
@@ -71,6 +72,11 @@ public enum CommonNetworkCache implements ICommonResourceProvider {
     @Override
     public @Nullable CommonBlockIndex getBlockIndex(ResourceLocation blockId) {
         return blockIndex.get(blockId);
+    }
+
+    @Override
+    public @Nullable LuaTable getScript(ResourceLocation scriptId) {
+        return null; // 脚本不需要同步
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.tacz.guns.client.resource.manager;
+package com.tacz.guns.resource.manager;
 
 import com.google.common.collect.Maps;
 import com.google.gson.JsonParseException;
@@ -25,15 +25,13 @@ import java.util.Map;
 
 public class ScriptManager extends SimplePreparableReloadListener<Map<ResourceLocation, LuaTable>> {
     private static final Marker MARKER = MarkerManager.getMarker("ScriptLoader");
-    private static Globals globals = JsePlatform.standardGlobals();
-    static {
-        // 装载 lib
-        new LuaAnimationConstant().install(globals);
-        new LuaGunAnimationConstant().install(globals);
-    }
-
+    private Globals globals;
     private final Map<ResourceLocation, LuaTable> dataMap = Maps.newHashMap();
-    private final FileToIdConverter filetoidconverter = new FileToIdConverter("scripts", ".lua");
+    private final FileToIdConverter filetoidconverter;
+
+    public ScriptManager(FileToIdConverter converter) {
+        this.filetoidconverter = converter;
+    }
 
     @Override
     @NotNull
@@ -43,6 +41,7 @@ public class ScriptManager extends SimplePreparableReloadListener<Map<ResourceLo
             ResourceLocation resourcelocation = entry.getKey();
             ResourceLocation resourcelocation1 = filetoidconverter.fileToId(resourcelocation);
 
+            initGlobals();
             try (Reader reader = entry.getValue().openAsReader()) {
                 LuaValue chunk = globals.load(reader, resourcelocation1.getNamespace() + "_" + resourcelocation1.getPath());
                 LuaTable table = chunk.call().checktable();
@@ -60,7 +59,7 @@ public class ScriptManager extends SimplePreparableReloadListener<Map<ResourceLo
         dataMap.putAll(pObject);
     }
 
-    public static void reloadGlobal() {
+    private void initGlobals() {
         globals = JsePlatform.standardGlobals();
         new LuaAnimationConstant().install(globals);
         new LuaGunAnimationConstant().install(globals);

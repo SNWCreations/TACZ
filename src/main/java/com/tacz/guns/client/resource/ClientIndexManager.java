@@ -8,7 +8,6 @@ import com.tacz.guns.client.resource.index.ClientAmmoIndex;
 import com.tacz.guns.client.resource.index.ClientAttachmentIndex;
 import com.tacz.guns.client.resource.index.ClientBlockIndex;
 import com.tacz.guns.client.resource.index.ClientGunIndex;
-import com.tacz.guns.client.resource.manager.ScriptManager;
 import com.tacz.guns.resource.modifier.AttachmentPropertyManager;
 import com.tacz.guns.resource.pojo.AmmoIndexPOJO;
 import com.tacz.guns.resource.pojo.AttachmentIndexPOJO;
@@ -35,7 +34,6 @@ public class ClientIndexManager {
         AMMO_INDEX.clear();
         ATTACHMENT_INDEX.clear();
         BLOCK_INDEX.clear();
-        ScriptManager.reloadGlobal();
         loadGunIndex();
         loadAmmoIndex();
         loadAttachmentIndex();
