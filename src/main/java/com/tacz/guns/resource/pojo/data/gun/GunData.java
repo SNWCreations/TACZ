@@ -96,6 +96,9 @@ public class GunData {
     @SerializedName("builtin_attachments")
     private Map<AttachmentType, ResourceLocation> builtInAttachments = Maps.newHashMap();
 
+    @SerializedName("script")
+    private ResourceLocation script = null;
+
     public ResourceLocation getAmmoId() {
         return ammoId;
     }
@@ -225,6 +228,11 @@ public class GunData {
 
     public Map<ResourceLocation, AttachmentData> getExclusiveAttachments() {
         return exclusiveAttachments;
+    }
+
+    @Nullable
+    public ResourceLocation getScript() {
+        return script;
     }
 
     /**

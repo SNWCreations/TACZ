@@ -144,4 +144,11 @@ public interface IGunOperator {
      */
     @Nullable
     AttachmentCacheProperty getCacheProperty();
+
+    /**
+     * 曳光弹计数器自增 1，并根据传入的曳光弹间隔计算当前子弹是否为曳光弹。
+     * @param tracerCountInterval 曳光弹间隔
+     * @return 是否为曳光弹
+     */
+    boolean nextBulletIsTracer(int tracerCountInterval);
 }

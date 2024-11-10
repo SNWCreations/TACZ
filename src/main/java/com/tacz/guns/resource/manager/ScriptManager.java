@@ -3,8 +3,7 @@ package com.tacz.guns.resource.manager;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonParseException;
 import com.tacz.guns.GunMod;
-import com.tacz.guns.api.client.animation.statemachine.vmlib.LuaAnimationConstant;
-import com.tacz.guns.client.animation.statemachine.vmlib.LuaGunAnimationConstant;
+import com.tacz.guns.api.vm.LuaLibrary;
 import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
@@ -21,6 +20,7 @@ import org.luaj.vm2.lib.jse.JsePlatform;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.util.List;
 import java.util.Map;
 
 public class ScriptManager extends SimplePreparableReloadListener<Map<ResourceLocation, LuaTable>> {
@@ -28,9 +28,11 @@ public class ScriptManager extends SimplePreparableReloadListener<Map<ResourceLo
     private Globals globals;
     private final Map<ResourceLocation, LuaTable> dataMap = Maps.newHashMap();
     private final FileToIdConverter filetoidconverter;
+    private final List<LuaLibrary> libraries;
 
-    public ScriptManager(FileToIdConverter converter) {
+    public ScriptManager(FileToIdConverter converter, List<LuaLibrary> libraries) {
         this.filetoidconverter = converter;
+        this.libraries = libraries;
     }
 
     @Override
@@ -61,8 +63,11 @@ public class ScriptManager extends SimplePreparableReloadListener<Map<ResourceLo
 
     private void initGlobals() {
         globals = JsePlatform.standardGlobals();
-        new LuaAnimationConstant().install(globals);
-        new LuaGunAnimationConstant().install(globals);
+        if (libraries != null) {
+            libraries.forEach(library -> {
+                library.install(globals);
+            });
+        }
     }
 
     public LuaTable getScript(ResourceLocation id) {

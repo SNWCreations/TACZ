@@ -2,12 +2,13 @@ package com.tacz.guns.resource.index;
 
 import com.google.common.base.Preconditions;
 import com.tacz.guns.api.item.gun.FireMode;
-import com.tacz.guns.resource.pojo.GunIndexPOJO;
 import com.tacz.guns.resource.CommonAssetsManager;
+import com.tacz.guns.resource.pojo.GunIndexPOJO;
 import com.tacz.guns.resource.pojo.data.gun.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import org.apache.commons.lang3.StringUtils;
+import org.luaj.vm2.LuaTable;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -17,6 +18,7 @@ public class CommonGunIndex {
     private String type;
     private GunIndexPOJO pojo;
     private int sort;
+    private LuaTable script;
 
     private CommonGunIndex() {
     }
@@ -52,6 +54,7 @@ public class CommonGunIndex {
         Preconditions.checkArgument(!data.getFireModeSet().contains(null) && !data.getFireModeSet().contains(FireMode.UNKNOWN), "fire mode is error");
         checkInaccuracy(data);
         checkRecoil(data);
+        checkScript(data, index);
         index.gunData = data;
     }
 
@@ -90,6 +93,17 @@ public class CommonGunIndex {
         }
     }
 
+    private static void checkScript(GunData data, CommonGunIndex index) {
+        ResourceLocation scriptId = data.getScript();
+        CommonAssetsManager commonAssetsManager = CommonAssetsManager.getInstance();
+        if(scriptId != null && commonAssetsManager != null) {
+            index.script = commonAssetsManager.getScript(scriptId);
+            if (index.script == null) {
+                throw new NullPointerException("script '" + scriptId +  "' not found");
+            }
+        }
+    }
+
     public GunData getGunData() {
         return gunData;
     }
@@ -104,6 +118,10 @@ public class CommonGunIndex {
 
     public GunIndexPOJO getPojo() {
         return pojo;
+    }
+
+    public LuaTable getScript() {
+        return script;
     }
 
     public int getSort() {

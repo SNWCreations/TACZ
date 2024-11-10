@@ -10,7 +10,6 @@ import com.tacz.guns.network.NetworkHandler;
 import com.tacz.guns.network.message.event.ServerMessageGunShoot;
 import com.tacz.guns.resource.index.CommonGunIndex;
 import com.tacz.guns.resource.pojo.data.gun.Bolt;
-import com.tacz.guns.resource.pojo.data.gun.BulletData;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
@@ -92,12 +91,9 @@ public class LivingEntityShoot {
         NetworkHandler.sendToTrackingEntity(new ServerMessageGunShoot(shooter.getId(), currentGunItem), shooter);
         // 执行枪械射击逻辑
         if (iGun instanceof AbstractGunItem logicGun) {
-            BulletData bulletData = gunIndex.getBulletData();
-            boolean isTracerAmmo = bulletData.hasTracerAmmo() && (data.shootCount % (bulletData.getTracerCountInterval() + 1) == 0);
-            logicGun.shoot(currentGunItem, pitch, yaw, isTracerAmmo, shooter);
+            logicGun.shoot(currentGunItem, pitch, yaw, shooter);
         }
         data.shootTimestamp = System.currentTimeMillis();
-        data.shootCount += 1;
         return ShootResult.SUCCESS;
     }
 

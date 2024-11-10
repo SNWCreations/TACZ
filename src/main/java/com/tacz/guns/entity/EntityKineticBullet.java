@@ -18,12 +18,12 @@ import com.tacz.guns.network.message.event.ServerMessageGunHurt;
 import com.tacz.guns.network.message.event.ServerMessageGunKill;
 import com.tacz.guns.particles.BulletHoleOption;
 import com.tacz.guns.resource.modifier.AttachmentCacheProperty;
+import com.tacz.guns.resource.modifier.custom.*;
 import com.tacz.guns.resource.pojo.data.gun.BulletData;
 import com.tacz.guns.resource.pojo.data.gun.ExplosionData;
 import com.tacz.guns.resource.pojo.data.gun.ExtraDamage.DistanceDamagePair;
 import com.tacz.guns.resource.pojo.data.gun.GunData;
 import com.tacz.guns.resource.pojo.data.gun.Ignite;
-import com.tacz.guns.resource.modifier.custom.*;
 import com.tacz.guns.util.EntityUtil;
 import com.tacz.guns.util.ExplodeUtil;
 import com.tacz.guns.util.TacHitResult;
@@ -67,7 +67,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-import static com.tacz.guns.api.event.common.GunDamageSourcePart.*;
+import static com.tacz.guns.api.event.common.GunDamageSourcePart.ARMOR_PIERCING;
+import static com.tacz.guns.api.event.common.GunDamageSourcePart.NON_ARMOR_PIERCING;
 
 /**
  * 动能武器打出的子弹实体。
@@ -192,6 +193,11 @@ public class EntityKineticBullet extends Projectile implements IEntityAdditional
 
     @Override
     protected void defineSynchedData() {
+    }
+
+    public void shootFromRotation(LivingEntity pShooter, float pX, float pY, float pZ, float pInaccuracy) {
+        AttachmentCacheProperty cacheProperty = Objects.requireNonNull(IGunOperator.fromLivingEntity(pShooter).getCacheProperty());
+
     }
 
     @Override

@@ -4,10 +4,8 @@ import com.google.common.collect.Maps;
 import com.google.gson.JsonParseException;
 import com.tacz.guns.GunMod;
 import com.tacz.guns.api.client.animation.gltf.AnimationStructure;
-import com.tacz.guns.api.client.animation.statemachine.vmlib.LuaAnimationConstant;
-import com.tacz.guns.client.animation.statemachine.vmlib.LuaGunAnimationConstant;
-import com.tacz.guns.client.resource.pojo.animation.gltf.RawAnimationStructure;
 import com.tacz.guns.client.resource.ClientAssetsManager;
+import com.tacz.guns.client.resource.pojo.animation.gltf.RawAnimationStructure;
 import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
@@ -17,8 +15,6 @@ import net.minecraft.util.profiling.ProfilerFiller;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import org.jetbrains.annotations.NotNull;
-import org.luaj.vm2.Globals;
-import org.luaj.vm2.lib.jse.JsePlatform;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -27,12 +23,6 @@ import java.util.Map;
 
 public class GltfManager extends SimplePreparableReloadListener<Map<ResourceLocation, AnimationStructure>> {
     private static final Marker MARKER = MarkerManager.getMarker("GltfAnimationLoader");
-    private static final Globals globals = JsePlatform.standardGlobals();
-    static {
-        // 装载 lib
-        new LuaAnimationConstant().install(globals);
-        new LuaGunAnimationConstant().install(globals);
-    }
 
     private final Map<ResourceLocation, AnimationStructure> dataMap = Maps.newHashMap();
     private final FileToIdConverter filetoidconverter = new FileToIdConverter("animations", ".gltf");

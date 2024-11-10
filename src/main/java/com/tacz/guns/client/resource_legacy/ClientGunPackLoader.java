@@ -9,12 +9,6 @@ import com.tacz.guns.client.resource.index.ClientAmmoIndex;
 import com.tacz.guns.client.resource.index.ClientAttachmentIndex;
 import com.tacz.guns.client.resource.index.ClientBlockIndex;
 import com.tacz.guns.client.resource.index.ClientGunIndex;
-import com.tacz.guns.client.resource_legacy.loader.ClientLoaders;
-import com.tacz.guns.client.resource_legacy.loader.asset.*;
-import com.tacz.guns.client.resource_legacy.loader.index.ClientAmmoIndexLoader;
-import com.tacz.guns.client.resource_legacy.loader.index.ClientAttachmentIndexLoader;
-import com.tacz.guns.client.resource_legacy.loader.index.ClientBlockIndexLoader;
-import com.tacz.guns.client.resource_legacy.loader.index.ClientGunIndexLoader;
 import com.tacz.guns.client.resource.pojo.CommonTransformObject;
 import com.tacz.guns.client.resource.pojo.animation.bedrock.AnimationKeyframes;
 import com.tacz.guns.client.resource.pojo.animation.bedrock.SoundEffectKeyframes;
@@ -23,6 +17,12 @@ import com.tacz.guns.client.resource.serialize.AnimationKeyframesSerializer;
 import com.tacz.guns.client.resource.serialize.ItemStackSerializer;
 import com.tacz.guns.client.resource.serialize.SoundEffectKeyframesSerializer;
 import com.tacz.guns.client.resource.serialize.Vector3fSerializer;
+import com.tacz.guns.client.resource_legacy.loader.ClientLoaders;
+import com.tacz.guns.client.resource_legacy.loader.asset.*;
+import com.tacz.guns.client.resource_legacy.loader.index.ClientAmmoIndexLoader;
+import com.tacz.guns.client.resource_legacy.loader.index.ClientAttachmentIndexLoader;
+import com.tacz.guns.client.resource_legacy.loader.index.ClientBlockIndexLoader;
+import com.tacz.guns.client.resource_legacy.loader.index.ClientGunIndexLoader;
 import com.tacz.guns.compat.playeranimator.PlayerAnimatorCompat;
 import com.tacz.guns.config.common.OtherConfig;
 import com.tacz.guns.resource.VersionChecker;
@@ -164,7 +164,6 @@ public class ClientGunPackLoader {
             TextureLoader.load(root);
             SoundLoader.load(root);
             LanguageLoader.load(root);
-            ScriptLoader.load(root);
             PackInfoLoader.load(root);
         }
     }
@@ -217,10 +216,6 @@ public class ClientGunPackLoader {
                 }
                 // 加载语言文件
                 if (LanguageLoader.load(zipFile, path)) {
-                    continue;
-                }
-                // 加载脚本文件
-                if (ScriptLoader.load(zipFile, path)) {
                     continue;
                 }
                 // 加载信息文件

@@ -70,8 +70,6 @@ public class LocalPlayerReload {
             } else {
                 noAmmo = !iGun.hasBulletInBarrel(mainhandItem);
             }
-            // TODO 这块没完全弄好，目前还有问题
-            // this.playMagExtendedAnimation(mainhandItem, iGun, animationStateMachine);
             // 触发 reload，停止播放声音
             SoundPlayManager.stopPlayGunSound();
             SoundPlayManager.playReloadSound(player, gunIndex, noAmmo);

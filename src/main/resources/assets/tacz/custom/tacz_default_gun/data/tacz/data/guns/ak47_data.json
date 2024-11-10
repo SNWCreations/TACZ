@@ -246,7 +246,9 @@
 //  "builtin_attachments": {
 //    "scope": "tacz:scope_standard_8x"
 //  },
-  // 专属的配件属性
+  // 指定枪械逻辑的脚本，调用的是 data/{命名空间}/scripts 下的脚本
+  "script": "tacz:default_gun_logic",
+  // 为特定的配件指派属性
   "exclusive_attachments": {
     // 配件 ID，后面的数据和配件的 data 部分结构完全一致
     "tacz:scope_standard_8x": {

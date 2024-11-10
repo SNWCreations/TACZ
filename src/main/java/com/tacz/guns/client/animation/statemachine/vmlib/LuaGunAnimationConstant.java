@@ -2,6 +2,7 @@ package com.tacz.guns.client.animation.statemachine.vmlib;
 
 import com.google.common.collect.Maps;
 import com.tacz.guns.api.item.gun.FireMode;
+import com.tacz.guns.api.vm.LuaLibrary;
 import com.tacz.guns.client.animation.statemachine.GunAnimationConstant;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
@@ -13,7 +14,7 @@ import java.util.Map;
 /**
  * 功能和 {@link com.tacz.guns.api.client.animation.statemachine.vmlib.LuaAnimationConstant} 类似。
  */
-public class LuaGunAnimationConstant {
+public class LuaGunAnimationConstant implements LuaLibrary {
     private final Map<String, Object> constantMap = Maps.newHashMap();
 
     public LuaGunAnimationConstant() {
@@ -39,6 +40,7 @@ public class LuaGunAnimationConstant {
         }
     }
 
+    @Override
     public void install(LuaValue chunk) {
         for(Map.Entry<String, Object> entry : constantMap.entrySet()) {
             chunk.set(entry.getKey(), CoerceJavaToLua.coerce(entry.getValue()));

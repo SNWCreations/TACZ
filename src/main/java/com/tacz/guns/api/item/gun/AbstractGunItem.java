@@ -3,6 +3,7 @@ package com.tacz.guns.api.item.gun;
 import com.tacz.guns.api.DefaultAssets;
 import com.tacz.guns.api.TimelessAPI;
 import com.tacz.guns.api.entity.IGunOperator;
+import com.tacz.guns.api.entity.ReloadState;
 import com.tacz.guns.api.item.*;
 import com.tacz.guns.api.item.attachment.AttachmentType;
 import com.tacz.guns.api.item.builder.AmmoItemBuilder;
@@ -55,13 +56,22 @@ public abstract class AbstractGunItem extends Item implements IGun {
     /**
      * 射击时触发
      */
-    public abstract void shoot(ItemStack gunItem, Supplier<Float> pitch, Supplier<Float> yaw, boolean tracer, LivingEntity shooter);
+    public abstract void shoot(ItemStack gunItem, Supplier<Float> pitch, Supplier<Float> yaw, LivingEntity shooter);
+
+    /**
+     * 换弹时每个 tick 调用
+     * @return 如果返回的类型是 NOT_RELOADING 则下一个 tick 不再继续调用
+     */
+    public abstract ReloadState tickReload(ItemStack gunItem);
 
     /**
      * 切换开火模式时调用
      */
     public abstract void fireSelect(ItemStack gunItem);
 
+    /**
+     * 近战时调用
+     */
     public abstract void melee(LivingEntity user, ItemStack gunItem);
 
     /**

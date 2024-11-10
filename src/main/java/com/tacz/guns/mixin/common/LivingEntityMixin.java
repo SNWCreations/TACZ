@@ -155,9 +155,16 @@ public abstract class LivingEntityMixin extends Entity implements IGunOperator, 
         this.tacz$data.cacheProperty = cacheProperty;
     }
 
+    @Override
     @Nullable
     public AttachmentCacheProperty getCacheProperty() {
         return this.tacz$data.cacheProperty;
+    }
+
+    @Override
+    public boolean nextBulletIsTracer(int tracerCountInterval) {
+        this.tacz$data.shootCount++;
+        return tacz$data.shootCount % (tracerCountInterval + 1) == 0;
     }
 
     @Unique

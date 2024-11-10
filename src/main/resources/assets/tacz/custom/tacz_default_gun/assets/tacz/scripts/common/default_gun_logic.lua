@@ -1,3 +1,0 @@
-print("lua test")
-
-return {}

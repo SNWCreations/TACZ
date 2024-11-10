@@ -4,8 +4,8 @@ import com.google.common.base.Suppliers;
 import com.tacz.guns.api.DefaultAssets;
 import com.tacz.guns.api.TimelessAPI;
 import com.tacz.guns.api.entity.IGunOperator;
+import com.tacz.guns.api.entity.ReloadState;
 import com.tacz.guns.api.event.common.GunFireEvent;
-import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.attachment.AttachmentType;
 import com.tacz.guns.api.item.gun.AbstractGunItem;
 import com.tacz.guns.api.item.gun.FireMode;
@@ -43,6 +43,7 @@ import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.LogicalSide;
 import net.minecraftforge.registries.ForgeRegistries;
+import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 
 import javax.annotation.Nullable;
 import java.util.*;
@@ -68,86 +69,24 @@ public class ModernKineticGunItem extends AbstractGunItem implements GunItemData
     }
 
     @Override
-    public void shoot(ItemStack gunItem, Supplier<Float> pitch, Supplier<Float> yaw, boolean tracer, LivingEntity shooter) {
-        ResourceLocation gunId = getGunId(gunItem);
-        IGun iGun = IGun.getIGunOrNull(gunItem);
-        if (iGun == null) {
-            return;
-        }
-        Optional<CommonGunIndex> gunIndexOptional = TimelessAPI.getCommonGunIndex(gunId);
-        if (gunIndexOptional.isEmpty()) {
-            return;
-        }
-        CommonGunIndex gunIndex = gunIndexOptional.get();
-        BulletData bulletData = gunIndex.getBulletData();
-        GunData gunData = gunIndex.getGunData();
-        ResourceLocation ammoId = gunData.getAmmoId();
-        FireMode fireMode = iGun.getFireMode(gunItem);
-        AttachmentCacheProperty cacheProperty = IGunOperator.fromLivingEntity(shooter).getCacheProperty();
-        if (cacheProperty == null) {
-            return;
-        }
+    public void shoot(ItemStack gunItem, Supplier<Float> pitch, Supplier<Float> yaw, LivingEntity shooter) {
+        ScriptAPI api = new ScriptAPI();
+        api.setItemStack(gunItem);
+        api.setShooter(shooter);
+        api.setPitchSupplier(pitch);
+        api.setYawSupplier(yaw);
 
-        // 散射影响
-        InaccuracyType inaccuracyType = InaccuracyType.getInaccuracyType(shooter);
-        float inaccuracy = Math.max(0, cacheProperty.<Map<InaccuracyType, Float>>getCache(InaccuracyModifier.ID).get(inaccuracyType));
-        if (inaccuracyType == InaccuracyType.AIM) {
-            inaccuracy = Math.max(0, cacheProperty.<Map<InaccuracyType, Float>>getCache(AimInaccuracyModifier.ID).get(inaccuracyType));
-        }
-        final float finalInaccuracy = inaccuracy;
+        CommonGunIndex gunIndex = api.getGunIndex();
+        Optional.ofNullable(gunIndex.getScript())
+                .map(script -> script.get("shoot").checkfunction())
+                .ifPresentOrElse(
+                        func -> func.call(CoerceJavaToLua.coerce(api)),
+                        api::shootOnce);
+    }
 
-        // 消音器影响
-        Pair<Integer, Boolean> silence = cacheProperty.getCache(SilenceModifier.ID);
-        final int soundDistance = silence.first();
-        final boolean useSilenceSound = silence.right();
-
-        // 子弹飞行速度
-        float speed = cacheProperty.<Float>getCache(AmmoSpeedModifier.ID);
-        float finalSpeed = Mth.clamp(speed / 20, 0, Float.MAX_VALUE);
-        // 弹丸数量
-        int bulletAmount = Math.max(bulletData.getBulletAmount(), 1);
-        // 连发数量
-        int cycles = fireMode == FireMode.BURST ? gunData.getBurstData().getCount() : 1;
-        // 连发间隔
-        long period = fireMode == FireMode.BURST ? gunData.getBurstShootInterval() : 1;
-        // 是否消耗弹药
-        boolean consumeAmmo = IGunOperator.fromLivingEntity(shooter).consumesAmmoOrNot();
-
-        CycleTaskHelper.addCycleTask(() -> {
-            // 如果射击者死亡，取消射击
-            if (shooter.isDeadOrDying()) {
-                return false;
-            }
-            // 准备削减弹药数
-            if (consumeAmmo) {
-                Bolt boltType = gunData.getBolt();
-                boolean hasAmmoInBarrel = this.hasBulletInBarrel(gunItem) && boltType != Bolt.OPEN_BOLT;
-                int ammoCount = this.getCurrentAmmoCount(gunItem) + (hasAmmoInBarrel ? 1 : 0);
-                if (ammoCount <= 0) {
-                    return false;
-                }
-            }
-            // 触发击发事件
-            boolean fire = !MinecraftForge.EVENT_BUS.post(new GunFireEvent(shooter, gunItem, LogicalSide.SERVER));
-            if (fire) {
-                NetworkHandler.sendToTrackingEntity(new ServerMessageGunFire(shooter.getId(), gunItem), shooter);
-                if (consumeAmmo) {
-                    // 削减弹药
-                    this.reduceAmmo(gunItem);
-                }
-                // 生成子弹
-                Level world = shooter.level();
-                for (int i = 0; i < bulletAmount; i++) {
-                    this.doSpawnBulletEntity(world, shooter, gunItem, pitch.get(), yaw.get(), finalSpeed, finalInaccuracy, ammoId, gunId, tracer, gunData, bulletData);
-                }
-                // 播放枪声
-                if (soundDistance > 0) {
-                    String soundId = useSilenceSound ? SoundManager.SILENCE_3P_SOUND : SoundManager.SHOOT_3P_SOUND;
-                    SoundManager.sendSoundToNearby(shooter, soundDistance, gunId, soundId, 0.8f, 0.9f + shooter.getRandom().nextFloat() * 0.125f);
-                }
-            }
-            return true;
-        }, period, cycles);
+    @Override
+    public ReloadState tickReload(ItemStack gunItem) {
+        return null;
     }
 
     @Override
@@ -289,16 +228,6 @@ public class ModernKineticGunItem extends AbstractGunItem implements GunItemData
         });
     }
 
-
-    /**
-     * 生成子弹实体
-     */
-    protected void doSpawnBulletEntity(Level world, LivingEntity shooter, ItemStack gunItem, float pitch, float yaw, float speed, float inaccuracy, ResourceLocation ammoId, ResourceLocation gunId, boolean tracer, GunData gunData, BulletData bulletData) {
-        EntityKineticBullet bullet = new EntityKineticBullet(world, shooter, gunItem, ammoId, gunId, tracer, gunData, bulletData);
-        bullet.shootFromRotation(bullet, pitch, yaw, 0.0F, speed, inaccuracy);
-        world.addFreshEntity(bullet);
-    }
-
     @Override
     public int getLevel(int exp) {
         return 0;
@@ -314,34 +243,178 @@ public class ModernKineticGunItem extends AbstractGunItem implements GunItemData
         return 0;
     }
 
-    /**
-     * 将枪内的弹药数减少。
-     *
-     * @param currentGunItem 枪械物品
-     */
-    protected void reduceAmmo(ItemStack currentGunItem) {
-        Bolt boltType = TimelessAPI.getCommonGunIndex(getGunId(currentGunItem)).map(index -> index.getGunData().getBolt()).orElse(null);
-        if (boltType == null) {
-            return;
-        }
-        if (boltType == Bolt.MANUAL_ACTION) {
-            this.setBulletInBarrel(currentGunItem, false);
-        } else if (boltType == Bolt.CLOSED_BOLT) {
-            if (this.getCurrentAmmoCount(currentGunItem) > 0) {
-                this.reduceCurrentAmmoCount(currentGunItem);
-            } else {
-                this.setBulletInBarrel(currentGunItem, false);
-            }
-        } else {
-            this.reduceCurrentAmmoCount(currentGunItem);
-        }
-    }
-
     @Nullable
     private MeleeData getMeleeData(ResourceLocation attachmentId) {
         if (DefaultAssets.isEmptyAttachmentId(attachmentId)) {
             return null;
         }
         return TimelessAPI.getCommonAttachmentIndex(attachmentId).map(index -> index.getData().getMeleeData()).orElse(null);
+    }
+
+    public static class ScriptAPI {
+        private LivingEntity shooter;
+
+        private ItemStack itemStack;
+
+        private AbstractGunItem abstractGunItem;
+
+        private CommonGunIndex gunIndex;
+
+        private ResourceLocation gunId;
+
+        private Supplier<Float> pitchSupplier;
+
+        private Supplier<Float> yawSupplier;
+
+        /**
+         * 执行一次完整的射击逻辑，会考虑玩家的状态(是否在瞄准、是否在移动、是否在匍匐等)、配件数值影响、多弹丸散射、连发，播放开火音效、
+         */
+        public void shootOnce(){
+            GunData gunData = gunIndex.getGunData();
+            BulletData bulletData = gunIndex.getBulletData();
+            IGunOperator gunOperator = IGunOperator.fromLivingEntity(shooter);
+
+            // 获取配件数据缓存
+            AttachmentCacheProperty cacheProperty = gunOperator.getCacheProperty();
+            if (cacheProperty == null) {
+                return;
+            }
+
+            // 散射影响
+            InaccuracyType inaccuracyType = InaccuracyType.getInaccuracyType(shooter);
+            float inaccuracy = Math.max(0, cacheProperty.<Map<InaccuracyType, Float>>getCache(InaccuracyModifier.ID).get(inaccuracyType));
+            if (inaccuracyType == InaccuracyType.AIM) {
+                inaccuracy = Math.max(0, cacheProperty.<Map<InaccuracyType, Float>>getCache(AimInaccuracyModifier.ID).get(inaccuracyType));
+            }
+            final float finalInaccuracy = inaccuracy;
+
+            // 消音器影响
+            Pair<Integer, Boolean> silence = cacheProperty.getCache(SilenceModifier.ID);
+            final int soundDistance = silence.first();
+            final boolean useSilenceSound = silence.right();
+
+            // 子弹飞行速度
+            float speed = cacheProperty.<Float>getCache(AmmoSpeedModifier.ID);
+            float processedSpeed = Mth.clamp(speed / 20, 0, Float.MAX_VALUE);
+            // 弹丸数量
+            int bulletAmount = Math.max(bulletData.getBulletAmount(), 1);
+
+            // 获取射击方向（pitch 和 yaw）
+            float pitch = pitchSupplier != null ? pitchSupplier.get() : shooter.getXRot();
+            float yaw = yawSupplier != null ? yawSupplier.get() : shooter.getYRot();
+
+            // 连发数量
+            FireMode fireMode = abstractGunItem.getFireMode(itemStack);
+            int cycles = fireMode == FireMode.BURST ? gunData.getBurstData().getCount() : 1;
+            // 连发间隔
+            long period = fireMode == FireMode.BURST ? gunData.getBurstShootInterval() : 1;
+            // 是否消耗弹药
+            boolean consumeAmmo = gunOperator.consumesAmmoOrNot();
+
+            CycleTaskHelper.addCycleTask(() -> {
+                // 如果射击者死亡，取消射击
+                if (shooter.isDeadOrDying()) {
+                    return false;
+                }
+                // 是否消耗弹药
+                if (consumeAmmo) {
+                    Bolt boltType = gunData.getBolt();
+                    boolean hasAmmoInBarrel = abstractGunItem.hasBulletInBarrel(itemStack) && boltType != Bolt.OPEN_BOLT;
+                    int ammoCount = abstractGunItem.getCurrentAmmoCount(itemStack) + (hasAmmoInBarrel ? 1 : 0);
+                    if (ammoCount <= 0) {
+                        return false;
+                    }
+                }
+                // 触发击发事件
+                boolean fire = !MinecraftForge.EVENT_BUS.post(new GunFireEvent(shooter, itemStack, LogicalSide.SERVER));
+                if (fire) {
+                    NetworkHandler.sendToTrackingEntity(new ServerMessageGunFire(shooter.getId(), itemStack), shooter);
+                    if (consumeAmmo) {
+                        // 削减弹药
+                        this.reduceAmmoOnce();
+                    }
+                    // 生成子弹
+                    Level world = shooter.level();
+                    ResourceLocation ammoId = gunData.getAmmoId();
+                    for (int i = 0; i < bulletAmount; i++) {
+                        boolean isTracer = gunOperator.nextBulletIsTracer(bulletData.getTracerCountInterval());
+                        EntityKineticBullet bullet = new EntityKineticBullet(world, shooter, itemStack, ammoId, gunId, isTracer, gunData, bulletData);
+                        bullet.shootFromRotation(bullet, pitch, yaw, 0.0F, processedSpeed, finalInaccuracy);
+                        world.addFreshEntity(bullet);
+                    }
+                    // 播放枪声
+                    if (soundDistance > 0) {
+                        String soundId = useSilenceSound ? SoundManager.SILENCE_3P_SOUND : SoundManager.SHOOT_3P_SOUND;
+                        SoundManager.sendSoundToNearby(shooter, soundDistance, gunId, soundId, 0.8f, 0.9f + shooter.getRandom().nextFloat() * 0.125f);
+                    }
+                }
+                return true;
+            }, period, cycles);
+        }
+
+        public void reduceAmmoOnce() {
+            Bolt boltType = TimelessAPI.getCommonGunIndex(abstractGunItem.getGunId(itemStack))
+                    .map(index -> index.getGunData().getBolt())
+                    .orElse(null);
+            if (boltType == null) {
+                return;
+            }
+            if (boltType == Bolt.MANUAL_ACTION) {
+                abstractGunItem.setBulletInBarrel(itemStack, false);
+            } else if (boltType == Bolt.CLOSED_BOLT) {
+                if (abstractGunItem.getCurrentAmmoCount(itemStack) > 0) {
+                    abstractGunItem.reduceCurrentAmmoCount(itemStack);
+                } else {
+                    abstractGunItem.setBulletInBarrel(itemStack, false);
+                }
+            } else {
+                abstractGunItem.reduceCurrentAmmoCount(itemStack);
+            }
+        }
+
+        public void setShooter(LivingEntity shooter) {
+            this.shooter = shooter;
+        }
+
+        public void setItemStack(ItemStack itemStack) {
+            this.itemStack = itemStack;
+            initGunItem();
+        }
+
+        public void setPitchSupplier(Supplier<Float> pitchSupplier) {
+            this.pitchSupplier = pitchSupplier;
+        }
+
+        public void setYawSupplier(Supplier<Float> yawSupplier) {
+            this.yawSupplier = yawSupplier;
+        }
+
+        public LivingEntity getShooter() {
+            return shooter;
+        }
+
+        public ItemStack getItemStack() {
+            return itemStack;
+        }
+
+        public AbstractGunItem getAbstractGunItem() {
+            return abstractGunItem;
+        }
+
+        public CommonGunIndex getGunIndex() {
+            return gunIndex;
+        }
+
+        private void initGunItem(){
+            if (itemStack == null || !(itemStack.getItem() instanceof AbstractGunItem gunItem)) {
+                gunIndex = null;
+                abstractGunItem = null;
+                return;
+            }
+            gunId = gunItem.getGunId(itemStack);
+            Optional<CommonGunIndex> gunIndexOptional = TimelessAPI.getCommonGunIndex(gunId);
+            gunIndex = gunIndexOptional.orElse(null);
+            abstractGunItem = gunItem;
+        }
     }
 }
