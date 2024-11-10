@@ -22,7 +22,6 @@ import com.tacz.guns.client.resource.pojo.display.ammo.AmmoParticle;
 import com.tacz.guns.client.resource.pojo.display.gun.*;
 import com.tacz.guns.client.resource.pojo.model.BedrockModelPOJO;
 import com.tacz.guns.client.resource.pojo.model.BedrockVersion;
-import com.tacz.guns.client.resource_legacy.ClientAssetManager;
 import com.tacz.guns.resource.CommonAssetsManager;
 import com.tacz.guns.resource.pojo.GunIndexPOJO;
 import com.tacz.guns.resource.pojo.data.gun.GunData;
@@ -129,7 +128,7 @@ public class ClientGunIndex {
     private static GunDisplay checkDisplay(GunIndexPOJO gunIndexPOJO) {
         ResourceLocation pojoDisplay = gunIndexPOJO.getDisplay();
         Preconditions.checkArgument(pojoDisplay != null, "index object missing display field");
-        GunDisplay display = ClientAssetManager.INSTANCE.getGunDisplay(pojoDisplay);
+        GunDisplay display = ClientAssetsManager.INSTANCE.getGunDisplay(pojoDisplay);
         Preconditions.checkArgument(display != null, "there is no corresponding display file");
         return display;
     }
