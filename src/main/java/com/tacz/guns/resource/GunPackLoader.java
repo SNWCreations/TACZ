@@ -19,7 +19,6 @@ import net.minecraft.server.packs.repository.RepositorySource;
 import net.minecraft.server.packs.resources.IoSupplier;
 import net.minecraftforge.fml.ModContainer;
 import net.minecraftforge.fml.ModList;
-import net.minecraftforge.fml.loading.FMLEnvironment;
 import net.minecraftforge.fml.loading.FMLPaths;
 import net.minecraftforge.forgespi.language.IModInfo;
 import net.minecraftforge.forgespi.locating.IModFile;
@@ -54,15 +53,19 @@ import static com.tacz.guns.resource_legacy.CommonGunPackLoader.GSON;
 public enum GunPackLoader implements RepositorySource {
     INSTANCE;
     private static final Marker MARKER = MarkerManager.getMarker("GunPackFinder");
-    private Pack extensionsPack;
-    private List<GunPack> gunPacks;
+    public PackType packType;
+    private boolean firstLoad = true;
+
 
     @Override
     public void loadPacks(Consumer<Pack> pOnLoad) {
-        pOnLoad.accept(this.extensionsPack);
+        Pack extensionsPack = discoverExtensions();
+        if (extensionsPack != null) {
+            pOnLoad.accept(extensionsPack);
+        }
     }
 
-    public void discoverExtensions(PackType packType) {
+    public Pack discoverExtensions() {
         Path resourcePacksPath = FMLPaths.GAMEDIR.get().resolve("tacz");
         File folder = resourcePacksPath.toFile();
         if (!folder.isDirectory()) {
@@ -70,23 +73,24 @@ public enum GunPackLoader implements RepositorySource {
                 Files.createDirectories(folder.toPath());
             } catch (Exception e) {
                 GunMod.LOGGER.warn(MARKER, "Failed to init tacz resource directory...", e);
-                return;
+                return null;
             }
         }
 
         // 确保配置文件加载，这个阶段将比标准的forge配置文件加载早
         PreLoadConfig.load(resourcePacksPath);
 
-        // 避免单人游戏进入世界时的覆盖，这是无意义的重复劳动
-        if (packType == PackType.CLIENT_RESOURCES || FMLEnvironment.dist.isDedicatedServer()) {
+        // 仅在第一次加载时复制默认资源包
+        if (firstLoad) {
             if (!PreLoadConfig.override.get()) {
                 for (ResourceManager.ExtraEntry entry : ResourceManager.EXTRA_ENTRIES) {
                     GetJarResources.copyModDirectory(entry.modMainClass(), entry.srcPath(), resourcePacksPath, entry.extraDirName());
                 }
             }
+            firstLoad = false;
         }
 
-        this.gunPacks = scanExtensions(resourcePacksPath);
+        List<GunPack> gunPacks = scanExtensions(resourcePacksPath);
         List<PathPackResources> extensionPacks = new ArrayList<>();
 
         for(GunPack gunPack : gunPacks) {
@@ -114,7 +118,7 @@ public enum GunPackLoader implements RepositorySource {
         }
 
 
-        this.extensionsPack = Pack.readMetaAndCreate("tacz_resources", Component.literal("TACZ Resources"), true, (id) -> {
+        return Pack.readMetaAndCreate("tacz_resources", Component.literal("TACZ Resources"), true, (id) -> {
             return new DelegatingPackResources(id, false, new PackMetadataSection(Component.translatable("tacz.resources.modresources"),
                     SharedConstants.getCurrentVersion().getPackVersion(packType)), extensionPacks) {
                 public IoSupplier<InputStream> getRootResource(String... paths) {
