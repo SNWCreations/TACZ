@@ -1,4 +1,4 @@
-package com.tacz.guns.api.vm;
+package com.tacz.guns.api.vmlib;
 
 import org.luaj.vm2.LuaValue;
 

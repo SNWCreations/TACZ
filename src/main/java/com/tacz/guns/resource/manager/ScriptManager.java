@@ -3,7 +3,7 @@ package com.tacz.guns.resource.manager;
 import com.google.common.collect.Maps;
 import com.google.gson.JsonParseException;
 import com.tacz.guns.GunMod;
-import com.tacz.guns.api.vm.LuaLibrary;
+import com.tacz.guns.api.vmlib.LuaLibrary;
 import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.resources.Resource;
@@ -38,12 +38,11 @@ public class ScriptManager extends SimplePreparableReloadListener<Map<ResourceLo
     @Override
     @NotNull
     protected Map<ResourceLocation, LuaTable> prepare(ResourceManager pResourceManager, ProfilerFiller pProfiler) {
+        initGlobals();
         Map<ResourceLocation, LuaTable> output = Maps.newHashMap();
         for(Map.Entry<ResourceLocation, Resource> entry : filetoidconverter.listMatchingResources(pResourceManager).entrySet()) {
             ResourceLocation resourcelocation = entry.getKey();
             ResourceLocation resourcelocation1 = filetoidconverter.fileToId(resourcelocation);
-
-            initGlobals();
             try (Reader reader = entry.getValue().openAsReader()) {
                 LuaValue chunk = globals.load(reader, resourcelocation1.getNamespace() + "_" + resourcelocation1.getPath());
                 LuaTable table = chunk.call().checktable();

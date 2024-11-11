@@ -3,8 +3,9 @@ package com.tacz.guns.client.resource;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.tacz.guns.api.client.animation.gltf.AnimationStructure;
-import com.tacz.guns.api.client.animation.statemachine.vmlib.LuaAnimationConstant;
-import com.tacz.guns.client.animation.statemachine.vmlib.LuaGunAnimationConstant;
+import com.tacz.guns.api.vmlib.LuaAnimationConstant;
+import com.tacz.guns.api.vmlib.LuaGunAnimationConstant;
+import com.tacz.guns.api.vmlib.LuaLibrary;
 import com.tacz.guns.client.resource.manager.DisplayManager;
 import com.tacz.guns.client.resource.manager.GltfManager;
 import com.tacz.guns.client.resource.manager.PackInfoManager;
@@ -75,6 +76,7 @@ public enum ClientAssetsManager {
     // gltf 动画
     private GltfManager gltfAnimation;
     // 客户端脚本
+    private final List<LuaLibrary> libList = List.of(new LuaAnimationConstant(), new LuaGunAnimationConstant());
     private ScriptManager scriptManager;
     // 音效
     private SoundAssetsManager soundAssetsManager;
@@ -93,7 +95,6 @@ public enum ClientAssetsManager {
             bedrockModel = register(new JsonDataManager<>(BedrockModelPOJO.class, GSON, "geo_models", "BedrockModelLoader"));
             bedrockAnimation = register(new JsonDataManager<>(BedrockAnimationFile.class, GSON, new FileToIdConverter("animations", ".animation.json"), "BedrockAnimationLoader"));
             gltfAnimation = register(new GltfManager());
-            var libList = List.of(new LuaAnimationConstant(), new LuaGunAnimationConstant());
             scriptManager = register(new ScriptManager(new FileToIdConverter("scripts", ".lua"), libList));
             soundAssetsManager = register(new SoundAssetsManager());
             packInfo = register(new PackInfoManager());

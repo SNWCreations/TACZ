@@ -1,9 +1,8 @@
-package com.tacz.guns.client.animation.statemachine.vmlib;
+package com.tacz.guns.api.vmlib;
 
 import com.google.common.collect.Maps;
-import com.tacz.guns.api.item.gun.FireMode;
-import com.tacz.guns.api.vm.LuaLibrary;
-import com.tacz.guns.client.animation.statemachine.GunAnimationConstant;
+import com.tacz.guns.api.client.animation.ObjectAnimation;
+import com.tacz.guns.api.client.animation.statemachine.AnimationConstant;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 
@@ -12,14 +11,16 @@ import java.lang.reflect.Modifier;
 import java.util.Map;
 
 /**
- * 功能和 {@link com.tacz.guns.api.client.animation.statemachine.vmlib.LuaAnimationConstant} 类似。
+ * 此类用于在 Lua 脚本中引入 ContextConstant 定义的常量，如播放类型等。
+ * 调用 install 方法直接将常量注入环境
+ * @see AnimationConstant
  */
-public class LuaGunAnimationConstant implements LuaLibrary {
+public class LuaAnimationConstant implements LuaLibrary {
     private final Map<String, Object> constantMap = Maps.newHashMap();
 
-    public LuaGunAnimationConstant() {
-        // 获取 GunAnimationConstant 的所有 public 字段
-        Field[] fields = GunAnimationConstant.class.getFields();
+    public LuaAnimationConstant() {
+        // 获取 AnimationConstant 中所有 public 字段
+        Field[] fields = AnimationConstant.class.getFields();
         // 将 static final 的常量字段提取到 constantMap
         for (Field field : fields) {
             if (Modifier.isStatic(field.getModifiers()) && Modifier.isFinal(field.getModifiers())) {
@@ -34,9 +35,9 @@ public class LuaGunAnimationConstant implements LuaLibrary {
             }
         }
 
-        // 映射 FireMode 枚举
-        for (var fireMode : FireMode.values()) {
-            constantMap.put(fireMode.name(), fireMode.ordinal());
+        // 映射 PlayType 枚举
+        for (var playType : ObjectAnimation.PlayType.values()) {
+            constantMap.put(playType.name(), playType.ordinal());
         }
     }
 

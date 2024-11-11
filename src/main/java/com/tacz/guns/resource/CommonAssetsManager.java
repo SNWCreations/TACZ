@@ -3,7 +3,8 @@ package com.tacz.guns.resource;
 import com.google.common.collect.ImmutableMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.tacz.guns.api.vm.LuaLibrary;
+import com.tacz.guns.api.vmlib.LuaGunLogicConstant;
+import com.tacz.guns.api.vmlib.LuaLibrary;
 import com.tacz.guns.crafting.GunSmithTableIngredient;
 import com.tacz.guns.crafting.result.GunSmithTableResult;
 import com.tacz.guns.network.NetworkHandler;
@@ -68,8 +69,8 @@ public class CommonAssetsManager implements ICommonResourceProvider {
     private CommonDataManager<CommonAttachmentIndex> attachmentIndex;
     private CommonDataManager<CommonBlockIndex> blockIndex;
     private AttachmentsTagManager attachmentsTagManager;
-    List<LuaLibrary> libList = List.of();
-    private final ScriptManager scriptManager = new ScriptManager(new FileToIdConverter("scripts/common", ".lua"), libList);
+    List<LuaLibrary> libList = List.of(new LuaGunLogicConstant());
+    private final ScriptManager scriptManager = new ScriptManager(new FileToIdConverter("scripts", ".lua"), libList);
 
     public void reloadAndRegister(Consumer<PreparableReloadListener> register) {
         // 这里会顺序重载，所以需要把index这种依赖data的放在后面
