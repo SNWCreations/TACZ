@@ -21,7 +21,9 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.phys.AABB;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
 import org.jetbrains.annotations.NotNull;
@@ -48,9 +50,8 @@ public class BulletHoleParticle extends TextureSheetParticle {
         this.gravity = 0.0F;
         this.quadSize = 0.05F;
 
-        // 如果方块是空气，则立即移除粒子
         BlockState state = world.getBlockState(pos);
-        if (world.getBlockState(pos).isAir() || state.is(ModBlocks.TARGET.get())) {
+        if (state.is(ModBlocks.TARGET.get()) || shouldRemove()) {
             this.remove();
         }
         TimelessAPI.getClientGunIndex(new ResourceLocation(gunId)).ifPresent(gunIndex -> {
@@ -121,7 +122,7 @@ public class BulletHoleParticle extends TextureSheetParticle {
     @Override
     public void tick() {
         super.tick();
-        if (this.level.getBlockState(this.pos).isAir()) {
+        if (shouldRemove()) {
             this.remove();
         }
     }
@@ -179,6 +180,25 @@ public class BulletHoleParticle extends TextureSheetParticle {
     @Override
     public ParticleRenderType getRenderType() {
         return ParticleRenderType.TERRAIN_SHEET;
+    }
+
+    private boolean shouldRemove() {
+        final BlockState blockState = this.level.getBlockState(this.pos);
+        if (blockState.isAir()) {
+            return true;
+        } else {
+            // 阻止弹孔在与方块不构成有效附着时继续渲染
+            VoxelShape shape = blockState.getCollisionShape(this.level, this.pos);
+            if (shape.isEmpty()) {
+                return true;
+            }
+            AABB baseBlockBoundingBox = shape.bounds();
+            AABB blockBoundingBox = baseBlockBoundingBox.move(this.pos);
+            boolean intersects = blockBoundingBox.intersects(
+                    this.x - 0.1, this.y - 0.1, this.z - 0.1,
+                    this.x + 0.1, this.y + 0.1, this.z + 0.1);
+            return !intersects;
+        }
     }
 
     @OnlyIn(Dist.CLIENT)
