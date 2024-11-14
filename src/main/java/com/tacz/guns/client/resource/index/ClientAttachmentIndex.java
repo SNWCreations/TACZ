@@ -3,13 +3,11 @@ package com.tacz.guns.client.resource.index;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.tacz.guns.client.model.BedrockAttachmentModel;
-import com.tacz.guns.client.resource_legacy.ClientAssetManager;
 import com.tacz.guns.client.resource.ClientAssetsManager;
 import com.tacz.guns.client.resource.pojo.display.attachment.AttachmentDisplay;
 import com.tacz.guns.client.resource.pojo.display.attachment.AttachmentLod;
 import com.tacz.guns.client.resource.pojo.model.BedrockModelPOJO;
 import com.tacz.guns.client.resource.pojo.model.BedrockVersion;
-import com.tacz.guns.client.resource.pojo.skin.attachment.AttachmentSkin;
 import com.tacz.guns.resource.CommonAssetsManager;
 import com.tacz.guns.resource.pojo.AttachmentIndexPOJO;
 import com.tacz.guns.resource.pojo.data.attachment.AttachmentData;
@@ -52,7 +50,7 @@ public class ClientAttachmentIndex {
         checkSlotTexture(display, index);
         checkTextureAndModel(display, index);
         checkLod(display, index);
-        checkSkins(registryName, index);
+//        checkSkins(registryName, index);
         checkSounds(display, index);
         return index;
     }
@@ -107,12 +105,38 @@ public class ClientAttachmentIndex {
 
     private static void checkTextureAndModel(AttachmentDisplay display, ClientAttachmentIndex index) {
         // 不检查模型/材质是否为 null，模型/材质可以为 null
-        index.attachmentModel = ClientAssetManager.INSTANCE.getOrLoadAttachmentModel(display.getModel());
+        index.attachmentModel = getOrLoadAttachmentModel(display.getModel());
         if (index.attachmentModel != null) {
             index.attachmentModel.setIsScope(display.isScope());
             index.attachmentModel.setIsSight(display.isSight());
         }
         index.modelTexture = display.getTexture();
+    }
+
+    @Nullable
+    public static BedrockAttachmentModel getOrLoadAttachmentModel(@Nullable ResourceLocation modelLocation) {
+        if (modelLocation == null) {
+            return null;
+        }
+        BedrockModelPOJO modelPOJO = ClientAssetsManager.INSTANCE.getBedrockModelPOJO(modelLocation);
+        if (modelPOJO == null) {
+            return null;
+        }
+        return getAttachmentModel(modelPOJO);
+    }
+
+    @Nullable
+    public static BedrockAttachmentModel getAttachmentModel(BedrockModelPOJO modelPOJO) {
+        BedrockAttachmentModel attachmentModel = null;
+        // 先判断是不是 1.10.0 版本基岩版模型文件
+        if (BedrockVersion.isLegacyVersion(modelPOJO) && modelPOJO.getGeometryModelLegacy() != null) {
+            attachmentModel = new BedrockAttachmentModel(modelPOJO, BedrockVersion.LEGACY);
+        }
+        // 判定是不是 1.12.0 版本基岩版模型文件
+        if (BedrockVersion.isNewVersion(modelPOJO) && modelPOJO.getGeometryModelNew() != null) {
+            attachmentModel = new BedrockAttachmentModel(modelPOJO, BedrockVersion.NEW);
+        }
+        return attachmentModel;
     }
 
     private static void checkLod(AttachmentDisplay display, ClientAttachmentIndex index) {
@@ -142,15 +166,15 @@ public class ClientAttachmentIndex {
         }
     }
 
-    private static void checkSkins(ResourceLocation registryName, ClientAttachmentIndex index) {
-        Map<ResourceLocation, AttachmentSkin> skins = ClientAssetManager.INSTANCE.getAttachmentSkins(registryName);
-        if (skins != null) {
-            for (Map.Entry<ResourceLocation, AttachmentSkin> entry : skins.entrySet()) {
-                ClientAttachmentSkinIndex skinIndex = ClientAttachmentSkinIndex.getInstance(entry.getValue());
-                index.skinIndexMap.put(entry.getKey(), skinIndex);
-            }
-        }
-    }
+//    private static void checkSkins(ResourceLocation registryName, ClientAttachmentIndex index) {
+//        Map<ResourceLocation, AttachmentSkin> skins = ClientAssetManager.INSTANCE.getAttachmentSkins(registryName);
+//        if (skins != null) {
+//            for (Map.Entry<ResourceLocation, AttachmentSkin> entry : skins.entrySet()) {
+//                ClientAttachmentSkinIndex skinIndex = ClientAttachmentSkinIndex.getInstance(entry.getValue());
+//                index.skinIndexMap.put(entry.getKey(), skinIndex);
+//            }
+//        }
+//    }
 
     private static void checkSounds(AttachmentDisplay display, ClientAttachmentIndex index) {
         Map<String, ResourceLocation> displaySounds = display.getSounds();

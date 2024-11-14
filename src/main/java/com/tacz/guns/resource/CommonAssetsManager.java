@@ -69,7 +69,7 @@ public class CommonAssetsManager implements ICommonResourceProvider {
     private CommonDataManager<CommonBlockIndex> blockIndex;
     private AttachmentsTagManager attachmentsTagManager;
     List<LuaLibrary> libList = List.of();
-    private final ScriptManager scriptManager = new ScriptManager(new FileToIdConverter("scripts/common", ".lua"), libList);
+    private final ScriptManager scriptManager = new ScriptManager(new FileToIdConverter("scripts", ".lua"), libList);
 
     public void reloadAndRegister(Consumer<PreparableReloadListener> register) {
         // 这里会顺序重载，所以需要把index这种依赖data的放在后面

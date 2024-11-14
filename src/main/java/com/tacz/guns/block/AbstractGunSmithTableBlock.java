@@ -1,6 +1,7 @@
 package com.tacz.guns.block;
 
 import com.tacz.guns.api.DefaultAssets;
+import com.tacz.guns.api.item.builder.BlockItemBuilder;
 import com.tacz.guns.api.item.nbt.BlockItemDataAccessor;
 import com.tacz.guns.block.entity.GunSmithTableBlockEntity;
 import net.minecraft.core.BlockPos;
@@ -12,14 +13,20 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.*;
+import net.minecraft.world.level.block.BaseEntityBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RenderShape;
+import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
-import net.minecraft.world.level.block.state.properties.*;
+import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.material.PushReaction;
 import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.HitResult;
 import net.minecraftforge.network.NetworkHooks;
 import org.jetbrains.annotations.Nullable;
 
@@ -36,7 +43,7 @@ public abstract class AbstractGunSmithTableBlock extends BaseEntityBlock {
         if (level.isClientSide) {
             return InteractionResult.SUCCESS;
         } else {
-            BlockEntity blockEntity = level.getBlockEntity(pos);
+            BlockEntity blockEntity = level.getBlockEntity(getRootPos(pos, pState));
             if (blockEntity instanceof GunSmithTableBlockEntity gunSmithTable && player instanceof ServerPlayer serverPlayer) {
                 NetworkHooks.openScreen(serverPlayer, gunSmithTable, (buf) -> {
                     ResourceLocation rl = gunSmithTable.getId() == null ? DefaultAssets.DEFAULT_BLOCK_ID : gunSmithTable.getId();
@@ -83,9 +90,24 @@ public abstract class AbstractGunSmithTableBlock extends BaseEntityBlock {
         }
     }
 
+    @Override
+    public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter level, BlockPos pos, Player player) {
+        BlockPos blockPos = getRootPos(pos, state);
+        BlockEntity blockentity = level.getBlockEntity(blockPos);
+        if (blockentity instanceof GunSmithTableBlockEntity e) {
+            if (e.getId() != null) {
+                return BlockItemBuilder.create(this).setId(e.getId()).build();
+            }
+            return new ItemStack(this);
+        }
+        return super.getCloneItemStack(state, target, level, pos, player);
+    }
+
     public abstract boolean isRoot(BlockState blockState);
 
     public float parseRotation(Direction direction) {
         return 90.0F * (3-direction.get2DDataValue()) - 90;
     }
+
+    public abstract BlockPos getRootPos(BlockPos pos, BlockState blockState);
 }

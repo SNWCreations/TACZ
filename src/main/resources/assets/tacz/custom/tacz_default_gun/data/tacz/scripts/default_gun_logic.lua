@@ -3,7 +3,7 @@ print("lua test")
 local M = {}
 
 function M.shoot(api)
-    print("shoot")
+    api:shootOnce()
 end
 
 return M
