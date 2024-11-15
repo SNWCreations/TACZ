@@ -28,6 +28,14 @@ public class PackConvertor {
             .setPrettyPrinting()
             .create();
 
+    private static Component pre(Component component) {
+        return Component.translatable("message.tacz.pre").append(component);
+    }
+
+    private static void msg(CommandSourceStack source, Component component) {
+        source.sendSystemMessage(pre(component));
+    }
+
     public static void convert(CommandSourceStack source) {
         Path resourcePacksPath = FMLPaths.GAMEDIR.get().resolve("tacz");
         File folder = resourcePacksPath.toFile();
@@ -35,7 +43,7 @@ public class PackConvertor {
             try {
                 Files.createDirectories(folder.toPath());
             } catch (Exception e) {
-                source.sendSystemMessage(Component.literal("[TACZ] 初始化枪包文件夹失败! 请检查日志!"));
+                msg(source, Component.translatable("message.tacz.converter.init_failed"));
                 GunMod.LOGGER.error("Failed to init tacz directory...", e);
                 return;
             }
@@ -46,23 +54,27 @@ public class PackConvertor {
         if (files != null && files.length > 0) {
             StopWatch watch = StopWatch.createStarted();
             {
-                source.sendSystemMessage(Component.literal("[TACZ] 开始转换，请勿关闭游戏..."));
+                msg(source, Component.translatable("message.tacz.converter.start"));
                 GunMod.LOGGER.info("Start converting legacy packs...");
                 for (File file : files) {
                     if (file.isFile() && file.getName().endsWith(".zip")) {
                         PackConvertor.LegacyPack pack = fromZipFile(file);
                         if (pack != null) {
-                            source.sendSystemMessage(Component.literal("[TACZ] 正在尝试转换旧版枪包: " + file.getName()));
+                            msg(source, Component.translatable("message.tacz.converter.pack.start", file.getName()));
                             GunMod.LOGGER.info("Attempt to converting legacy pack: {}", file.getName());
                             try {
                                 pack.convert();
                             } catch (FileAlreadyExistsException e) {
-                                source.sendSystemMessage(Component.literal("[TACZ] 目标文件已存在! 跳过..."));
+                                msg(source, Component.translatable("message.tacz.converter.pack.exist"));
                                 GunMod.LOGGER.warn("Target file already exists: {}", file.getName());
+                                continue;
+                            } catch (Exception e){
+                                msg(source, Component.translatable("message.tacz.converter.pack.failed", file.getName()));
+                                GunMod.LOGGER.error("Failed to convert legacy pack: {}", file.getName(), e);
                                 continue;
                             }
                             cnt++;
-                            source.sendSystemMessage(Component.literal("[TACZ] " + file.getName() + " 转换完成! "));
+                            msg(source, Component.translatable("message.tacz.converter.pack.finish", file.getName()));
                             GunMod.LOGGER.info("Legacy pack converted: {}", file.getName());
                         }
                     }
@@ -70,7 +82,7 @@ public class PackConvertor {
             }
             watch.stop();
             double time = watch.getTime(TimeUnit.MICROSECONDS) / 1000.0;
-            source.sendSystemMessage(Component.literal("[TACZ] 转换结束! 总耗时: "+ time +" ms. 总计枪包: " +cnt+ "个. 请重启游戏以加载新的枪包资源!"));
+            msg(source, Component.translatable("message.tacz.converter.finish", time, cnt));
             GunMod.LOGGER.info("Convert finished! Total time: {} ms. Total packs: {}. Restart the game to load new packs!", time, cnt);
         }
     }

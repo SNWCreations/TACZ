@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Optional;
 
 public class OpenGunPackDirEntry extends AbstractConfigListEntry<Boolean> {
-    private final Button button = Button.builder(Component.literal("打开枪包文件夹"), button -> {
+    private final Button button = Button.builder(Component.translatable("config.tacz.open_gunpack_folder"), button -> {
         Util.getPlatform().openUri(FMLPaths.GAMEDIR.get().resolve("tacz").toUri());
         button.setFocused(false);
     }).bounds(0, 0, 150, 20).build();
@@ -46,8 +46,9 @@ public class OpenGunPackDirEntry extends AbstractConfigListEntry<Boolean> {
 
     @Override
     public void render(GuiGraphics graphics, int index, int y, int x, int entryWidth, int entryHeight, int mouseX, int mouseY, boolean isHovered, float delta) {
-        button.setX(x);
+        button.setX(x + entryWidth - 150);
         button.setY(y);
         button.render(graphics, mouseX, mouseY, delta);
+        super.render(graphics, index, y, x, entryWidth, entryHeight, mouseX, mouseY, isHovered, delta);
     }
 }
