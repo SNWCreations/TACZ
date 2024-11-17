@@ -97,7 +97,7 @@ public class LivingEntityMelee {
             }
             ItemStack currentGunItem = data.currentGunItem.get();
             if (currentGunItem.getItem() instanceof AbstractGunItem logicGun) {
-                logicGun.melee(this.shooter, currentGunItem);
+                logicGun.melee(data, this.shooter, currentGunItem);
             }
         }
     }

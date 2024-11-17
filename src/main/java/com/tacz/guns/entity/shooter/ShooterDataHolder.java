@@ -3,6 +3,7 @@ package com.tacz.guns.entity.shooter;
 import com.tacz.guns.api.entity.ReloadState;
 import com.tacz.guns.resource.modifier.AttachmentCacheProperty;
 import net.minecraft.world.item.ItemStack;
+import org.luaj.vm2.LuaValue;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -88,6 +89,11 @@ public class ShooterDataHolder {
      */
     public boolean isCrawling = false;
     /**
+     * 用于缓存 lua 脚本的数据
+     */
+    @Nullable
+    public LuaValue scriptData = null;
+    /**
      * 配件修改过的各种属性缓存
      */
     @Nullable
@@ -107,5 +113,6 @@ public class ShooterDataHolder {
         boltTimestamp = -1;
         boltCoolDown = -1;
         shootCount = 0;
+        scriptData = null;
     }
 }

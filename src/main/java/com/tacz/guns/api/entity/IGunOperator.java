@@ -79,6 +79,11 @@ public interface IGunOperator {
     void reload();
 
     /**
+     * 服务端取消换弹逻辑
+     */
+    void cancelReload();
+
+    /**
      * 服务端切换开火模式的逻辑
      */
     void fireSelect();

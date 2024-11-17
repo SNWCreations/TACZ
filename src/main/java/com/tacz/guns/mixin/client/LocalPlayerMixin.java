@@ -3,6 +3,8 @@ package com.tacz.guns.mixin.client;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.tacz.guns.api.client.gameplay.IClientPlayerGunOperator;
+import com.tacz.guns.api.entity.IGunOperator;
+import com.tacz.guns.api.entity.ReloadState;
 import com.tacz.guns.api.entity.ShootResult;
 import com.tacz.guns.client.gameplay.*;
 import net.minecraft.client.player.LocalPlayer;
@@ -31,6 +33,7 @@ public abstract class LocalPlayerMixin implements IClientPlayerGunOperator {
     @Unique
     @Override
     public ShootResult shoot() {
+        tac$reload.cancelReload();
         return tac$shoot.shoot();
     }
 
@@ -108,7 +111,16 @@ public abstract class LocalPlayerMixin implements IClientPlayerGunOperator {
 
     @WrapOperation(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;setSprinting(Z)V"))
     public void swapSprintStatus(LocalPlayer player, boolean sprinting, Operation<Void> original) {
-        original.call(player, this.tac$aim.cancelSprint(player, sprinting));
+        if (sprinting) {
+            tac$reload.cancelReload();
+        }
+        IGunOperator gunOperator = IGunOperator.fromLivingEntity(player);
+        ReloadState.StateType reloadStateType = gunOperator.getSynReloadState().getStateType();
+        if (this.tac$aim.isAim() || (reloadStateType.isReloading() && !reloadStateType.isReloadFinishing())) {
+            original.call(player, false);
+        } else {
+            original.call(player, sprinting);
+        }
     }
 
     @Inject(method = "respawn", at = @At("RETURN"))

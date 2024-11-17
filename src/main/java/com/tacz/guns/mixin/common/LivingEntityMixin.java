@@ -115,6 +115,11 @@ public abstract class LivingEntityMixin extends Entity implements IGunOperator, 
     public void reload() {
         this.tacz$reload.reload();
     }
+    @Unique
+    @Override
+    public void cancelReload(){
+        this.tacz$reload.cancelReload();
+    }
 
     @Override
     public void melee() {

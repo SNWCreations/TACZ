@@ -2,6 +2,8 @@ package com.tacz.guns.client.animation.statemachine;
 
 import com.tacz.guns.api.TimelessAPI;
 import com.tacz.guns.api.client.gameplay.IClientPlayerGunOperator;
+import com.tacz.guns.api.entity.IGunOperator;
+import com.tacz.guns.api.entity.ReloadState;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.client.resource.index.ClientGunIndex;
 import com.tacz.guns.resource.pojo.data.gun.Bolt;
@@ -94,11 +96,27 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
     }
 
     /**
+     * 获取玩家当前是否在瞄准。如果正在瞄准，aiming progress 会增加，否则减少。
+     * @return 玩家当前是否在瞄准
+     */
+    public boolean isAiming() {
+        return processGunOperator(IClientPlayerGunOperator::isAim).orElse(false);
+    }
+
+    /**
      * 获取玩家的射击冷却。
      * @return 玩家的射击冷却，单位为毫秒(ms)。
      */
     public long getShootCoolDown() {
         return processGunOperator(IClientPlayerGunOperator::getClientShootCoolDown).orElse(0L);
+    }
+
+    /**
+     * 获取玩家的换弹状态
+     * @return 玩家的换弹状态
+     */
+    public ReloadState getReloadState() {
+        return processPlayer(player -> IGunOperator.fromLivingEntity(player).getSynReloadState()).orElse(null);
     }
 
     /**

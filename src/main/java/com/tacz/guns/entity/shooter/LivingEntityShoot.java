@@ -91,7 +91,7 @@ public class LivingEntityShoot {
         NetworkHandler.sendToTrackingEntity(new ServerMessageGunShoot(shooter.getId(), currentGunItem), shooter);
         // 执行枪械射击逻辑
         if (iGun instanceof AbstractGunItem logicGun) {
-            logicGun.shoot(currentGunItem, pitch, yaw, shooter);
+            logicGun.shoot(data, currentGunItem, pitch, yaw, shooter);
         }
         data.shootTimestamp = System.currentTimeMillis();
         return ShootResult.SUCCESS;

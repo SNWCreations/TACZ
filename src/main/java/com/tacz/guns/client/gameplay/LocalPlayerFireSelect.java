@@ -46,7 +46,7 @@ public class LocalPlayerFireSelect {
             NetworkHandler.CHANNEL.sendToServer(new ClientMessagePlayerFireSelect());
             // 客户端切换开火模式
             if (iGun instanceof AbstractGunItem logicGun) {
-                logicGun.fireSelect(mainhandItem);
+                logicGun.fireSelect(null, mainhandItem);
             }
             AttachmentPropertyManager.postChangeEvent(player, mainhandItem);
             // 动画状态机转移状态

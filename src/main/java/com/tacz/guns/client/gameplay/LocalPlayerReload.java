@@ -2,21 +2,19 @@ package com.tacz.guns.client.gameplay;
 
 import com.tacz.guns.api.TimelessAPI;
 import com.tacz.guns.api.entity.IGunOperator;
+import com.tacz.guns.api.entity.ReloadState;
 import com.tacz.guns.api.event.common.GunReloadEvent;
-import com.tacz.guns.api.item.IAmmo;
-import com.tacz.guns.api.item.IAmmoBox;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.gun.AbstractGunItem;
 import com.tacz.guns.client.animation.statemachine.GunAnimationConstant;
 import com.tacz.guns.client.resource.index.ClientGunIndex;
 import com.tacz.guns.client.sound.SoundPlayManager;
 import com.tacz.guns.network.NetworkHandler;
+import com.tacz.guns.network.message.ClientMessagePlayerCancelReload;
 import com.tacz.guns.network.message.ClientMessagePlayerReloadGun;
 import com.tacz.guns.resource.pojo.data.gun.Bolt;
-import com.tacz.guns.util.AttachmentDataUtils;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.LogicalSide;
@@ -28,6 +26,26 @@ public class LocalPlayerReload {
     public LocalPlayerReload(LocalPlayerDataHolder data, LocalPlayer player) {
         this.data = data;
         this.player = player;
+    }
+
+    public void cancelReload() {
+        ItemStack mainhandItem = player.getMainHandItem();
+        if (!(mainhandItem.getItem() instanceof AbstractGunItem gunItem)) {
+            return;
+        }
+        ResourceLocation gunId = gunItem.getGunId(mainhandItem);
+        TimelessAPI.getClientGunIndex(gunId).ifPresent(gunIndex -> {
+            // 如果没在换弹，则返回
+            IGunOperator gunOperator = IGunOperator.fromLivingEntity(player);
+            ReloadState reloadState = gunOperator.getSynReloadState();
+            if (!reloadState.getStateType().isReloading()) {
+                return;
+            }
+            // 发包通知服务器
+            NetworkHandler.CHANNEL.sendToServer(new ClientMessagePlayerCancelReload());
+            // 执行本地取消换弹逻辑
+            this.cancelReload(gunIndex);
+        });
     }
 
     public void reload() {
@@ -77,27 +95,10 @@ public class LocalPlayerReload {
         }
     }
 
-    private boolean inventoryHasAmmo(IGun iGun, ClientGunIndex gunIndex, ItemStack mainhandItem) {
-        // 满弹检查也放这，这样创造模式玩家随意随便换弹
-        // 满弹不需要换
-        int maxAmmoCount = AttachmentDataUtils.getAmmoCountWithAttachment(mainhandItem, gunIndex.getGunData());
-        if (iGun.getCurrentAmmoCount(mainhandItem) >= maxAmmoCount) {
-            return false;
+    private void cancelReload(ClientGunIndex gunIndex) {
+        var animationStateMachine = gunIndex.getAnimationStateMachine();
+        if (animationStateMachine != null) {
+            animationStateMachine.trigger(GunAnimationConstant.INPUT_CANCEL_RELOAD);
         }
-        if (iGun.useDummyAmmo(mainhandItem)) {
-            return iGun.getDummyAmmoAmount(mainhandItem) > 0;
-        }
-        // 背包弹药检查
-        Inventory inventory = player.getInventory();
-        for (int i = 0; i < inventory.getContainerSize(); i++) {
-            ItemStack checkAmmo = inventory.getItem(i);
-            if (checkAmmo.getItem() instanceof IAmmo iAmmo && iAmmo.isAmmoOfGun(mainhandItem, checkAmmo)) {
-                return true;
-            }
-            if (checkAmmo.getItem() instanceof IAmmoBox iAmmoBox && iAmmoBox.isAmmoBoxOfGun(mainhandItem, checkAmmo)) {
-                return true;
-            }
-        }
-        return false;
     }
 }

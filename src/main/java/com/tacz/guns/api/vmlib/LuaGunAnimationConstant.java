@@ -1,6 +1,7 @@
 package com.tacz.guns.api.vmlib;
 
 import com.google.common.collect.Maps;
+import com.tacz.guns.api.entity.ReloadState;
 import com.tacz.guns.api.item.gun.FireMode;
 import com.tacz.guns.client.animation.statemachine.GunAnimationConstant;
 import org.luaj.vm2.LuaValue;
@@ -31,6 +32,10 @@ public class LuaGunAnimationConstant implements LuaLibrary {
                     e.printStackTrace();
                 }
             }
+        }
+
+        for (ReloadState.StateType stateType : ReloadState.StateType.values()) {
+            constantMap.put(stateType.name(), stateType.ordinal());
         }
 
         // 映射 FireMode 枚举

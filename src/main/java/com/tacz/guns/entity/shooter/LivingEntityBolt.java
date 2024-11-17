@@ -93,7 +93,7 @@ public class LivingEntityBolt {
         }).orElse(-1L);
         if (data.boltCoolDown == 0) {
             if (iGun instanceof AbstractGunItem logicGun) {
-                logicGun.bolt(currentGunItem);
+                logicGun.bolt(data, currentGunItem);
             }
             data.boltCoolDown = -1;
         }

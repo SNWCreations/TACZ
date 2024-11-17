@@ -81,6 +81,7 @@ public class LocalPlayerShoot {
         IGunOperator gunOperator = IGunOperator.fromLivingEntity(player);
         // 检查是否正在换弹
         if (gunOperator.getSynReloadState().getStateType().isReloading()) {
+
             return ShootResult.IS_RELOADING;
         }
         // 检查是否正在切枪

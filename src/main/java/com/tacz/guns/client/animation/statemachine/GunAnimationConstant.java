@@ -14,6 +14,7 @@ public class GunAnimationConstant {
     public static final String INPUT_BAYONET_STOCK = "bayonet_stock";
     public static final String INPUT_BAYONET_PUSH = "bayonet_push";
     public static final String INPUT_RELOAD = "reload";
+    public static final String INPUT_CANCEL_RELOAD = "cancel_reload";
     public static final String INPUT_SHOOT = "shoot";
     public static final String INPUT_WALK = "walk";
     public static final String INPUT_RUN = "run";
