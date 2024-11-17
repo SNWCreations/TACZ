@@ -3,8 +3,6 @@ package com.tacz.guns.mixin.client;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.tacz.guns.api.client.gameplay.IClientPlayerGunOperator;
-import com.tacz.guns.api.entity.IGunOperator;
-import com.tacz.guns.api.entity.ReloadState;
 import com.tacz.guns.api.entity.ShootResult;
 import com.tacz.guns.client.gameplay.*;
 import net.minecraft.client.player.LocalPlayer;
@@ -29,6 +27,7 @@ public abstract class LocalPlayerMixin implements IClientPlayerGunOperator {
     private final @Unique LocalPlayerInspect tac$inspect = new LocalPlayerInspect(tac$data, tac$player);
     private final @Unique LocalPlayerReload tac$reload = new LocalPlayerReload(tac$data, tac$player);
     private final @Unique LocalPlayerShoot tac$shoot = new LocalPlayerShoot(tac$data, tac$player);
+    private final @Unique LocalPlayerSprint tac$sprint = new LocalPlayerSprint(tac$data, tac$player);
 
     @Unique
     @Override
@@ -106,21 +105,16 @@ public abstract class LocalPlayerMixin implements IClientPlayerGunOperator {
             tac$crawl.tickCrawl();
             tac$data.tickStateLock();
             tac$bolt.tickAutoBolt();
+            player.setSprinting(tac$sprint.getProcessedSprintStatus(player.isSprinting()));
         }
     }
 
     @WrapOperation(method = "aiStep", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/player/LocalPlayer;setSprinting(Z)V"))
     public void swapSprintStatus(LocalPlayer player, boolean sprinting, Operation<Void> original) {
-        if (sprinting) {
+        if (sprinting) { // 用原始的输入尝试打断换弹
             tac$reload.cancelReload();
         }
-        IGunOperator gunOperator = IGunOperator.fromLivingEntity(player);
-        ReloadState.StateType reloadStateType = gunOperator.getSynReloadState().getStateType();
-        if (this.tac$aim.isAim() || (reloadStateType.isReloading() && !reloadStateType.isReloadFinishing())) {
-            original.call(player, false);
-        } else {
-            original.call(player, sprinting);
-        }
+        original.call(player, tac$sprint.getProcessedSprintStatus(sprinting));
     }
 
     @Inject(method = "respawn", at = @At("RETURN"))
