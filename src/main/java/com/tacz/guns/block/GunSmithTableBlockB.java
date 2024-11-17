@@ -1,26 +1,21 @@
 package com.tacz.guns.block;
 
-import com.tacz.guns.api.item.builder.BlockItemBuilder;
-import com.tacz.guns.block.entity.GunSmithTableBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.LevelEvent;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BedPart;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
-import net.minecraft.world.phys.HitResult;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -85,23 +80,6 @@ public class GunSmithTableBlockB extends AbstractGunSmithTableBlock {
     }
 
     @Override
-    public ItemStack getCloneItemStack(BlockState state, HitResult target, BlockGetter level, BlockPos pos, Player player) {
-        BedPart bedPart = state.getValue(PART);
-        BlockPos blockPos = pos;
-        if (bedPart == BedPart.HEAD) {
-            blockPos = pos.relative(getNeighbourDirection(bedPart, state.getValue(FACING)));
-        }
-        BlockEntity blockentity = level.getBlockEntity(blockPos);
-        if (blockentity instanceof GunSmithTableBlockEntity e) {
-            if (e.getId() != null) {
-                return BlockItemBuilder.create(this).setId(e.getId()).build();
-            }
-            return new ItemStack(this);
-        }
-        return super.getCloneItemStack(state, target, level, pos, player);
-    }
-
-    @Override
     public BlockState updateShape(BlockState state, Direction direction, BlockState facingState, LevelAccessor level, BlockPos currentPos, BlockPos facingPos) {
         if (direction == getNeighbourDirection(state.getValue(PART), state.getValue(FACING))) {
             return facingState.is(this) && facingState.getValue(PART) != state.getValue(PART) ? state : Blocks.AIR.defaultBlockState();
@@ -118,5 +96,10 @@ public class GunSmithTableBlockB extends AbstractGunSmithTableBlock {
     @Override
     public float parseRotation(Direction direction) {
         return 90 - 90 * direction.get2DDataValue();
+    }
+
+    @Override
+    public BlockPos getRootPos(BlockPos pos, BlockState blockState) {
+        return blockState.getValue(PART).equals(BedPart.FOOT) ? pos : pos.relative(getNeighbourDirection(BedPart.HEAD, blockState.getValue(FACING)));
     }
 }

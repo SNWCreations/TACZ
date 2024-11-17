@@ -1,5 +1,6 @@
 package com.tacz.guns.block;
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.state.BlockState;
@@ -17,5 +18,10 @@ public class GunSmithTableBlockA extends AbstractGunSmithTableBlock {
     @Override
     public boolean isRoot(BlockState blockState) {
         return true;
+    }
+
+    @Override
+    public BlockPos getRootPos(BlockPos pos, BlockState blockState) {
+        return pos;
     }
 }
