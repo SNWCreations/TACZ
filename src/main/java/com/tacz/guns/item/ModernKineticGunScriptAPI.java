@@ -33,6 +33,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.fml.LogicalSide;
 import org.luaj.vm2.LuaFunction;
+import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 
 import java.util.Map;
@@ -182,6 +183,17 @@ public class ModernKineticGunScriptAPI {
     }
 
     /**
+     * 获取从开始拉栓到现在经历的时间，单位为 ms
+     * @return 开始拉栓到现在经历的时间，单位为 ms
+     */
+    public long getBoltTime() {
+        if (!dataHolder.isBolting) {
+            return 0;
+        }
+        return System.currentTimeMillis() - dataHolder.boltTimestamp;
+    }
+
+    /**
      * 获取玩家当前的换弹状态。
      * @return 玩家当前的换弹状态
      */
@@ -213,6 +225,30 @@ public class ModernKineticGunScriptAPI {
         int maxAmmoCount = AttachmentDataUtils.getAmmoCountWithAttachment(itemStack, gunIndex.getGunData());
         int currentAmmoCount = abstractGunItem.getCurrentAmmoCount(itemStack);
         return maxAmmoCount - currentAmmoCount;
+    }
+
+    /**
+     * 获取弹匣中的备弹数。
+     * @return 返回弹匣中的备弹数，不计算已在枪管中的弹药。
+     */
+    public int getAmmoAmount() {
+        return abstractGunItem.getCurrentAmmoCount(itemStack);
+    }
+
+    /**
+     * 获取枪械弹匣的最大备弹数。
+     * @return 返回枪械弹匣的最大备弹数，不计算已在枪管中的弹药。
+     */
+    public int getMaxAmmoCount() {
+        return AttachmentDataUtils.getAmmoCountWithAttachment(itemStack, gunIndex.getGunData());
+    }
+
+    /**
+     * 获取枪械扩容等级。
+     * @return 扩容等级，范围 0 ~ 3。0 表示没有安装扩容弹匣，1 ~ 3 表示安装了扩容等级 1 ~ 3 的扩容弹匣
+     */
+    public int getMagExtentLevel() {
+        return AttachmentDataUtils.getMagExtendLevel(itemStack, gunIndex.getGunData());
     }
 
     /**
@@ -280,10 +316,11 @@ public class ModernKineticGunScriptAPI {
 
     /**
      * 获取枪膛内是否有子弹。
-     * @return 枪膛内是否有子弹
+     * @return 枪膛内是否有子弹.如果是开膛待击的枪械，则此方法返回 false。
      */
     public boolean hasAmmoInBarrel() {
-        return abstractGunItem.hasBulletInBarrel(itemStack);
+        Bolt boltType = gunIndex.getGunData().getBolt();
+        return boltType != Bolt.OPEN_BOLT && abstractGunItem.hasBulletInBarrel(itemStack);
     }
 
     /**
@@ -291,14 +328,6 @@ public class ModernKineticGunScriptAPI {
      */
     public void setAmmoInBarrel(boolean ammoInBarrel) {
         abstractGunItem.setBulletInBarrel(itemStack, ammoInBarrel);
-    }
-
-    /**
-     * 获取枪械数据
-     * @return 枪械数据
-     */
-    public GunData getGunData() {
-        return gunIndex.getGunData();
     }
 
     /**
@@ -315,6 +344,15 @@ public class ModernKineticGunScriptAPI {
      */
     public LuaValue getCachedScriptData() {
         return dataHolder.scriptData;
+    }
+
+    /**
+     * 获取在枪械 data 中声明的脚本参数
+     * @return 脚本参数表
+     */
+    public LuaTable getScriptParams() {
+        LuaTable param = gunIndex.getScriptParam();
+        return param == null ? new LuaTable() : param;
     }
 
     /**

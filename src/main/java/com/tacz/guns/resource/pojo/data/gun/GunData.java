@@ -99,6 +99,9 @@ public class GunData {
     @SerializedName("script")
     private ResourceLocation script = null;
 
+    @SerializedName("script_param")
+    private Map<String, Object> scriptParam = null;
+
     public ResourceLocation getAmmoId() {
         return ammoId;
     }
@@ -233,6 +236,11 @@ public class GunData {
     @Nullable
     public ResourceLocation getScript() {
         return script;
+    }
+
+    @Nullable
+    public Map<String, Object> getScriptParam() {
+        return scriptParam;
     }
 
     /**

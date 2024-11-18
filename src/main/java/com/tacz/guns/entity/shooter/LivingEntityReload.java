@@ -50,7 +50,7 @@ public class LivingEntityReload {
                 return;
             }
             // 检查是否在拉栓
-            if (data.boltCoolDown >= 0) {
+            if (data.isBolting) {
                 return;
             }
             // 检查弹药
@@ -72,7 +72,11 @@ public class LivingEntityReload {
                 data.reloadStateType = ReloadState.StateType.TACTICAL_RELOAD_FEEDING;
             }
             data.reloadTimestamp = System.currentTimeMillis();
-            gunItem.startReload(data, currentGunItem, shooter);
+            // 调用枪械逻辑
+            if (!gunItem.startReload(data, currentGunItem, shooter)) {
+                data.reloadStateType = ReloadState.StateType.NOT_RELOADING;
+                data.reloadTimestamp = -1;
+            }
         });
     }
 
@@ -93,9 +97,11 @@ public class LivingEntityReload {
 
     public ReloadState tickReloadState() {
         ReloadState result = new ReloadState();
+        // 如果没有在换弹，直接返回
         if (data.reloadTimestamp == -1) {
             return result;
         }
+        // 调用枪械逻辑
         if (data.currentGunItem != null) {
             ItemStack currentGunItem = data.currentGunItem.get();
             if (currentGunItem != null && currentGunItem.getItem() instanceof AbstractGunItem abstractGunItem) {

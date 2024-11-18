@@ -48,9 +48,16 @@ public abstract class AbstractGunItem extends Item implements IGun {
     }
 
     /**
-     * 拉栓完成时调用
+     * 开始拉栓时调用，返回 bolt 状态
+     * @return bolt 状态。ture 代表开始 bolt，false 则代表不开始。
      */
-    public abstract void bolt(ShooterDataHolder dataHolder, ItemStack gunItem);
+    public abstract boolean startBolt(ShooterDataHolder dataHolder, ItemStack gunItem, LivingEntity shooter);
+
+    /**
+     * 拉栓 tick 时调用，返回是否仍在 bolt 状态
+     * @return 是否仍在 bolt 状态
+     */
+    public abstract boolean tickBolt(ShooterDataHolder dataHolder, ItemStack gunItem, LivingEntity shooter);
 
     /**
      * 射击时触发
@@ -60,7 +67,7 @@ public abstract class AbstractGunItem extends Item implements IGun {
     /**
      * 开始换弹时调用
      */
-    public abstract void startReload(ShooterDataHolder dataHolder, ItemStack gunItem, LivingEntity shooter);
+    public abstract boolean startReload(ShooterDataHolder dataHolder, ItemStack gunItem, LivingEntity shooter);
 
     /**
      * 换弹时每个 tick 调用
@@ -84,7 +91,7 @@ public abstract class AbstractGunItem extends Item implements IGun {
     public abstract void melee(ShooterDataHolder dataHolder, LivingEntity user, ItemStack gunItem);
 
     /**
-     * 换弹前的检查，用于检查背包是否有弹药等
+     * 换弹前的检查，完成如下检查：枪内弹药是否已经填满？玩家背包是否有可用弹药？
      * @param shooter 准备换弹的实体
      * @param gunItem 枪械物品
      * @return 是否满足换弹条件
@@ -119,8 +126,15 @@ public abstract class AbstractGunItem extends Item implements IGun {
         }).orElse(false);
     }
 
+    /**
+     * 将枪内的弹药全部退至背包（如果背包满了会丢到地上）。不会退枪膛内的弹药。
+     * 目前，仅更换弹匣配件时调用。
+     * @param player 玩家
+     * @param gunItem 枪械物品
+     */
     @Override
     public void dropAllAmmo(Player player, ItemStack gunItem) {
+        //TODO 这里操作的对象不应该是 Player 而是 LivingEntity。此外枪膛内的子弹也要退
         int ammoCount = getCurrentAmmoCount(gunItem);
         if (ammoCount <= 0) {
             return;
@@ -167,7 +181,7 @@ public abstract class AbstractGunItem extends Item implements IGun {
 
     /**
      * 枪械寻弹和扣除背包弹药逻辑
-     * @param itemHandler 目标实体的背包，该方法具有通用的实现，放在此处
+     * @param itemHandler 目标实体的背包
      * @param gunItem 枪械物品
      * @param needAmmoCount 需要的弹药(物品)数量
      * @return 寻找到的弹药(物品)数量
@@ -215,7 +229,7 @@ public abstract class AbstractGunItem extends Item implements IGun {
     }
 
     /**
-     * 该方法具有通用的实现，放在此处
+     * 检查枪械是否允许安装指定的物品作为配件
      */
     @Override
     public boolean allowAttachment(ItemStack gun, ItemStack attachmentItem) {
@@ -230,7 +244,7 @@ public abstract class AbstractGunItem extends Item implements IGun {
     }
 
     /**
-     * 该方法具有通用的实现，放在此处
+     * 检查枪械是否允许安装某种类型的配件
      */
     @Override
     public boolean allowAttachmentType(ItemStack gun, AttachmentType type) {
@@ -249,7 +263,7 @@ public abstract class AbstractGunItem extends Item implements IGun {
     }
 
     /**
-     * 该方法具有通用的实现，放在此处
+     * 获取枪械的显示名称
      */
     @Override
     @Nonnull
@@ -264,7 +278,7 @@ public abstract class AbstractGunItem extends Item implements IGun {
     }
 
     /**
-     * 该方法具有通用的实现，放在此处
+     * 获取某一类 TabType 的所有枪械物品的实例。用于填充创造物品栏和枪械制造台。
      */
     public static NonNullList<ItemStack> fillItemCategory(GunTabType type) {
         NonNullList<ItemStack> stacks = NonNullList.create();
@@ -287,16 +301,13 @@ public abstract class AbstractGunItem extends Item implements IGun {
     }
 
     /**
-     * 阻止玩家手臂挥动动画的播放
+     * 阻止玩家手臂挥动
      */
     @Override
     public boolean onEntitySwing(ItemStack stack, LivingEntity entity) {
         return true;
     }
 
-    /**
-     * 该方法具有通用的实现，放在此处
-     */
     @Override
     public void initializeClient(Consumer<IClientItemExtensions> consumer) {
         consumer.accept(new IClientItemExtensions() {
@@ -309,7 +320,7 @@ public abstract class AbstractGunItem extends Item implements IGun {
     }
 
     /**
-     * 该方法具有通用的实现，放在此处
+     * 获取在 Tooltip 中渲染的图片
      */
     @Override
     @Nonnull

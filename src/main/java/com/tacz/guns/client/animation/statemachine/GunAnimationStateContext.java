@@ -79,6 +79,17 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
     }
 
     /**
+     * 获取枪械扩容等级。
+     * @return 扩容等级，范围 0 ~ 3。0 表示没有安装扩容弹匣，1 ~ 3 表示安装了扩容等级 1 ~ 3 的扩容弹匣
+     */
+    public int getMagExtentLevel() {
+        return processGunData(
+                (iGun, gunIndex) ->
+                        AttachmentDataUtils.getMagExtendLevel(currentGunItem, gunIndex.getGunData())
+        ).orElse(0);
+    }
+
+    /**
      * 获取枪械当前的开火模式。
      * @return FireMode 枚举的 ordinal 值
      */

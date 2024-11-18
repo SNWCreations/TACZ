@@ -36,7 +36,7 @@ public class ShooterDataHolder {
      * 拉栓时间戳，在拉栓开始时更新，单位 ms。
      */
     public long boltTimestamp = -1;
-    public long boltCoolDown = -1;
+    public boolean isBolting = false;
     /**
      * 瞄准的进度，范围 0 ~ 1
      */
@@ -111,7 +111,7 @@ public class ShooterDataHolder {
         sprintTimestamp = -1;
         sprintTimeS = 0;
         boltTimestamp = -1;
-        boltCoolDown = -1;
+        isBolting = false;
         shootCount = 0;
         scriptData = null;
     }

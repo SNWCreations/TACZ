@@ -41,7 +41,7 @@ public class LivingEntityMelee {
             return;
         }
         // 检查是否在拉栓
-        if (data.boltCoolDown >= 0) {
+        if (data.isBolting) {
             return;
         }
         long coolDown = getMeleeCoolDown();

@@ -3,7 +3,6 @@ package com.tacz.guns.item;
 import com.google.common.base.Suppliers;
 import com.tacz.guns.api.DefaultAssets;
 import com.tacz.guns.api.TimelessAPI;
-import com.tacz.guns.api.entity.IGunOperator;
 import com.tacz.guns.api.entity.ReloadState;
 import com.tacz.guns.api.item.attachment.AttachmentType;
 import com.tacz.guns.api.item.gun.AbstractGunItem;
@@ -53,11 +52,37 @@ public class ModernKineticGunItem extends AbstractGunItem implements GunItemData
     }
 
     @Override
-    public void bolt(ShooterDataHolder dataHolder, ItemStack gunItem) {
-        if (this.getCurrentAmmoCount(gunItem) > 0) {
-            this.reduceCurrentAmmoCount(gunItem);
-            this.setBulletInBarrel(gunItem, true);
+    public boolean startBolt(ShooterDataHolder dataHolder, ItemStack gunItem, LivingEntity shooter) {
+        ModernKineticGunScriptAPI api = new ModernKineticGunScriptAPI();
+        api.setItemStack(gunItem);
+        api.setShooter(shooter);
+        api.setDataHolder(dataHolder);
+
+        CommonGunIndex gunIndex = api.getGunIndex();
+        if (gunIndex == null) {
+            return false;
         }
+        return Optional.ofNullable(gunIndex.getScript())
+                .map(script -> checkFunction(script.get("start_bolt")))
+                .map(func -> func.call(CoerceJavaToLua.coerce(api)).checkboolean())
+                .orElse(true);
+    }
+
+    @Override
+    public boolean tickBolt(ShooterDataHolder dataHolder, ItemStack gunItem, LivingEntity shooter) {
+        ModernKineticGunScriptAPI api = new ModernKineticGunScriptAPI();
+        api.setItemStack(gunItem);
+        api.setShooter(shooter);
+        api.setDataHolder(dataHolder);
+
+        CommonGunIndex gunIndex = api.getGunIndex();
+        if (gunIndex == null) {
+            return false;
+        }
+        return Optional.ofNullable(gunIndex.getScript())
+                .map(script -> checkFunction(script.get("tick_bolt")))
+                .map(func -> func.call(CoerceJavaToLua.coerce(api)).checkboolean())
+                .orElseGet(() -> defaultTickBolt(api));
     }
 
     @Override
@@ -77,10 +102,11 @@ public class ModernKineticGunItem extends AbstractGunItem implements GunItemData
                 .map(script -> checkFunction(script.get("shoot")))
                 .ifPresentOrElse(
                         func -> func.call(CoerceJavaToLua.coerce(api)),
-                        ()   -> api.shootOnce(IGunOperator.fromLivingEntity(shooter).consumesAmmoOrNot()));
+                        ()   -> api.shootOnce(api.isShootingNeedConsumeAmmo()));
     }
 
-    public void startReload(ShooterDataHolder dataHolder, ItemStack gunItem, LivingEntity shooter){
+    @Override
+    public boolean startReload(ShooterDataHolder dataHolder, ItemStack gunItem, LivingEntity shooter){
         ModernKineticGunScriptAPI api = new ModernKineticGunScriptAPI();
         api.setItemStack(gunItem);
         api.setShooter(shooter);
@@ -88,11 +114,12 @@ public class ModernKineticGunItem extends AbstractGunItem implements GunItemData
 
         CommonGunIndex gunIndex = api.getGunIndex();
         if (gunIndex == null) {
-            return;
+            return false;
         }
-        Optional.ofNullable(gunIndex.getScript())
+        return Optional.ofNullable(gunIndex.getScript())
                 .map(script -> checkFunction(script.get("start_reload")))
-                .ifPresent(func -> func.call(CoerceJavaToLua.coerce(api)));
+                .map(func -> func.call(CoerceJavaToLua.coerce(api)).checkboolean())
+                .orElse(true);
     }
 
     @Override
@@ -171,23 +198,28 @@ public class ModernKineticGunItem extends AbstractGunItem implements GunItemData
             amount, AttributeModifier.Operation.ADDITION
     );
 
-    private ReloadState defaultTickReload(ModernKineticGunScriptAPI api) {
-        ShooterDataHolder data = api.getDataHolder();
-        CommonGunIndex gunIndex = api.getGunIndex();
-
-        ReloadState reloadState = new ReloadState();
-        // 判断是否正在进行装填流程。如果没有则返回。
-        if (data.reloadTimestamp == -1) {
-            return reloadState;
+    private boolean defaultTickBolt(ModernKineticGunScriptAPI api) {
+        long boltActionTime = (long) (api.getGunIndex().getGunData().getBoltActionTime() * 1000);
+        if (api.getBoltTime() < boltActionTime) {
+            return true;
+        } else {
+            if (api.removeAmmoFromMagazine(1) != 0) {
+                api.setAmmoInBarrel(true);
+            }
+            return false;
         }
+    }
+
+    private ReloadState defaultTickReload(ModernKineticGunScriptAPI api) {
+        CommonGunIndex gunIndex = api.getGunIndex();
         // 获取 ReloadData
         GunData gunData = gunIndex.getGunData();
         GunReloadData reloadData = gunData.getReloadData();
         // 计算新的 stateType 和 countDown
         long countDown;
         ReloadState.StateType stateType;
-        ReloadState.StateType oldStateType = data.reloadStateType;
-        long progressTime = System.currentTimeMillis() - data.reloadTimestamp;
+        ReloadState.StateType oldStateType = api.getReloadStateType();
+        long progressTime = api.getReloadTime();
         if (oldStateType.isReloadingEmpty()) {
             long feedTime = (long) (reloadData.getFeed().getEmptyTime() * 1000);
             long finishingTime = (long) (reloadData.getCooldown().getEmptyTime() * 1000);
@@ -226,6 +258,7 @@ public class ModernKineticGunItem extends AbstractGunItem implements GunItemData
             this.defaultReloadFinishing(api, true);
         }
         // 返回 tick 结果
+        ReloadState reloadState = new ReloadState();
         reloadState.setStateType(stateType);
         reloadState.setCountDown(countDown);
         return reloadState;
@@ -357,6 +390,24 @@ public class ModernKineticGunItem extends AbstractGunItem implements GunItemData
         }
     }
 
+    @Nullable
+    private MeleeData getMeleeData(ResourceLocation attachmentId) {
+        if (DefaultAssets.isEmptyAttachmentId(attachmentId)) {
+            return null;
+        }
+        return TimelessAPI.getCommonAttachmentIndex(attachmentId).map(index -> index.getData().getMeleeData()).orElse(null);
+    }
+
+    private LuaFunction checkFunction(LuaValue luaValue) {
+        if (luaValue.isfunction()) {
+            return (LuaFunction) luaValue;
+        } else if (luaValue.isnil()) {
+            return null;
+        } else {
+            throw new LuaError("bad argument: function or nil expected, got " + luaValue.typename());
+        }
+    }
+
     @Override
     public void fireSelect(ShooterDataHolder dataHolder, ItemStack gunItem) {
         ResourceLocation gunId = this.getGunId(gunItem);
@@ -384,23 +435,5 @@ public class ModernKineticGunItem extends AbstractGunItem implements GunItemData
     @Override
     public int getMaxLevel() {
         return 0;
-    }
-
-    @Nullable
-    private MeleeData getMeleeData(ResourceLocation attachmentId) {
-        if (DefaultAssets.isEmptyAttachmentId(attachmentId)) {
-            return null;
-        }
-        return TimelessAPI.getCommonAttachmentIndex(attachmentId).map(index -> index.getData().getMeleeData()).orElse(null);
-    }
-
-    private LuaFunction checkFunction(LuaValue luaValue) {
-        if (luaValue.isfunction()) {
-            return (LuaFunction) luaValue;
-        } else if (luaValue.isnil()) {
-            return null;
-        } else {
-            throw new LuaError("bad argument: function or nil expected, got " + luaValue.typename());
-        }
     }
 }

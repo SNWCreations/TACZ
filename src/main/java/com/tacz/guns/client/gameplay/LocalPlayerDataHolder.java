@@ -104,7 +104,7 @@ public class LocalPlayerDataHolder {
         if (gunOperator.getSynDrawCoolDown() > 0) {
             return;
         }
-        if (gunOperator.getSynBoltCoolDown() >= 0) {
+        if (gunOperator.getSynIsBolting()) {
             return;
         }
         if (gunOperator.getSynMeleeCoolDown() > 0) {

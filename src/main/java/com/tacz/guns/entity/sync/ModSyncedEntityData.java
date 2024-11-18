@@ -53,9 +53,9 @@ public class ModSyncedEntityData {
             .syncMode(SyncedDataKey.SyncMode.ALL)
             .build();
 
-    public static final SyncedDataKey<LivingEntity, Long> BOLT_COOL_DOWN_KEY = SyncedDataKey.builder(SyncedClassKey.LIVING_ENTITY, Serializers.LONG)
-            .id(new ResourceLocation(GunMod.MOD_ID, "bolt_cool_down"))
-            .defaultValueSupplier(() -> -1L)
+    public static final SyncedDataKey<LivingEntity, Boolean> BOLT_COOL_DOWN_KEY = SyncedDataKey.builder(SyncedClassKey.LIVING_ENTITY, Serializers.BOOLEAN)
+            .id(new ResourceLocation(GunMod.MOD_ID, "is_bolting"))
+            .defaultValueSupplier(() -> false)
             .syncMode(SyncedDataKey.SyncMode.ALL)
             .build();
 

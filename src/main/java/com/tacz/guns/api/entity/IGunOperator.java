@@ -33,7 +33,7 @@ public interface IGunOperator {
     /**
      * 获取从服务端同步的手动换弹的冷却
      */
-    long getSynBoltCoolDown();
+    boolean getSynIsBolting();
 
     /**
      * 获取从服务端同步的换弹状态

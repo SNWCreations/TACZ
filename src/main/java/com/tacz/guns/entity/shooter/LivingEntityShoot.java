@@ -62,7 +62,7 @@ public class LivingEntityShoot {
             return ShootResult.IS_DRAWING;
         }
         // 检查是否在拉栓
-        if (data.boltCoolDown >= 0) {
+        if (data.isBolting) {
             return ShootResult.IS_BOLTING;
         }
         // 检查是否在奔跑

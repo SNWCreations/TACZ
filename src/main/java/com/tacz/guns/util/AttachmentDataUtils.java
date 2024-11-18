@@ -10,13 +10,13 @@ import com.tacz.guns.config.sync.SyncConfig;
 import com.tacz.guns.resource.index.CommonAttachmentIndex;
 import com.tacz.guns.resource.modifier.AttachmentCacheProperty;
 import com.tacz.guns.resource.modifier.AttachmentPropertyManager;
+import com.tacz.guns.resource.modifier.custom.*;
 import com.tacz.guns.resource.pojo.data.attachment.AttachmentData;
 import com.tacz.guns.resource.pojo.data.attachment.Modifier;
 import com.tacz.guns.resource.pojo.data.gun.BulletData;
 import com.tacz.guns.resource.pojo.data.gun.ExtraDamage;
 import com.tacz.guns.resource.pojo.data.gun.GunData;
 import com.tacz.guns.resource.pojo.data.gun.GunFireModeAdjustData;
-import com.tacz.guns.resource.modifier.custom.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 
@@ -51,35 +51,41 @@ public final class AttachmentDataUtils {
         }
     }
 
-    public static int getAmmoCountWithAttachment(ItemStack gunItem, GunData gunData) {
+    public static int getMagExtendLevel(ItemStack gunItem, GunData gunData) {
         IGun iGun = IGun.getIGunOrNull(gunItem);
         if (iGun == null) {
-            return gunData.getAmmoAmount();
-        }
-        int[] extendedMagAmmoAmount = gunData.getExtendedMagAmmoAmount();
-        if (extendedMagAmmoAmount == null) {
-            return gunData.getAmmoAmount();
+            return 0;
         }
         ResourceLocation attachmentId = iGun.getAttachmentId(gunItem, AttachmentType.EXTENDED_MAG);
         if (DefaultAssets.isEmptyAttachmentId(attachmentId)) {
-            return gunData.getAmmoAmount();
+            return 0;
         }
         AttachmentData attachmentData = gunData.getExclusiveAttachments().get(attachmentId);
         if (attachmentData != null) {
             int level = attachmentData.getExtendedMagLevel();
-            if (level <= 0 || level > 3) {
-                return gunData.getAmmoAmount();
-            }
-            return extendedMagAmmoAmount[level];
+            if (level <= 0) {
+                return 0;
+            } else return Math.min(level, 3);
         } else {
             return TimelessAPI.getCommonAttachmentIndex(attachmentId).map(index -> {
                 int level = index.getData().getExtendedMagLevel();
-                if (level <= 0 || level > 3) {
-                    return gunData.getAmmoAmount();
-                }
-                return extendedMagAmmoAmount[level - 1];
-            }).orElse(gunData.getAmmoAmount());
+                if (level <= 0) {
+                    return 0;
+                } else return Math.min(level, 3);
+            }).orElse(0);
         }
+    }
+
+    public static int getAmmoCountWithAttachment(ItemStack gunItem, GunData gunData) {
+        int[] extendedMagAmmoAmount = gunData.getExtendedMagAmmoAmount();
+        if (extendedMagAmmoAmount == null) {
+            return gunData.getAmmoAmount();
+        }
+        int level = getMagExtendLevel(gunItem, gunData);
+        if (level == 0) {
+            return gunData.getAmmoAmount();
+        }
+        return extendedMagAmmoAmount[level - 1];
     }
 
     public static double getWightWithAttachment(ItemStack gunItem, GunData gunData) {

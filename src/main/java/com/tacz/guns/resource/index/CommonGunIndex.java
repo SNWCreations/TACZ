@@ -9,6 +9,7 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import org.apache.commons.lang3.StringUtils;
 import org.luaj.vm2.LuaTable;
+import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -19,6 +20,7 @@ public class CommonGunIndex {
     private GunIndexPOJO pojo;
     private int sort;
     private LuaTable script;
+    private LuaTable scriptParam;
 
     private CommonGunIndex() {
     }
@@ -95,11 +97,18 @@ public class CommonGunIndex {
 
     private static void checkScript(GunData data, CommonGunIndex index) {
         ResourceLocation scriptId = data.getScript();
+        Map<String, Object> params = data.getScriptParam();
         CommonAssetsManager commonAssetsManager = CommonAssetsManager.getInstance();
-        if(scriptId != null && commonAssetsManager != null) {
+        if (scriptId != null && commonAssetsManager != null) {
             index.script = commonAssetsManager.getScript(scriptId);
             if (index.script == null) {
                 throw new NullPointerException("script '" + scriptId +  "' not found");
+            }
+            if (params != null) {
+                index.scriptParam = new LuaTable();
+                for (Map.Entry<String, Object> entry : params.entrySet()) {
+                    index.scriptParam.set(entry.getKey(), CoerceJavaToLua.coerce(entry.getValue()));
+                }
             }
         }
     }
@@ -122,6 +131,10 @@ public class CommonGunIndex {
 
     public LuaTable getScript() {
         return script;
+    }
+
+    public LuaTable getScriptParam() {
+        return scriptParam;
     }
 
     public int getSort() {
