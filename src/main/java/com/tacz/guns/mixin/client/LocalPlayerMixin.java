@@ -81,6 +81,11 @@ public abstract class LocalPlayerMixin implements IClientPlayerGunOperator {
     }
 
     @Override
+    public LocalPlayerDataHolder getDataHolder() {
+        return tac$data;
+    }
+
+    @Override
     public void crawl(boolean isCrawl) {
         tac$crawl.crawl(isCrawl);
     }

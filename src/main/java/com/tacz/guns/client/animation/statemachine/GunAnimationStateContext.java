@@ -5,13 +5,14 @@ import com.tacz.guns.api.client.gameplay.IClientPlayerGunOperator;
 import com.tacz.guns.api.entity.IGunOperator;
 import com.tacz.guns.api.entity.ReloadState;
 import com.tacz.guns.api.item.IGun;
+import com.tacz.guns.api.item.gun.FireMode;
 import com.tacz.guns.client.resource.index.ClientGunIndex;
 import com.tacz.guns.resource.pojo.data.gun.Bolt;
 import com.tacz.guns.util.AttachmentDataUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 
 import java.util.Optional;
@@ -40,10 +41,20 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
         return Optional.empty();
     }
 
-    private <T> Optional<T> processPlayer(Function<Player, T> processor) {
-        LocalPlayer player = Minecraft.getInstance().player;
-        if (player != null) {
-            return Optional.ofNullable(processor.apply(player));
+    private <T> Optional<T> processRemoteGunOperator(Function<IGunOperator, T> processor) {
+        return processCameraEntity(entity -> {
+            if (entity instanceof LivingEntity) {
+                IGunOperator gunOperator = IGunOperator.fromLivingEntity((LivingEntity) entity);
+                return processor.apply(gunOperator);
+            }
+            return null;
+        });
+    }
+
+    private <T> Optional<T> processCameraEntity(Function<Entity, T> processor) {
+        Entity entity = Minecraft.getInstance().cameraEntity;
+        if (entity != null) {
+            return Optional.ofNullable(processor.apply(entity));
         }
         return Optional.empty();
     }
@@ -57,6 +68,53 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
             Bolt boltType = gunIndex.getGunData().getBolt();
             return boltType != Bolt.OPEN_BOLT && iGun.hasBulletInBarrel(currentGunItem);
         }).orElse(false);
+    }
+
+    /**
+     * 获取枪械的射击间隔，单位毫秒
+     * @return 射击间隔
+     */
+    public long getShootInterval() {
+        return processCameraEntity(entity -> {
+            if (entity instanceof LivingEntity livingEntity) {
+                FireMode fireMode = iGun.getFireMode(currentGunItem);
+                if (fireMode == FireMode.BURST) {
+                    long coolDown = (long) (clientGunIndex.getGunData().getBurstData().getMinInterval() * 1000f);
+                    return Math.max(coolDown, 0L);
+                }
+                long coolDown = clientGunIndex.getGunData().getShootInterval(livingEntity, fireMode);
+                return Math.max(coolDown, 0L);
+            }
+            return 0L;
+        }).orElse(0L);
+    }
+
+    /**
+     * 返回上次射击的 timestamp(系统时间)，单位为毫秒。此值在切枪时会重置为 -1。
+     * @return 上次射击的 timestamp，在切枪时会重置为 -1。
+     */
+    public long getLastShootTimestamp() {
+        return processGunOperator(operator -> operator.getDataHolder().clientLastShootTimestamp).orElse(-1L);
+    }
+
+    /**
+     * 获取当前系统时间，单位毫秒。
+     * @return 当前系统时间
+     */
+    public long getCurrentTimestamp() {
+        return System.currentTimeMillis();
+    }
+
+    /**
+     * 调整射击间隔。(仅在客户端表现)
+     * @param alpha 需要加上或减少的射击间隔，单位为毫秒。正数即增加射击间隔，负数则是减少。
+     */
+    public void adjustClientShootInterval(long alpha) {
+        processGunOperator(operator -> {
+            long timestamp = operator.getDataHolder().clientShootTimestamp;
+            operator.getDataHolder().clientShootTimestamp = timestamp + alpha;
+            return null;
+        });
     }
 
     /**
@@ -127,7 +185,12 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
      * @return 玩家的换弹状态
      */
     public ReloadState getReloadState() {
-        return processPlayer(player -> IGunOperator.fromLivingEntity(player).getSynReloadState()).orElse(null);
+        return processCameraEntity(entity -> {
+            if (entity instanceof LivingEntity livingEntity) {
+                return IGunOperator.fromLivingEntity(livingEntity).getSynReloadState();
+            }
+            return null;
+        }).orElse(null);
     }
 
     /**
@@ -183,7 +246,7 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
      * @return 玩家是否接触地面
      */
     public boolean isOnGround() {
-        return processPlayer(Entity::onGround).orElse(false);
+        return processCameraEntity(Entity::onGround).orElse(false);
     }
 
     /**
@@ -191,15 +254,15 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
      * @return 玩家是否蹲伏
      */
     public boolean isCrouching() {
-        return processPlayer(Entity::isCrouching).orElse(false);
+        return processCameraEntity(Entity::isCrouching).orElse(false);
     }
 
     /**
      * 在玩家当前的行走距离打上锚点。此后，getWalkDist() 将返回与此锚点的相对值
      */
     public void anchorWalkDist() {
-        processPlayer(player -> {
-            walkDistAnchor = player.walkDist + (player.walkDist - player.walkDistO) * partialTicks;
+        processCameraEntity(entity -> {
+            walkDistAnchor = entity.walkDist + (entity.walkDist - entity.walkDistO) * partialTicks;
             return null;
         });
     }
@@ -209,8 +272,8 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
      * @return 与锚点相对的行走距离。如果没有打锚点，则直接返回行走距离。
      */
     public float getWalkDist() {
-        return processPlayer(player -> {
-            float currentWalkDist = player.walkDist + (player.walkDist - player.walkDistO) * partialTicks;
+        return processCameraEntity(entity -> {
+            float currentWalkDist = entity.walkDist + (entity.walkDist - entity.walkDistO) * partialTicks;
             return currentWalkDist - walkDistAnchor;
         }).orElse(0f);
     }

@@ -15,6 +15,7 @@ public class ShooterDataHolder {
      * 用于计算射击的冷却时间。
      */
     public long shootTimestamp = -1L;
+    public long lastShootTimestamp = -1L;
     /**
      * 近战时间戳，按下刺刀按键时更新，单位 ms
      * 用于计算射击的冷却时间

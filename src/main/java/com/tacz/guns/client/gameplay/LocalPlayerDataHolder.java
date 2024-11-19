@@ -28,6 +28,7 @@ public class LocalPlayerDataHolder {
      * 与延迟射击有关的几个变量
      */
     public volatile long clientShootTimestamp = -1L;
+    public volatile long clientLastShootTimestamp = -1L;
     public volatile boolean isShootRecorded = true;
     /**
      * 这个状态锁表示：任意时刻，正在进行的枪械操作只能为一个。

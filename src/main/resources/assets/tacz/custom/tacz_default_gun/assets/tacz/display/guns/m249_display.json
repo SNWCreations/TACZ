@@ -6,6 +6,7 @@
   "animation": "tacz:m249",
   "use_default_animation": "rifle",
   "third_person_animation": "default",
+  "state_machine": "tacz:devotion_lmg_state_machine",
   "lod": {
     "model": "tacz:gun/lod/m249",
     "texture": "tacz:gun/lod/m249"

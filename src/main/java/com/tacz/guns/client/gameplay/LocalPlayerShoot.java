@@ -152,6 +152,7 @@ public class LocalPlayerShoot {
                     return;
                 }
                 // 记录新的开火时间戳
+                data.clientLastShootTimestamp = data.clientShootTimestamp;
                 data.clientShootTimestamp = System.currentTimeMillis();
                 // 发送开火的数据包，通知服务器
                 NetworkHandler.CHANNEL.sendToServer(new ClientMessagePlayerShoot());

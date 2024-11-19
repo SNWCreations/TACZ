@@ -6,6 +6,7 @@ import com.tacz.guns.api.entity.ReloadState;
 import com.tacz.guns.api.event.common.GunFireEvent;
 import com.tacz.guns.api.item.gun.AbstractGunItem;
 import com.tacz.guns.api.item.gun.FireMode;
+import com.tacz.guns.client.animation.statemachine.GunAnimationStateContext;
 import com.tacz.guns.entity.EntityKineticBullet;
 import com.tacz.guns.entity.shooter.ShooterDataHolder;
 import com.tacz.guns.network.NetworkHandler;
@@ -194,6 +195,58 @@ public class ModernKineticGunScriptAPI {
     }
 
     /**
+     * 获取枪械的射击间隔，单位毫秒）
+     * @return 射击间隔
+     */
+    public long getShootInterval() {
+        FireMode fireMode = abstractGunItem.getFireMode(itemStack);
+        if (fireMode == FireMode.BURST) {
+            long coolDown = (long) (gunIndex.getGunData().getBurstData().getMinInterval() * 1000f);
+            // 给 5 ms 的窗口时间，以平衡延迟
+            coolDown = coolDown - 5;
+            return Math.max(coolDown, 0L);
+        }
+        long coolDown = gunIndex.getGunData().getShootInterval(this.shooter, fireMode);
+        // 给 5 ms 的窗口时间，以平衡延迟
+        coolDown = coolDown - 5;
+        return Math.max(coolDown, 0L);
+    }
+
+    /**
+     * 返回上次射击的 timestamp(系统时间)，单位为毫秒。此值在切枪时会重置为 -1。
+     * @return 上次射击的 timestamp，在切枪时会重置为 -1。
+     */
+    public long getLastShootTimestamp() {
+        return dataHolder.lastShootTimestamp;
+    }
+
+    /**
+     * 调整射击间隔。
+     * 射击间隔比较特殊，它在客户端和服务端上是分别计算的。因此你还需要在状态机脚本中重复进行一次这个操作。
+     * @see GunAnimationStateContext#adjustClientShootInterval
+     * @param alpha 需要加上或减少的射击间隔，单位为毫秒。正数即增加射击间隔，负数则是减少。
+     */
+    public void adjustShootInterval(long alpha) {
+        dataHolder.shootTimestamp += alpha;
+    }
+
+    /**
+     * 调整换弹时间
+     * @param alpha 需要加上或减少的换弹时间，单位为毫秒。正数即增加换弹时间（加快换弹进度），负数则是减少（减慢换弹进度）。
+     */
+    public void adjustReloadTime(long alpha) {
+        dataHolder.reloadTimestamp -= alpha;
+    }
+
+    /**
+     * 调整拉栓时间
+     * @param alpha 需要加上或减少的拉栓时间，单位为毫秒。正数即增加拉栓时间（加快拉栓进度），负数则是减少（减慢拉栓进度）。
+     */
+    public void adjustBoltTime(long alpha) {
+        dataHolder.boltTimestamp -= alpha;
+    }
+
+    /**
      * 获取玩家当前的换弹状态。
      * @return 玩家当前的换弹状态
      */
@@ -365,6 +418,14 @@ public class ModernKineticGunScriptAPI {
     public void safeAsyncTask(LuaValue value, long delayMs, long periodMs, int cycles) {
         LuaFunction func = value.checkfunction();
         CycleTaskHelper.addCycleTask(() -> func.call().checkboolean(), delayMs, periodMs, cycles);
+    }
+
+    /**
+     * 获取当前系统时间，单位毫秒。
+     * @return 当前系统时间
+     */
+    public long getCurrentTimestamp() {
+        return System.currentTimeMillis();
     }
 
     public void setShooter(LivingEntity shooter) {

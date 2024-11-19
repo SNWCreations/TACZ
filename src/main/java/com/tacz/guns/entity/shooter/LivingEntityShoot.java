@@ -89,11 +89,12 @@ public class LivingEntityShoot {
             return ShootResult.FORGE_EVENT_CANCEL;
         }
         NetworkHandler.sendToTrackingEntity(new ServerMessageGunShoot(shooter.getId(), currentGunItem), shooter);
+        data.lastShootTimestamp = data.shootTimestamp;
+        data.shootTimestamp = System.currentTimeMillis();
         // 执行枪械射击逻辑
         if (iGun instanceof AbstractGunItem logicGun) {
             logicGun.shoot(data, currentGunItem, pitch, yaw, shooter);
         }
-        data.shootTimestamp = System.currentTimeMillis();
         return ShootResult.SUCCESS;
     }
 
