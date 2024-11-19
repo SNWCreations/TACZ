@@ -629,7 +629,7 @@
 			}
 		},
 		"reload_intro_empty": {
-			"animation_length": 2.13333,
+			"animation_length": 2.1333,
 			"bones": {
 				"lefthand": {
 					"rotation": {
@@ -813,6 +813,23 @@
 						"0.9333": [0, 0, 0]
 					}
 				}
+			},
+			"sound_effects": {
+				"0.1667": {
+					"effect": "tacz:m870/m870_reload_empty_start_open"
+				},
+				"0.8333": {
+					"effect": "tacz:m870/12_gauge_shotgun_shell_drop"
+				},
+				"1.0": {
+					"effect": "tacz:m870/m870_reload_empty_start_sideload"
+				},
+				"1.3667": {
+					"effect": "tacz:m870/m870_reload_empty_start_close"
+				},
+				"1.8333": {
+					"effect": "tacz:m870/m870_reload_empty_start_twist"
+				}
 			}
 		},
 		"reload_intro": {
@@ -847,10 +864,15 @@
 				"bullet": {
 					"scale": 1
 				}
+			},
+			"sound_effects": {
+				"0.0": {
+					"effect": "tacz:m870/m870_reload_start_twist"
+				}
 			}
 		},
 		"reload_loop": {
-			"animation_length": 0.66667,
+			"animation_length": 0.6667,
 			"bones": {
 				"lefthand": {
 					"rotation": {
@@ -969,6 +991,11 @@
 						}
 					}
 				}
+			},
+			"sound_effects": {
+				"0.2": {
+					"effect": "tacz:m870/m870_reload_loop_shellin_01"
+				}
 			}
 		},
 		"reload_end": {
@@ -1042,6 +1069,11 @@
 					"rotation": [0, 0, 0],
 					"position": [0, 1.575, -0.525],
 					"scale": 0
+				}
+			},
+			"sound_effects": {
+				"0.0333": {
+					"effect": "tacz:m870/m870_reload_end_turnover"
 				}
 			}
 		},
@@ -1259,7 +1291,7 @@
 			}
 		},
 		"bolt": {
-			"animation_length": 0.76667,
+			"animation_length": 0.7667,
 			"bones": {
 				"lefthand": {
 					"rotation": {
@@ -1387,6 +1419,17 @@
 						"0.4": [0, 0, 3.05],
 						"0.4667": [0, 0, 0]
 					}
+				}
+			},
+			"sound_effects": {
+				"0.1": {
+					"effect": "tacz:m870/m870_bolt_in"
+				},
+				"0.3333": {
+					"effect": "tacz:m870/m870_bolt_out"
+				},
+				"0.6": {
+					"effect": "tacz:m870/12_gauge_shotgun_shell_drop"
 				}
 			}
 		}
