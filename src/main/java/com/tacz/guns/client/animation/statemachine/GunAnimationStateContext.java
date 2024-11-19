@@ -184,13 +184,13 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
      * 获取玩家的换弹状态
      * @return 玩家的换弹状态
      */
-    public ReloadState getReloadState() {
+    public int getReloadStateType() {
         return processCameraEntity(entity -> {
             if (entity instanceof LivingEntity livingEntity) {
-                return IGunOperator.fromLivingEntity(livingEntity).getSynReloadState();
+                return IGunOperator.fromLivingEntity(livingEntity).getSynReloadState().getStateType().ordinal();
             }
-            return null;
-        }).orElse(null);
+            return ReloadState.StateType.NOT_RELOADING.ordinal();
+        }).orElse(ReloadState.StateType.NOT_RELOADING.ordinal());
     }
 
     /**

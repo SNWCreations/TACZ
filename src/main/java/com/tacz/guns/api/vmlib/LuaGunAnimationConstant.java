@@ -34,6 +34,7 @@ public class LuaGunAnimationConstant implements LuaLibrary {
             }
         }
 
+        // 映射 ReloadState.StateType 枚举
         for (ReloadState.StateType stateType : ReloadState.StateType.values()) {
             constantMap.put(stateType.name(), stateType.ordinal());
         }

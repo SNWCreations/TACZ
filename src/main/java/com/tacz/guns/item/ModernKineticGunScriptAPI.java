@@ -2,7 +2,6 @@ package com.tacz.guns.item;
 
 import com.tacz.guns.api.TimelessAPI;
 import com.tacz.guns.api.entity.IGunOperator;
-import com.tacz.guns.api.entity.ReloadState;
 import com.tacz.guns.api.event.common.GunFireEvent;
 import com.tacz.guns.api.item.gun.AbstractGunItem;
 import com.tacz.guns.api.item.gun.FireMode;
@@ -256,10 +255,10 @@ public class ModernKineticGunScriptAPI {
 
     /**
      * 获取玩家当前的换弹状态。
-     * @return 玩家当前的换弹状态
+     * @return 玩家当前的换弹状态 (序数)
      */
-    public ReloadState.StateType getReloadStateType() {
-        return dataHolder.reloadStateType;
+    public int getReloadStateType() {
+        return dataHolder.reloadStateType.ordinal();
     }
 
     /**

@@ -29,16 +29,11 @@ function M.tick_bolt(api)
 end
 
 function M.start_reload(api)
-    local neededAmmoAmount = api:getNeededAmmoAmount()
-    -- If there is no ammo to be loaded, there is no need to start ticking, just return false
-    if (neededAmmoAmount == 0) then
-        return false
-    end
     -- Initialize cache that will be used in reload ticking
     local cache = {
         reloaded_count = 0,
         needed_count = api:getNeededAmmoAmount(),
-        is_tactical = api:getReloadStateType():ordinal() == TACTICAL_RELOAD_FEEDING,
+        is_tactical = api:getReloadStateType() == TACTICAL_RELOAD_FEEDING,
         interrupted_time = -1,
     }
     api:cacheScriptData(cache)

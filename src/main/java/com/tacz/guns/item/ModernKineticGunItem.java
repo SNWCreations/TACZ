@@ -218,7 +218,7 @@ public class ModernKineticGunItem extends AbstractGunItem implements GunItemData
         // 计算新的 stateType 和 countDown
         long countDown;
         ReloadState.StateType stateType;
-        ReloadState.StateType oldStateType = api.getReloadStateType();
+        ReloadState.StateType oldStateType = ReloadState.StateType.values()[api.getReloadStateType()];
         long progressTime = api.getReloadTime();
         if (oldStateType.isReloadingEmpty()) {
             long feedTime = (long) (reloadData.getFeed().getEmptyTime() * 1000);
