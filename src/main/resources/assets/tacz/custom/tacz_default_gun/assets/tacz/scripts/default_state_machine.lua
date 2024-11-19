@@ -323,26 +323,54 @@ function movement_track_states.walk.transition(context, input)
     end
 end
 
-local M = {}
+local M = {
+    track_line_top = track_line_top,
+    STATIC_TRACK_LINE = STATIC_TRACK_LINE,
+    GUN_KICK_TRACK_LINE = GUN_KICK_TRACK_LINE,
+    BLENDING_TRACK_LINE = BLENDING_TRACK_LINE,
+
+    static_track_top = static_track_top,
+    BASE_TRACK = BASE_TRACK,
+    BOLT_CAUGHT_TRACK = BOLT_CAUGHT_TRACK,
+    SAFETY_TRACK = SAFETY_TRACK,
+    ADS_TRACK = ADS_TRACK,
+    MAIN_TRACK = MAIN_TRACK,
+
+    blending_track_top = blending_track_top,
+    MOVEMENT_TRACK = MOVEMENT_TRACK,
+    LOOP_TRACK = LOOP_TRACK,
+
+    base_track_state = base_track_state,
+    bolt_caught_states = bolt_caught_states,
+    main_track_states = main_track_states,
+    gun_kick_state = gun_kick_state,
+    movement_track_states = movement_track_states
+}
 
 function M.initialize(context)
     context:ensureTrackLineSize(track_line_top.value)
     context:ensureTracksAmount(STATIC_TRACK_LINE, static_track_top.value)
     context:ensureTracksAmount(BLENDING_TRACK_LINE, blending_track_top.value)
+    movement_track_states.run.mode = -1
+    movement_track_states.walk.mode = -1
 end
 
 function M.exit(context)
+    -- do some cleaning up things
+end
+
+function M:default_states()
+    return {
+        self.base_track_state,
+        self.bolt_caught_states.normal,
+        self.main_track_states.start,
+        self.gun_kick_state,
+        self.movement_track_states.idle
+    }
 end
 
 function M.states()
-    local stateTable = {
-        base_track_state,
-        bolt_caught_states.normal,
-        main_track_states.start,
-        gun_kick_state,
-        movement_track_states.idle
-    }
-    return stateTable
+    return M:default_states()
 end
 
 return M

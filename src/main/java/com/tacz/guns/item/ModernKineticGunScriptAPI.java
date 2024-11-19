@@ -247,6 +247,14 @@ public class ModernKineticGunScriptAPI {
     }
 
     /**
+     * 获取瞄准进度。
+     * @return 范围 0~1。0 代表未瞄准，1 代表瞄准完成。
+     */
+    public float getAimingProgress() {
+        return dataHolder.aimingProgress;
+    }
+
+    /**
      * 获取玩家当前的换弹状态。
      * @return 玩家当前的换弹状态
      */

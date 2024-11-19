@@ -1,374 +1,87 @@
-local track_line_top = {value = 0}
-local static_track_top = {value = 0}
-local blending_track_top = {value = 0}
-
--- 相当于 obj.value++
-local function increment(obj)
-    obj.value = obj.value + 1
-    return obj.value - 1
-end
-
-local STATIC_TRACK_LINE = increment(track_line_top)
-local BASE_TRACK = increment(static_track_top)
-local BOLT_CAUGHT_TRACK = increment(static_track_top)
-local SAFETY_TRACK = increment(static_track_top) -- 待实现
-local ADS_TRACK = increment(static_track_top) -- 待实现
-local MAIN_TRACK = increment(static_track_top)
-
-local GUN_KICK_TRACK_LINE = increment(track_line_top)
-
-local BLENDING_TRACK_LINE = increment(track_line_top)
-local MOVEMENT_TRACK = increment(blending_track_top)
-local LOOP_TRACK = increment(blending_track_top)
-
-local function runPutAwayAnimation(context)
-    local put_away_time = context:getPutAwayTime()
-    local track = context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK)
-    -- 播放 put_away 动画，并且将其剩余时长设为 context 传入的 put_away_time
-    context:runAnimation("put_away", track, false, PLAY_ONCE_HOLD, put_away_time * 0.75)
-    context:setAnimationProgress(track, 1, true)
-    context:adjustAnimationProgress(track, -put_away_time, false)
-end
-
-local function isNoAmmo(context)
-    return (not context:hasBulletInBarrel()) and (context:getAmmoCount() <= 0)
-end
-
-local function runInspectAnimation(context)
-    local track = context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK)
-    if (isNoAmmo(context)) then
-        context:runAnimation("inspect_empty", track, false, PLAY_ONCE_STOP, 0.2)
-    else
-        context:runAnimation("inspect", track, false, PLAY_ONCE_STOP, 0.2)
-    end
-end
-
-local base_track_state = {}
-
-function base_track_state.entry(context)
-    context:runAnimation("static_idle", context:getTrack(STATIC_TRACK_LINE, BASE_TRACK), false, LOOP, 0)
-end
-
-local bolt_caught_states = {
-    normal = {
-        input = "bolt_normal"
-    },
-    bolt_caught = {
-        input = "bolt_caught"
-    }
+-- 脚本的位置是 "{命名空间}:{路径}"，那么 require 的格式为 "{命名空间}_{路径}"
+-- 注意！require 取得的内容不应该被修改，应仅调用
+local default = require("tacz_default_state_machine")
+local STATIC_TRACK_LINE = default.STATIC_TRACK_LINE
+local MAIN_TRACK = default.MAIN_TRACK
+local main_track_states = default.main_track_states
+-- main_track_states.start 和 main_track_states.idle 是我们要重写的状态。
+local start_state = setmetatable({}, {__index = main_track_states.start})
+local idle_state = setmetatable({}, {__index = main_track_states.idle})
+-- reload_state 是定义的新状态，用于执行单发装填
+local reload_state = {
+    retreat = "reload_retreat",
+    need_ammo = 0,
+    loaded_ammo = 0
 }
-
-function bolt_caught_states.normal.update(context)
-    if (isNoAmmo(context)) then
-        context:trigger(bolt_caught_states.bolt_caught.input)
+-- 重写 start 状态的 transition 函数，重定向到重写的 idle 状态
+function start_state.transition(context, input)
+    local state = main_track_states.start.transition(context, input)
+    if (state == main_track_states.idle) then
+        return idle_state
     end
 end
-
-function bolt_caught_states.normal.entry(context)
-    bolt_caught_states.normal.update(context)
-end
-
-function bolt_caught_states.normal.transition(context, input)
-    if (input == bolt_caught_states.bolt_caught.input) then
-        return bolt_caught_states.bolt_caught
-    end
-end
-
-function bolt_caught_states.bolt_caught.entry(context)
-    context:runAnimation("static_bolt_caught", context:getTrack(STATIC_TRACK_LINE, BOLT_CAUGHT_TRACK), false, LOOP, 0)
-end
-
-function bolt_caught_states.bolt_caught.update(context)
-    if (not isNoAmmo(context)) then
-        context:trigger(bolt_caught_states.normal.input)
-    end
-end
-
-function bolt_caught_states.bolt_caught.transition(context, input)
-    if (input == bolt_caught_states.normal.input) then
-        context:stopAnimation(context:getTrack(STATIC_TRACK_LINE, BOLT_CAUGHT_TRACK))
-        return bolt_caught_states.normal
-    end
-end
-
-local main_track_states = {
-    start = {},
-    idle = {},
-    reload = {
-        retreat = "reload_retreat",
-        need_ammo = 0,
-        loaded_ammo = 0
-    },
-    inspect = {
-        retreat = "inspect_retreat"
-    },
-    final = {},
-    bayonet_counter = 0
-}
-
-function main_track_states.start.transition(context, input)
-    if (input == INPUT_DRAW) then
-        context:runAnimation("draw", context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK), false, PLAY_ONCE_STOP, 0)
-        return main_track_states.idle
-    end
-end
-
-function main_track_states.idle.transition(context, input)
-    if (input == INPUT_PUT_AWAY) then
-        runPutAwayAnimation(context)
-        return main_track_states.final
-    end
+-- 重写 idle 状态的 transition 函数，将输入 INPUT_RELOAD 重定向到新定义的 reload_state 状态
+function idle_state.transition(context, input)
     if (input == INPUT_RELOAD) then
-        return main_track_states.reload
+        return reload_state
     end
-    if (input == INPUT_BOLT) then
-        context:runAnimation("bolt", context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK), false, PLAY_ONCE_STOP, 0.2)
-        return main_track_states.idle
+    local state = main_track_states.idle.transition(context, input)
+    if (state == main_track_states.idle) then
+        return idle_state
     end
-    if (input == INPUT_INSPECT) then
-        runInspectAnimation(context)
-        return main_track_states.inspect
-    end
-    if (input == INPUT_BAYONET_MUZZLE) then
-        local counter = main_track_states.bayonet_counter
-        local animationName = "melee_bayonet_" .. tostring(counter + 1)
-        main_track_states.bayonet_counter = (counter + 1) % 3
-        context:runAnimation(animationName, context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK), false, PLAY_ONCE_STOP, 0.2)
-        return main_track_states.idle
-    end
-    if (input == INPUT_BAYONET_STOCK) then
-        context:runAnimation("melee_stock", context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK), false, PLAY_ONCE_STOP, 0.2)
-        return main_track_states.idle
-    end
-    if (input == INPUT_BAYONET_PUSH) then
-        context:runAnimation("melee_push", context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK), false, PLAY_ONCE_STOP, 0.2)
-        return main_track_states.idle
-    end
+    return state
 end
-
-function main_track_states.reload.entry(context)
-    if (isNoAmmo(context)) then
+-- 在 entry 函数里，我们根据情况选择播放 'reload_intro_empty' 或 'reload_intro' 动画，
+-- 并初始化 需要的弹药数、已装填的弹药数。这决定了后续的 'loop' 动画进行几次循环。
+function reload_state.entry(context)
+    local isNoAmmo = not context:hasBulletInBarrel()
+    if (isNoAmmo) then
         context:runAnimation("reload_intro_empty", context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK), false, PLAY_ONCE_HOLD, 0.2)
     else
         context:runAnimation("reload_intro", context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK), false, PLAY_ONCE_HOLD, 0.2)
     end
-    main_track_states.reload.need_ammo = context:getMaxAmmoCount() - context:getAmmoCount()
-    main_track_states.reload.loaded_ammo = 0
+    reload_state.need_ammo = context:getMaxAmmoCount() - context:getAmmoCount()
+    reload_state.loaded_ammo = 0
 end
-
-function main_track_states.reload.update(context)
-    if (main_track_states.reload.loaded_ammo > main_track_states.reload.need_ammo) then
-        context:trigger(main_track_states.reload.retreat)
+-- 在 update 函数里，循环播放 loop，让 loaded_ammo 变量自增。
+function reload_state.update(context)
+    if (reload_state.loaded_ammo > reload_state.need_ammo) then
+        context:trigger(reload_state.retreat)
     else
         local track = context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK)
-        -- 等待 intro 结束，然后循环播放 loop 动画
         if (context:isHolding(track)) then
             context:runAnimation("reload_loop", track, false, PLAY_ONCE_HOLD, 0)
-            main_track_states.reload.loaded_ammo = main_track_states.reload.loaded_ammo + 1
+            reload_state.loaded_ammo = reload_state.loaded_ammo + 1
         end
     end
 end
-
-function main_track_states.reload.transition(context, input)
-    if (input == main_track_states.reload.retreat or input == INPUT_CANCEL_RELOAD) then
+-- 如果 loop 循环结束或者换弹被打断，退出到 idle 状态。否则由 idle 的 transition 函数决定下一个状态。
+function reload_state.transition(context, input)
+    if (input == reload_state.retreat or input == INPUT_CANCEL_RELOAD) then
         context:runAnimation("reload_end", context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK), false, PLAY_ONCE_STOP, 0.2)
-        return main_track_states.idle
+        return idle_state
     end
-    return main_track_states.idle.transition(context, input)
+    return idle_state.transition(context, input)
 end
-
-function main_track_states.inspect.entry(context)
-    context:setShouldHideCrossHair(true)
-end
-
-function main_track_states.inspect.exit(context)
-    context:setShouldHideCrossHair(false)
-end
-
-function main_track_states.inspect.update(context)
-    if (context:isStopped(context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK))) then
-        context:trigger(main_track_states.inspect.retreat)
-    end
-end
-
-function main_track_states.inspect.transition(context, input)
-    if (input == main_track_states.inspect.retreat) then
-        return main_track_states.idle
-    end
-    if (input == INPUT_SHOOT) then -- 特殊地，射击也应当打断检视
-        context:stopAnimation(context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK))
-        return main_track_states.idle
-    end
-    return main_track_states.idle.transition(context, input)
-end
-
-local gun_kick_state = {}
-
-function gun_kick_state.transition(context, input)
-    if (input == INPUT_SHOOT) then
-        local track = context:findIdleTrack(GUN_KICK_TRACK_LINE, false)
-        context:runAnimation("shoot", track, true, PLAY_ONCE_STOP, 0)
-    end
-    return nil
-end
-
-local movement_track_states = {
-    idle = {},
-    run = {
-        mode = -1
-    },
-    walk = {
-        mode = -1
-    }
-}
-
-function movement_track_states.idle.update(context)
-    local track = context:getTrack(BLENDING_TRACK_LINE, MOVEMENT_TRACK)
-    -- 如果轨道空闲，则播放 idle 动画
-    if (context:isStopped(track) or context:isHolding(track)) then
-        context:runAnimation("idle", track, true, LOOP, 0)
-    end
-end
-
-function movement_track_states.idle.transition(context, input)
-    if (input == INPUT_RUN) then
-        return movement_track_states.run
-    elseif (input == INPUT_WALK) then
-        return movement_track_states.walk
-    end
-end
-
-function movement_track_states.run.entry(context)
-    movement_track_states.run.mode = -1
-    context:runAnimation("run_start", context:getTrack(BLENDING_TRACK_LINE, MOVEMENT_TRACK), true, PLAY_ONCE_HOLD, 0.2)
-end
-
-function movement_track_states.run.exit(context)
-    context:runAnimation("run_end", context:getTrack(BLENDING_TRACK_LINE, MOVEMENT_TRACK), true, PLAY_ONCE_HOLD, 0.3)
-end
-
-function movement_track_states.run.update(context)
-    local track = context:getTrack(BLENDING_TRACK_LINE, MOVEMENT_TRACK)
-    local state = movement_track_states.run;
-    -- 等待 run_start 结束，然后循环播放 run
-    if (context:isHolding(track)) then
-        context:runAnimation("run", track, true, LOOP, 0.2)
-        state.mode = 0
-        context:anchorWalkDist() -- 打 walkDist 锚点，确保 run 动画的起点一致
-    end
-    if (state.mode ~= -1) then
-        if (not context:isOnGround()) then
-            -- 如果玩家在空中，则播放 run_hold 动画以稳定枪身
-            if (state.mode ~= 1) then
-                state.mode = 1
-                context:runAnimation("run_hold", track, true, LOOP, 0.6)
-            end
-        else
-            -- 如果玩家在地面，则切换回 run 动画
-            if (state.mode ~= 0) then
-                state.mode = 0
-                context:runAnimation("run", track, true, LOOP, 0.2)
-            end
-            -- 根据 walkDist 设置 run 动画的进度
-            context:setAnimationProgress(track, (context:getWalkDist() % 2.0) / 2.0, true)
-        end
-    end
-end
-
-function movement_track_states.run.transition(context, input)
-    if (input == INPUT_IDLE) then
-        return movement_track_states.idle
-    elseif (input == INPUT_WALK) then
-        return movement_track_states.walk
-    end
-end
-
-function movement_track_states.walk.entry(context)
-    movement_track_states.walk.mode = -1
-end
-
-function movement_track_states.walk.exit(context)
-    -- 手动播放一次 idle 动画以打断 walk 动画的循环
-    context:runAnimation("idle", context:getTrack(BLENDING_TRACK_LINE, MOVEMENT_TRACK), true, PLAY_ONCE_HOLD, 0.4)
-end
-
-function movement_track_states.walk.update(context)
-    local track = context:getTrack(BLENDING_TRACK_LINE, MOVEMENT_TRACK)
-    local state = movement_track_states.walk
-    if (context:getShootCoolDown() > 0) then
-        -- 如果刚刚开火，则播放 idle 动画以稳定枪身
-        if (state.mode ~= 0) then
-            state.mode = 0
-            context:runAnimation("idle", track, true, LOOP, 0.3)
-        end
-    elseif (not context:isOnGround()) then
-        -- 如果玩家在空中，则播放 idle 动画以稳定枪身
-        if (state.mode ~= 0) then
-            state.mode = 0
-            context:runAnimation("idle", track, true, LOOP, 0.6)
-        end
-    elseif (context:getAimingProgress() > 0.5) then
-        -- 如果正在喵准，则需要播放 walk_aiming 动画
-        if (state.mode ~= 1) then
-            state.mode = 1
-            context:runAnimation("walk_aiming", track, true, LOOP, 0.3)
-        end
-    elseif (context:isInputUp()) then
-        -- 如果正在向前走，则需要播放 walk_forward 动画
-        if (state.mode ~= 2) then
-            state.mode = 2
-            context:runAnimation("walk_forward", track, true, LOOP, 0.4)
-            context:anchorWalkDist() -- 打 walkDist 锚点，确保行走动画的起点一致
-        end
-    elseif (context:isInputDown()) then
-        -- 如果正在向后退，则需要播放 walk_backward 动画
-        if (state.mode ~= 3) then
-            state.mode = 3
-            context:runAnimation("walk_backward", track, true, LOOP, 0.4)
-            context:anchorWalkDist() -- 打 walkDist 锚点，确保行走动画的起点一致
-        end
-    elseif (context:isInputLeft() or context:isInputRight()) then
-        -- 如果正在向侧面，则需要播放 walk_sideway 动画
-        if (state.mode ~= 4) then
-            state.mode = 4
-            context:runAnimation("walk_sideway", track, true, LOOP, 0.4)
-            context:anchorWalkDist() -- 打 walkDist 锚点，确保行走动画的起点一致
-        end
-    end
-    -- 根据 walkDist 设置行走动画的进度
-    if (state.mode >= 1 and state.mode <= 4) then
-        context:setAnimationProgress(track, (context:getWalkDist() % 2.0) / 2.0, true)
-    end
-end
-
-function movement_track_states.walk.transition(context, input)
-    if (input == INPUT_IDLE) then
-        return movement_track_states.idle
-    elseif (input == INPUT_RUN) then
-        return movement_track_states.run
-    end
-end
-
-local M = {}
-
+-- 用元表的方式继承默认状态机的属性
+local M = setmetatable({
+    main_track_states = setmetatable({
+        -- 自定义的 start 和 idle 状态需要覆盖掉父级状态机的对应状态
+        start = start_state,
+        idle = idle_state,
+        -- 新定义的 reload 状态也放进来，方便其他脚本调用
+        reload = reload_state
+    }, {__index = main_track_states})
+}, {__index = default})
+-- 先调用父级状态机的初始化函数，然后进行自己的初始化
 function M.initialize(context)
-    context:ensureTrackLineSize(track_line_top.value)
-    context:ensureTracksAmount(STATIC_TRACK_LINE, static_track_top.value)
-    context:ensureTracksAmount(BLENDING_TRACK_LINE, blending_track_top.value)
+    default.initialize(context)
+    reload_state.need_ammo = 0
+    reload_state.loaded_ammo = 0
 end
-
-function M.exit(context)
-end
-
+-- 这里一定要写，用来生成覆盖状态后的默认状态表
 function M.states()
-    local stateTable = {
-        base_track_state,
-        bolt_caught_states.normal,
-        main_track_states.start,
-        gun_kick_state,
-        movement_track_states.idle
-    }
-    return stateTable
+    return M:default_states()
 end
-
+-- 导出状态机
 return M

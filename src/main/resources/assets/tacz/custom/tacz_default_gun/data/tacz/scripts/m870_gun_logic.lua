@@ -38,6 +38,7 @@ function M.start_reload(api)
     local cache = {
         reloaded_count = 0,
         needed_count = api:getNeededAmmoAmount(),
+        is_tactical = api:getReloadStateType():ordinal() == TACTICAL_RELOAD_FEEDING,
         interrupted_time = -1,
     }
     api:cacheScriptData(cache)
@@ -67,9 +68,8 @@ function M.tick_reload(api)
     if (intro_empty == nil) then
         return NOT_RELOADING, -1
     end
-    -- Get reload time (The time from the start of reloading to the current time) and reload state from api
+    -- Get reload time (The time from the start of reloading to the current time) from api
     local reload_time = api:getReloadTime()
-    local reload_state_type = api:getReloadStateType():ordinal()
     -- Get cache from api, it will be used to count loaded ammo, mark reload interruptions, etc.
     local cache = api:getCachedScriptData()
     -- Handle interrupting reload
@@ -78,13 +78,17 @@ function M.tick_reload(api)
         if (int_time >= ending) then
             return NOT_RELOADING, -1
         else
-            return TACTICAL_RELOAD_FINISHING, ending - int_time
+            if (cache.is_tactical) then
+                return TACTICAL_RELOAD_FINISHING, ending - int_time
+            else
+                return EMPTY_RELOAD_FINISHING, ending - int_time
+            end
         end
     end
     -- Put an ammo into the barrel first
     local reloaded_count = cache.reloaded_count;
     if (reloaded_count == 0) then
-        if (reload_state_type == EMPTY_RELOAD_FEEDING) then
+        if (not cache.is_tactical) then
             if (reload_time > intro_empty_feed) then
                 api:setAmmoInBarrel(true)
                 reloaded_count = reloaded_count + 1
@@ -96,9 +100,9 @@ function M.tick_reload(api)
     -- Load the ammo into the magazine one by one
     if (reloaded_count > 0) then
         local base_time = (reloaded_count -1) * loop + loop_feed
-        if (reload_state_type == EMPTY_RELOAD_FEEDING) then
+        if (not cache.is_tactical) then
             base_time = base_time + intro_empty
-        elseif (reload_state_type == TACTICAL_RELOAD_FEEDING) then
+        else
             base_time = base_time + intro
         end
         while (base_time < reload_time) do
@@ -118,12 +122,13 @@ function M.tick_reload(api)
     api:cacheScriptData(cache)
     -- return reloadstate
     local total_time = cache.needed_count * loop
-    if (reload_state_type == EMPTY_RELOAD_FEEDING) then
+    if (not cache.is_tactical) then
         total_time = total_time + intro_empty
-    elseif (reload_state_type == TACTICAL_RELOAD_FEEDING) then
+        return EMPTY_RELOAD_FEEDING, total_time - reload_time
+    else
         total_time = total_time + intro
+        return TACTICAL_RELOAD_FEEDING, total_time - reload_time
     end
-    return reload_state_type, total_time - reload_time
 end
 
 function M.interrupt_reload(api)

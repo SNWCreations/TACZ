@@ -14,19 +14,23 @@ import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import org.jetbrains.annotations.NotNull;
 import org.luaj.vm2.Globals;
+import org.luaj.vm2.LuaFunction;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.LuaValue;
 import org.luaj.vm2.lib.jse.JsePlatform;
 
 import java.io.IOException;
 import java.io.Reader;
+import java.util.AbstractMap;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Supplier;
 
-public class ScriptManager extends SimplePreparableReloadListener<Map<ResourceLocation, LuaTable>> {
+public class ScriptManager extends SimplePreparableReloadListener< List<Map.Entry<String, Supplier<LuaTable>>> > {
     private static final Marker MARKER = MarkerManager.getMarker("ScriptLoader");
     private Globals globals;
-    private final Map<ResourceLocation, LuaTable> dataMap = Maps.newHashMap();
+    private final Map<String, LuaTable> scriptMap = Maps.newHashMap();
     private final FileToIdConverter filetoidconverter;
     private final List<LuaLibrary> libraries;
 
@@ -37,39 +41,64 @@ public class ScriptManager extends SimplePreparableReloadListener<Map<ResourceLo
 
     @Override
     @NotNull
-    protected Map<ResourceLocation, LuaTable> prepare(ResourceManager pResourceManager, ProfilerFiller pProfiler) {
+    protected List<Map.Entry<String, Supplier<LuaTable>>> prepare(ResourceManager pResourceManager, ProfilerFiller pProfiler) {
+        // 初始化 globals
         initGlobals();
-        Map<ResourceLocation, LuaTable> output = Maps.newHashMap();
+        // 打包加载函数，设置 globals 的 preload
+        List<Map.Entry<String, Supplier<LuaTable>>> output = new ArrayList<>();
         for(Map.Entry<ResourceLocation, Resource> entry : filetoidconverter.listMatchingResources(pResourceManager).entrySet()) {
-            ResourceLocation resourcelocation = entry.getKey();
-            ResourceLocation resourcelocation1 = filetoidconverter.fileToId(resourcelocation);
-            try (Reader reader = entry.getValue().openAsReader()) {
-                LuaValue chunk = globals.load(reader, resourcelocation1.getNamespace() + "_" + resourcelocation1.getPath());
-                LuaTable table = chunk.call().checktable();
-                output.put(resourcelocation1, table);
-            } catch (IllegalArgumentException | IOException | JsonParseException jsonparseexception) {
-                GunMod.LOGGER.warn(MARKER, "Failed to read script file: {}, entry: {}", resourcelocation, entry);
-            }
+            var wrappedEntry = wrapLoadingFunction(entry.getKey(), entry.getValue());
+            output.add(wrappedEntry);
+            globals.get("package").get("preload").set(wrappedEntry.getKey(), new LuaFunction() {
+                @Override
+                public LuaValue call(LuaValue modname, LuaValue env) {
+                    return wrappedEntry.getValue().get();
+                }
+            });
         }
         return output;
     }
 
     @Override
-    protected void apply(Map<ResourceLocation, LuaTable> pObject, ResourceManager pResourceManager, ProfilerFiller pProfiler) {
-        dataMap.clear();
-        dataMap.putAll(pObject);
+    protected void apply(List<Map.Entry<String, Supplier<LuaTable>>> pObject, ResourceManager pResourceManager, ProfilerFiller pProfiler) {
+        scriptMap.clear();
+        pObject.forEach(entry -> scriptMap.put(entry.getKey(), entry.getValue().get()));
+    }
+
+    private Map.Entry<String, Supplier<LuaTable>> wrapLoadingFunction(ResourceLocation rawResourceLocation, Resource resource) {
+        ResourceLocation resourceLocation = filetoidconverter.fileToId(rawResourceLocation);
+        String moduleName = getModuleName(resourceLocation);
+        return new AbstractMap.SimpleEntry<>(moduleName, new Supplier<>() {
+            private LuaTable loaded = null;
+            @Override
+            public LuaTable get() {
+                if (loaded != null) {
+                    return loaded;
+                }
+                try (Reader reader = resource.openAsReader()) {
+                    LuaValue chunk = globals.load(reader, moduleName);
+                    loaded = chunk.call().checktable(1);
+                    return loaded;
+                } catch (IllegalArgumentException | IOException | JsonParseException jsonparseexception) {
+                    GunMod.LOGGER.warn(MARKER, "Failed to read script file: {}", resourceLocation);
+                }
+                return null;
+            }
+        });
     }
 
     private void initGlobals() {
         globals = JsePlatform.standardGlobals();
         if (libraries != null) {
-            libraries.forEach(library -> {
-                library.install(globals);
-            });
+            libraries.forEach(library -> library.install(globals));
         }
     }
 
+    private String getModuleName(ResourceLocation resourceLocation) {
+        return resourceLocation.getNamespace() + "_" + resourceLocation.getPath();
+    }
+
     public LuaTable getScript(ResourceLocation id) {
-        return dataMap.get(id);
+        return scriptMap.get(getModuleName(id));
     }
 }
