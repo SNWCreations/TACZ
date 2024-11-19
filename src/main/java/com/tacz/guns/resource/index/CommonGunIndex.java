@@ -1,6 +1,7 @@
 package com.tacz.guns.resource.index;
 
 import com.google.common.base.Preconditions;
+import com.tacz.guns.GunMod;
 import com.tacz.guns.api.item.gun.FireMode;
 import com.tacz.guns.resource.CommonAssetsManager;
 import com.tacz.guns.resource.pojo.GunIndexPOJO;
@@ -8,6 +9,8 @@ import com.tacz.guns.resource.pojo.data.gun.*;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.logging.log4j.Marker;
+import org.apache.logging.log4j.MarkerManager;
 import org.luaj.vm2.LuaTable;
 import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 
@@ -15,6 +18,7 @@ import java.util.Arrays;
 import java.util.Map;
 
 public class CommonGunIndex {
+    private static final Marker MARKER = MarkerManager.getMarker("CommonGunIndex");
     private GunData gunData;
     private String type;
     private GunIndexPOJO pojo;
@@ -102,7 +106,8 @@ public class CommonGunIndex {
         if (scriptId != null && commonAssetsManager != null) {
             index.script = commonAssetsManager.getScript(scriptId);
             if (index.script == null) {
-                throw new NullPointerException("script '" + scriptId +  "' not found");
+                GunMod.LOGGER.warn(MARKER, "script '{}' not found", scriptId);
+                return;
             }
             if (params != null) {
                 index.scriptParam = new LuaTable();

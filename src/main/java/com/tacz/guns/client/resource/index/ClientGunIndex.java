@@ -38,6 +38,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.luaj.vm2.LuaTable;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -240,10 +241,15 @@ public class ClientGunIndex {
             // 如果没指定状态机，则使用默认状态机
             stateMachineLocation = new ResourceLocation("tacz", "default_state_machine");
         }
-        index.animationStateMachine = new LuaStateMachineFactory<GunAnimationStateContext>()
-                .setController(controller)
-                .setLuaScripts(ClientAssetsManager.INSTANCE.getScript(stateMachineLocation))
-                .build();
+        LuaTable script = ClientAssetsManager.INSTANCE.getScript(stateMachineLocation);
+        if (script != null) {
+            index.animationStateMachine = new LuaStateMachineFactory<GunAnimationStateContext>()
+                    .setController(controller)
+                    .setLuaScripts(script)
+                    .build();
+        } else {
+            throw new NullPointerException("statemachine not found: " + stateMachineLocation);
+        }
         // 初始化第三人称动画
         if (StringUtils.isNoneBlank(display.getThirdPersonAnimation())) {
             index.thirdPersonAnimation = display.getThirdPersonAnimation();
