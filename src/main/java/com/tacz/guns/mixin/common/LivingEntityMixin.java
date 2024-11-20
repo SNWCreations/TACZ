@@ -176,6 +176,9 @@ public abstract class LivingEntityMixin extends Entity implements IGunOperator, 
     @Override
     public boolean nextBulletIsTracer(int tracerCountInterval) {
         this.tacz$data.shootCount++;
+        if (tracerCountInterval == -1) {
+            return false;
+        }
         return tacz$data.shootCount % (tracerCountInterval + 1) == 0;
     }
 

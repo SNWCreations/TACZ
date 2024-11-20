@@ -121,7 +121,7 @@ public class ModernKineticGunScriptAPI {
                 Level world = shooter.level();
                 ResourceLocation ammoId = gunData.getAmmoId();
                 for (int i = 0; i < bulletAmount; i++) {
-                    boolean isTracer = gunOperator.nextBulletIsTracer(bulletData.getTracerCountInterval());
+                    boolean isTracer = bulletData.hasTracerAmmo() && gunOperator.nextBulletIsTracer(bulletData.getTracerCountInterval());
                     EntityKineticBullet bullet = new EntityKineticBullet(world, shooter, itemStack, ammoId, gunId, isTracer, gunData, bulletData);
                     bullet.shootFromRotation(bullet, pitch, yaw, 0.0F, processedSpeed, finalInaccuracy);
                     world.addFreshEntity(bullet);
@@ -173,6 +173,7 @@ public class ModernKineticGunScriptAPI {
 
     /**
      * 获取从开始换弹到现在经历的时间，单位为 ms
+     *
      * @return 开始换弹到现在经历的时间，单位为 ms
      */
     public long getReloadTime() {
@@ -184,6 +185,7 @@ public class ModernKineticGunScriptAPI {
 
     /**
      * 获取从开始拉栓到现在经历的时间，单位为 ms
+     *
      * @return 开始拉栓到现在经历的时间，单位为 ms
      */
     public long getBoltTime() {
@@ -195,6 +197,7 @@ public class ModernKineticGunScriptAPI {
 
     /**
      * 获取枪械的射击间隔，单位毫秒）
+     *
      * @return 射击间隔
      */
     public long getShootInterval() {
@@ -213,6 +216,7 @@ public class ModernKineticGunScriptAPI {
 
     /**
      * 返回上次射击的 timestamp(系统时间)，单位为毫秒。此值在切枪时会重置为 -1。
+     *
      * @return 上次射击的 timestamp，在切枪时会重置为 -1。
      */
     public long getLastShootTimestamp() {
@@ -222,8 +226,9 @@ public class ModernKineticGunScriptAPI {
     /**
      * 调整射击间隔。
      * 射击间隔比较特殊，它在客户端和服务端上是分别计算的。因此你还需要在状态机脚本中重复进行一次这个操作。
-     * @see GunAnimationStateContext#adjustClientShootInterval
+     *
      * @param alpha 需要加上或减少的射击间隔，单位为毫秒。正数即增加射击间隔，负数则是减少。
+     * @see GunAnimationStateContext#adjustClientShootInterval
      */
     public void adjustShootInterval(long alpha) {
         dataHolder.shootTimestamp += alpha;
@@ -231,6 +236,7 @@ public class ModernKineticGunScriptAPI {
 
     /**
      * 调整换弹时间
+     *
      * @param alpha 需要加上或减少的换弹时间，单位为毫秒。正数即增加换弹时间（加快换弹进度），负数则是减少（减慢换弹进度）。
      */
     public void adjustReloadTime(long alpha) {
@@ -239,6 +245,7 @@ public class ModernKineticGunScriptAPI {
 
     /**
      * 调整拉栓时间
+     *
      * @param alpha 需要加上或减少的拉栓时间，单位为毫秒。正数即增加拉栓时间（加快拉栓进度），负数则是减少（减慢拉栓进度）。
      */
     public void adjustBoltTime(long alpha) {
@@ -247,6 +254,7 @@ public class ModernKineticGunScriptAPI {
 
     /**
      * 获取瞄准进度。
+     *
      * @return 范围 0~1。0 代表未瞄准，1 代表瞄准完成。
      */
     public float getAimingProgress() {
@@ -255,6 +263,7 @@ public class ModernKineticGunScriptAPI {
 
     /**
      * 获取玩家当前的换弹状态。
+     *
      * @return 玩家当前的换弹状态 (序数)
      */
     public int getReloadStateType() {
@@ -263,6 +272,7 @@ public class ModernKineticGunScriptAPI {
 
     /**
      * 获取当前玩家射击是否需要消耗弹药。经过设置，创造模式的玩家可以不消耗弹药射击。
+     *
      * @return 射击是否需要消耗弹药
      */
     public boolean isShootingNeedConsumeAmmo() {
@@ -271,6 +281,7 @@ public class ModernKineticGunScriptAPI {
 
     /**
      * 获取当前玩家换弹是否需要消耗弹药。一般来说创造模式下不需要消耗弹药。
+     *
      * @return 换弹是否需要消耗弹药
      */
     public boolean isReloadingNeedConsumeAmmo() {
@@ -279,6 +290,7 @@ public class ModernKineticGunScriptAPI {
 
     /**
      * 获取当前枪械需要的弹药数量。
+     *
      * @return 当前枪械需要的弹药数量
      */
     public int getNeededAmmoAmount() {
@@ -289,6 +301,7 @@ public class ModernKineticGunScriptAPI {
 
     /**
      * 获取弹匣中的备弹数。
+     *
      * @return 返回弹匣中的备弹数，不计算已在枪管中的弹药。
      */
     public int getAmmoAmount() {
@@ -297,6 +310,7 @@ public class ModernKineticGunScriptAPI {
 
     /**
      * 获取枪械弹匣的最大备弹数。
+     *
      * @return 返回枪械弹匣的最大备弹数，不计算已在枪管中的弹药。
      */
     public int getMaxAmmoCount() {
@@ -305,6 +319,7 @@ public class ModernKineticGunScriptAPI {
 
     /**
      * 获取枪械扩容等级。
+     *
      * @return 扩容等级，范围 0 ~ 3。0 表示没有安装扩容弹匣，1 ~ 3 表示安装了扩容等级 1 ~ 3 的扩容弹匣
      */
     public int getMagExtentLevel() {
@@ -313,6 +328,7 @@ public class ModernKineticGunScriptAPI {
 
     /**
      * 尽可能多地从玩家身上 (或者虚拟备弹) 消耗掉弹药，返回消耗的数量
+     *
      * @param neededAmount 需要的弹药数量
      * @return 实际消耗的弹药数量
      */
@@ -328,6 +344,7 @@ public class ModernKineticGunScriptAPI {
 
     /**
      * 将子弹推入弹匣。
+     *
      * @param amount 需要推入的子弹数量
      * @return 多余的子弹
      */
@@ -349,6 +366,7 @@ public class ModernKineticGunScriptAPI {
 
     /**
      * 将子弹从弹匣移除。
+     *
      * @param amount 需要移除的数量
      * @return 成功移除的数量
      */
@@ -368,6 +386,7 @@ public class ModernKineticGunScriptAPI {
 
     /**
      * 获取弹匣内子弹数量。
+     *
      * @return 弹匣内子弹数量
      */
     public int getAmmoCountInMagazine() {
@@ -376,6 +395,7 @@ public class ModernKineticGunScriptAPI {
 
     /**
      * 获取枪膛内是否有子弹。
+     *
      * @return 枪膛内是否有子弹.如果是开膛待击的枪械，则此方法返回 false。
      */
     public boolean hasAmmoInBarrel() {
@@ -392,6 +412,7 @@ public class ModernKineticGunScriptAPI {
 
     /**
      * 将任意 lua 对象数据缓存到玩家数据中。用于脚本中异步传递数据，或者跨方法传递数据。
+     *
      * @param luaValue 缓存的 lua 对象
      */
     public void cacheScriptData(LuaValue luaValue) {
@@ -400,6 +421,7 @@ public class ModernKineticGunScriptAPI {
 
     /**
      * 将玩家数据中缓存的 lua 对象取出。
+     *
      * @return 缓存的 lua 对象
      */
     public LuaValue getCachedScriptData() {
@@ -408,6 +430,7 @@ public class ModernKineticGunScriptAPI {
 
     /**
      * 获取在枪械 data 中声明的脚本参数
+     *
      * @return 脚本参数表
      */
     public LuaTable getScriptParams() {
@@ -417,10 +440,11 @@ public class ModernKineticGunScriptAPI {
 
     /**
      * 委托延迟的循环任务，在主线程执行，是线程安全的，但是时间不是严格的，粒度取决于 TPS。
-     * @param value 应当是一个返回 boolean 的 LuaFunction。如果返回 false ，则将退出循环。
-     * @param delayMs 延迟执行的时间。
+     *
+     * @param value    应当是一个返回 boolean 的 LuaFunction。如果返回 false ，则将退出循环。
+     * @param delayMs  延迟执行的时间。
      * @param periodMs 循环执行的间隔。
-     * @param cycles 最大循环次数。-1 代表无限次。
+     * @param cycles   最大循环次数。-1 代表无限次。
      */
     public void safeAsyncTask(LuaValue value, long delayMs, long periodMs, int cycles) {
         LuaFunction func = value.checkfunction();
@@ -429,6 +453,7 @@ public class ModernKineticGunScriptAPI {
 
     /**
      * 获取当前系统时间，单位毫秒。
+     *
      * @return 当前系统时间
      */
     public long getCurrentTimestamp() {
@@ -476,7 +501,7 @@ public class ModernKineticGunScriptAPI {
         return this.dataHolder;
     }
 
-    private void initGunItem(){
+    private void initGunItem() {
         if (itemStack == null || !(itemStack.getItem() instanceof AbstractGunItem gunItem)) {
             gunIndex = null;
             abstractGunItem = null;
