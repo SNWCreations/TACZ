@@ -66,6 +66,12 @@ public class PlayerAnimatorCompat {
         }
     }
 
+    public static void stopAllAnimation(LivingEntity livingEntity, int fadeTime) {
+        if (isInstalled() && livingEntity instanceof AbstractClientPlayer player) {
+            AnimationManager.stopAllAnimation(player, fadeTime);
+        }
+    }
+
     public static void playAnimation(LivingEntity livingEntity, ClientGunIndex gunIndex, float limbSwingAmount) {
         if (isInstalled() && livingEntity instanceof AbstractClientPlayer player) {
             AnimationManager.playLowerAnimation(player, gunIndex, limbSwingAmount);

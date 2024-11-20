@@ -198,18 +198,23 @@ public class AnimationManager {
     }
 
     public static void stopAllAnimation(AbstractClientPlayer player) {
-        stopAnimation(player, PlayerAnimatorCompat.LOWER_ANIMATION);
-        stopAnimation(player, PlayerAnimatorCompat.LOOP_UPPER_ANIMATION);
-        stopAnimation(player, PlayerAnimatorCompat.ONCE_UPPER_ANIMATION);
-        stopAnimation(player, PlayerAnimatorCompat.ROTATION_ANIMATION);
+        stopAllAnimation(player, 8);
     }
 
+    public static void stopAllAnimation(AbstractClientPlayer player, int fadeTime) {
+        stopAnimation(player, PlayerAnimatorCompat.LOWER_ANIMATION, fadeTime);
+        stopAnimation(player, PlayerAnimatorCompat.LOOP_UPPER_ANIMATION, fadeTime);
+        stopAnimation(player, PlayerAnimatorCompat.ONCE_UPPER_ANIMATION, fadeTime);
+        stopAnimation(player, PlayerAnimatorCompat.ROTATION_ANIMATION, fadeTime);
+    }
+
+
     @SuppressWarnings("unchecked")
-    private static void stopAnimation(AbstractClientPlayer player, ResourceLocation dataId) {
+    private static void stopAnimation(AbstractClientPlayer player, ResourceLocation dataId, int fadeTime) {
         var associatedData = PlayerAnimationAccess.getPlayerAssociatedData(player);
         var modifierLayer = (ModifierLayer<IAnimation>) associatedData.get(dataId);
         if (modifierLayer != null && modifierLayer.isActive()) {
-            AbstractFadeModifier fadeModifier = AbstractFadeModifier.standardFadeIn(8, Ease.INOUTSINE);
+            AbstractFadeModifier fadeModifier = AbstractFadeModifier.standardFadeIn(fadeTime, Ease.INOUTSINE);
             modifierLayer.replaceAnimationWithFade(fadeModifier, null);
         }
     }
@@ -323,8 +328,8 @@ public class AnimationManager {
         ItemStack previousGunItem = event.getPreviousGunItem();
         // 在切枪时，重置上半身动画
         if (currentGunItem.getItem() instanceof IGun && previousGunItem.getItem() instanceof IGun) {
-            stopAnimation(player, PlayerAnimatorCompat.LOOP_UPPER_ANIMATION);
-            stopAnimation(player, PlayerAnimatorCompat.ONCE_UPPER_ANIMATION);
+            stopAnimation(player, PlayerAnimatorCompat.LOOP_UPPER_ANIMATION, 8);
+            stopAnimation(player, PlayerAnimatorCompat.ONCE_UPPER_ANIMATION, 8);
         }
     }
 }

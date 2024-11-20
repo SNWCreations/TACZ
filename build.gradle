@@ -180,12 +180,12 @@ dependencies {
     implementation(jarJar("libs:mixinextras-forge:0.3.6")) {
         jarJar.ranged(it, "[0.3.6,)")
     }
-    // mek
-    runtimeOnly fg.deobf("curse.maven:mekanism-268560:5662583")
-    // create
-    runtimeOnly fg.deobf("com.simibubi.create:create-1.20.1:${create_version}:slim") { transitive = false }
-    runtimeOnly fg.deobf("com.jozufozu.flywheel:flywheel-forge-1.20.1:${flywheel_version}")
-    runtimeOnly fg.deobf("com.tterrag.registrate:Registrate:${registrate_version}")
+//    // mek
+//    runtimeOnly fg.deobf("curse.maven:mekanism-268560:5662583")
+//    // create
+//    runtimeOnly fg.deobf("com.simibubi.create:create-1.20.1:${create_version}:slim") { transitive = false }
+//    runtimeOnly fg.deobf("com.jozufozu.flywheel:flywheel-forge-1.20.1:${flywheel_version}")
+//    runtimeOnly fg.deobf("com.tterrag.registrate:Registrate:${registrate_version}")
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
