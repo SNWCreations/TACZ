@@ -75,7 +75,7 @@ public class ClientAttachmentItemTooltip implements ClientTooltipComponent {
 
     @Override
     public int getHeight() {
-        if (!shouldRender()) {
+        if (shouldNotRender()) {
             return 0;
         }
         if (!Screen.hasShiftDown()) {
@@ -86,7 +86,7 @@ public class ClientAttachmentItemTooltip implements ClientTooltipComponent {
 
     @Override
     public int getWidth(Font font) {
-        if (!shouldRender()) {
+        if (shouldNotRender()) {
             return 0;
         }
         int[] width = new int[]{0};
@@ -107,7 +107,7 @@ public class ClientAttachmentItemTooltip implements ClientTooltipComponent {
 
     @Override
     public void renderText(Font font, int pX, int pY, Matrix4f matrix4f, MultiBufferSource.BufferSource bufferSource) {
-        if (!shouldRender()) {
+        if (shouldNotRender()) {
             return;
         }
         int yOffset = pY;
@@ -129,7 +129,7 @@ public class ClientAttachmentItemTooltip implements ClientTooltipComponent {
 
     @Override
     public void renderImage(Font font, int mouseX, int mouseY, GuiGraphics gui) {
-        if (!Screen.hasShiftDown() || !shouldRender()) {
+        if (!Screen.hasShiftDown() || shouldNotRender()) {
             return;
         }
         int minY = components.size() * 10 + 3;
@@ -194,7 +194,7 @@ public class ClientAttachmentItemTooltip implements ClientTooltipComponent {
         });
     }
 
-    private boolean shouldRender() {
-        return GunTooltipPart.getHideFlags(itemStack) == 0;
+    private boolean shouldNotRender() {
+        return GunTooltipPart.hideFlagsPresent(itemStack);
     }
 }
