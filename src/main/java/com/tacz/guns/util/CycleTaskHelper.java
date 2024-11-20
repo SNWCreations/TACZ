@@ -6,6 +6,7 @@ import java.util.function.BooleanSupplier;
 
 public final class CycleTaskHelper {
     private static final List<CycleTaskHelper.CycleTaskTicker> CYCLE_TASKS = new LinkedList<>();
+    private static final List<CycleTaskHelper.CycleTaskTicker> TEMP_CYCLE_TASKS = new LinkedList<>();
 
     /**
      * 根据提供的时间间隔循环执行任务。会立刻调用一次。
@@ -31,8 +32,11 @@ public final class CycleTaskHelper {
     }
 
     public static void tick() {
-        // 迭代、调用并删除返回 false 的任务
-        CYCLE_TASKS.removeIf(ticker -> !ticker.tick());
+        TEMP_CYCLE_TASKS.addAll(CYCLE_TASKS);
+        CYCLE_TASKS.clear();
+        TEMP_CYCLE_TASKS.removeIf(ticker -> !ticker.tick());
+        CYCLE_TASKS.addAll(TEMP_CYCLE_TASKS);
+        TEMP_CYCLE_TASKS.clear();
     }
 
     private static class CycleTaskTicker {
@@ -73,7 +77,7 @@ public final class CycleTaskHelper {
                     delayS = delayS - duration;
                     return true;
                 } else {
-                    // 延迟执行结束，将延迟设为 0，并执行一次 task。
+                    // 延迟执行结束，将延迟设为 0
                     // 减少 duration 再加上一个 period，使得后续循环中 task 至少被执行一次。
                     delayS = 0;
                     duration = duration - delayS + periodS;

@@ -4,6 +4,8 @@ import com.tacz.guns.api.TimelessAPI;
 import com.tacz.guns.api.client.gameplay.IClientPlayerGunOperator;
 import com.tacz.guns.api.entity.IGunOperator;
 import com.tacz.guns.api.entity.ReloadState;
+import com.tacz.guns.api.item.IAmmo;
+import com.tacz.guns.api.item.IAmmoBox;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.gun.FireMode;
 import com.tacz.guns.client.resource.index.ClientGunIndex;
@@ -14,6 +16,7 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.common.capabilities.ForgeCapabilities;
 
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -134,6 +137,33 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
                 (iGun, gunIndex) ->
                         AttachmentDataUtils.getAmmoCountWithAttachment(currentGunItem, gunIndex.getGunData())
         ).orElse(0);
+    }
+
+    /**
+     * 检查玩家身上（或者虚拟备弹）是否有弹药可以消耗，通常用于循环换弹的打断。
+     * @return 玩家身上（或者虚拟备弹）是否有弹药可以消耗
+     */
+    public boolean hasAmmoToConsume(){
+        if (iGun.useDummyAmmo(currentGunItem)) {
+            return iGun.getDummyAmmoAmount(currentGunItem) > 0;
+        }
+        return processCameraEntity(entity ->
+                    entity.getCapability(ForgeCapabilities.ITEM_HANDLER, null)
+                        .map(cap -> {
+                            // 背包检查
+                            for (int i = 0; i < cap.getSlots(); i++) {
+                                ItemStack checkAmmoStack = cap.getStackInSlot(i);
+                                if (checkAmmoStack.getItem() instanceof IAmmo iAmmo && iAmmo.isAmmoOfGun(currentGunItem, checkAmmoStack)) {
+                                    return true;
+                                }
+                                if (checkAmmoStack.getItem() instanceof IAmmoBox iAmmoBox && iAmmoBox.isAmmoBoxOfGun(currentGunItem, checkAmmoStack)) {
+                                    return true;
+                                }
+                            }
+                            return false;
+                        })
+                        .orElse(false)
+                ).orElse(false);
     }
 
     /**
