@@ -12,7 +12,8 @@
   "animation": "tacz:m870",
   "state_machine": "tacz:m870_state_machine",
   state_machine_param: {
-    "bolt_shell_ejecting_time": 0.17
+    "bolt_shell_ejecting_time": 0.17,
+    "intro_shell_ejecting_time": 0.4
   },
   "use_default_animation": "rifle",
   "third_person_animation": "default",

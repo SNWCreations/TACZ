@@ -11,6 +11,15 @@ local reload_state = {
     need_ammo = 0,
     loaded_ammo = 0
 }
+local function get_ejection_time(context)
+    local ejection_time = context:getStateMachineParams().intro_shell_ejecting_time
+    if (ejection_time) then
+        ejection_time = ejection_time * 1000
+    else
+        ejection_time = 0
+    end
+    return ejection_time
+end
 -- 重写 idle 状态的 transition 函数，将输入 INPUT_RELOAD 重定向到新定义的 reload_state 状态
 function idle_state.transition(this, context, input)
     if (input == INPUT_RELOAD) then
@@ -21,19 +30,30 @@ end
 -- 在 entry 函数里，我们根据情况选择播放 'reload_intro_empty' 或 'reload_intro' 动画，
 -- 并初始化 需要的弹药数、已装填的弹药数。这决定了后续的 'loop' 动画进行几次循环。
 function reload_state.entry(this, context)
+    local state = this.main_track_states.reload
     local isNoAmmo = not context:hasBulletInBarrel()
     if (isNoAmmo) then
+        -- 记录开始换弹的时间戳，用于抛出 reload_intro_empty 中的弹壳
+        state.timestamp = context:getCurrentTimestamp()
+        state.ejection_time = get_ejection_time(context)
         context:runAnimation("reload_intro_empty", context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK), false, PLAY_ONCE_HOLD, 0.2)
     else
+        state.timestamp = -1
+        state.ejection_time = 0
         context:runAnimation("reload_intro", context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK), false, PLAY_ONCE_HOLD, 0.2)
     end
-    this.main_track_states.reload.need_ammo = context:getMaxAmmoCount() - context:getAmmoCount()
-    this.main_track_states.reload.loaded_ammo = 0
+    state.need_ammo = context:getMaxAmmoCount() - context:getAmmoCount()
+    state.loaded_ammo = 0
 end
 -- 在 update 函数里，循环播放 loop，让 loaded_ammo 变量自增。
 function reload_state.update(this, context)
     local state = this.main_track_states.reload
-    if (state.loaded_ammo > state.need_ammo) then
+    -- 处理 reload_intro_empty 的抛壳
+    if (state.timestamp ~= -1 and context:getCurrentTimestamp() - state.timestamp > state.ejection_time) then
+        context:popShellFrom(0)
+        state.timestamp = -1
+    end
+    if (state.loaded_ammo > state.need_ammo or not context:hasAmmoToConsume()) then
         context:trigger(this.INPUT_RELOAD_RETREAT)
     else
         local track = context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK)
