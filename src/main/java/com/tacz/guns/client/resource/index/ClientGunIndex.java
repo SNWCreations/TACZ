@@ -39,6 +39,7 @@ import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.luaj.vm2.LuaTable;
+import org.luaj.vm2.lib.jse.CoerceJavaToLua;
 
 import java.util.EnumMap;
 import java.util.Map;
@@ -51,6 +52,7 @@ public class ClientGunIndex {
     private BedrockGunModel gunModel;
     private @Nullable Pair<BedrockGunModel, ResourceLocation> lodModel;
     private LuaAnimationStateMachine<GunAnimationStateContext> animationStateMachine;
+    private @Nullable LuaTable stateMachineParam;
     private @Nullable ResourceLocation playerAnimator3rd = new ResourceLocation(GunMod.MOD_ID, "rifle_default.player_animation");
     private Map<String, ResourceLocation> sounds;
     private GunTransform transform;
@@ -250,6 +252,14 @@ public class ClientGunIndex {
         } else {
             throw new NullPointerException("statemachine not found: " + stateMachineLocation);
         }
+        // 加载状态机参数
+        Map<String, Object> params = display.getStateMachineParam();
+        if (params != null) {
+            index.stateMachineParam = new LuaTable();
+            for (Map.Entry<String, Object> entry : params.entrySet()) {
+                index.stateMachineParam.set(entry.getKey(), CoerceJavaToLua.coerce(entry.getValue()));
+            }
+        }
         // 初始化第三人称动画
         if (StringUtils.isNoneBlank(display.getThirdPersonAnimation())) {
             index.thirdPersonAnimation = display.getThirdPersonAnimation();
@@ -375,6 +385,10 @@ public class ClientGunIndex {
 
     public LuaAnimationStateMachine<GunAnimationStateContext> getAnimationStateMachine() {
         return animationStateMachine;
+    }
+
+    public @Nullable LuaTable getStateMachineParam() {
+        return stateMachineParam;
     }
 
     @Nullable

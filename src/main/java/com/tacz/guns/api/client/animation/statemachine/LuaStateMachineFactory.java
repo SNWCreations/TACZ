@@ -14,18 +14,19 @@ public class LuaStateMachineFactory<T extends AnimationStateContext> {
     private LuaFunction initializeFunc;
     private LuaFunction exitFunc;
     private LuaFunction statesFunc;
+    private LuaTable table;
 
     public LuaAnimationStateMachine<T> build() {
         checkNullPointer();
         var stateMachine = new LuaAnimationStateMachine<T>(controller);
         stateMachine.initializeFunc = (context) -> {
             if (initializeFunc != null) {
-                initializeFunc.call(CoerceJavaToLua.coerce(context));
+                initializeFunc.call(table, CoerceJavaToLua.coerce(context));
             }
         };
         stateMachine.exitFunc = (context) -> {
             if (exitFunc != null) {
-                exitFunc.call(CoerceJavaToLua.coerce(context));
+                exitFunc.call(table, CoerceJavaToLua.coerce(context));
             }
         };
         stateMachine.setStatesSupplier(getStatesSupplier());
@@ -41,6 +42,7 @@ public class LuaStateMachineFactory<T extends AnimationStateContext> {
         if (table == null) {
             return this;
         }
+        this.table = table;
         this.initializeFunc = checkFunction("initialize", table);
         this.exitFunc = checkFunction("exit", table);
         this.statesFunc = checkFunction("states", table);
@@ -66,11 +68,11 @@ public class LuaStateMachineFactory<T extends AnimationStateContext> {
             return null;
         }
         return () -> {
-            LuaTable statesTable = statesFunc.call().checktable();
+            LuaTable statesTable = statesFunc.call(table).checktable();
             LinkedList<LuaAnimationState<T>> states = new LinkedList<>();
             for (int f = 1; f <= statesTable.length(); f++) {
                 LuaTable stateTable = statesTable.get(f).checktable();
-                states.add(new LuaAnimationState<>(stateTable));
+                states.add(new LuaAnimationState<>(stateTable, table));
             }
             return states;
         };

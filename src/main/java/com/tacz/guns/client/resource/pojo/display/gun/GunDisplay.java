@@ -46,6 +46,9 @@ public class GunDisplay implements IDisplay {
     @SerializedName("state_machine")
     private ResourceLocation stateMachineLocation;
     @Nullable
+    @SerializedName("state_machine_param")
+    private Map<String, Object> stateMachineParam = null;
+    @Nullable
     @SerializedName("use_default_animation")
     private DefaultAnimation defaultAnimation;
     @Nullable
@@ -114,6 +117,11 @@ public class GunDisplay implements IDisplay {
     @Nullable
     public ResourceLocation getStateMachineLocation() {
         return stateMachineLocation;
+    }
+
+    @Nullable
+    public Map<String, Object> getStateMachineParam() {
+        return stateMachineParam;
     }
 
     @Nullable

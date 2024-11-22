@@ -59,7 +59,7 @@ public class LivingEntityShoot {
         MinecraftServer server = Objects.requireNonNull(shooter.getServer());
         double tickTime = Math.max(server.tickTimes[server.getTickCount() % 100] * 1.0E-6D, 50);
         long alpha = System.currentTimeMillis() - data.baseTimestamp - timestamp;
-        if (alpha < -300 || alpha > 300 + tickTime) { // 允许 +- 300ms 的网络波动、窗口下限再扩大一个 tick time 时间
+        if (alpha < -300 || alpha > 300 + tickTime * 2) { // 允许 +- 300ms 的网络波动、窗口下限再扩大 2 个 tick time 时间(最坏情况射击会延迟2个 tick)
             return ShootResult.NETWORK_FAIL;
         }
         // 检查是否正在换弹

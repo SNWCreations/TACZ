@@ -11,6 +11,9 @@
   "damage_style": "total",
   "animation": "tacz:m870",
   "state_machine": "tacz:m870_state_machine",
+  state_machine_param: {
+    "bolt_shell_ejecting_time": 0.17
+  },
   "use_default_animation": "rifle",
   "third_person_animation": "default",
   "player_animator_3rd": "tacz:rifle_default.player_animation",
@@ -27,6 +30,13 @@
     "scale": 1
   },
   "iron_zoom": 1.2,
+  "shell": {
+    "initial_velocity": [5, 2, 1],
+    "random_velocity": [1, 1, 0.25],
+    "acceleration": [0.0, -10, 0.0],
+    "angular_velocity": [360, -1200, 90],
+    "living_time": 1.0
+  },
   "sounds": {
     "draw": "tacz:m870/m870_draw",
     "shoot": "tacz:m870/m870_shoot",

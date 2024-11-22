@@ -100,20 +100,21 @@ public class CommonGunIndex {
     }
 
     private static void checkScript(GunData data, CommonGunIndex index) {
+        // 加载脚本
         ResourceLocation scriptId = data.getScript();
-        Map<String, Object> params = data.getScriptParam();
         CommonAssetsManager commonAssetsManager = CommonAssetsManager.getInstance();
         if (scriptId != null && commonAssetsManager != null) {
             index.script = commonAssetsManager.getScript(scriptId);
             if (index.script == null) {
                 GunMod.LOGGER.warn(MARKER, "script '{}' not found", scriptId);
-                return;
             }
-            if (params != null) {
-                index.scriptParam = new LuaTable();
-                for (Map.Entry<String, Object> entry : params.entrySet()) {
-                    index.scriptParam.set(entry.getKey(), CoerceJavaToLua.coerce(entry.getValue()));
-                }
+        }
+        // 加载脚本参数
+        Map<String, Object> params = data.getScriptParam();
+        if (params != null) {
+            index.scriptParam = new LuaTable();
+            for (Map.Entry<String, Object> entry : params.entrySet()) {
+                index.scriptParam.set(entry.getKey(), CoerceJavaToLua.coerce(entry.getValue()));
             }
         }
     }

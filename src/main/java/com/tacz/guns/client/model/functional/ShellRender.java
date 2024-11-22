@@ -22,7 +22,7 @@ import java.util.concurrent.ConcurrentLinkedDeque;
 
 public class ShellRender implements IFunctionalRenderer {
     // 抛壳队列
-    private static final ConcurrentLinkedDeque<Data> SHELL_QUEUE = new ConcurrentLinkedDeque<>();
+    private final ConcurrentLinkedDeque<Data> SHELL_QUEUE = new ConcurrentLinkedDeque<>();
     public static boolean isSelf = false;
 
     private final BedrockGunModel bedrockGunModel;
@@ -31,7 +31,7 @@ public class ShellRender implements IFunctionalRenderer {
         this.bedrockGunModel = bedrockGunModel;
     }
 
-    public static void addShell(Vector3f randomVelocity) {
+    public void addShell(Vector3f randomVelocity) {
         double xRandom = Math.random() * randomVelocity.x();
         double yRandom = Math.random() * randomVelocity.y();
         double zRandom = Math.random() * randomVelocity.z();
@@ -39,7 +39,7 @@ public class ShellRender implements IFunctionalRenderer {
         SHELL_QUEUE.offerLast(new Data(System.currentTimeMillis(), vector3f));
     }
 
-    public static void renderShell(ResourceLocation gunId, PoseStack poseStack, BedrockGunModel gunModel) {
+    public void renderShell(ResourceLocation gunId, PoseStack poseStack, BedrockGunModel gunModel) {
         TimelessAPI.getClientGunIndex(gunId).ifPresent(index -> {
             ShellEjection shellEjection = index.getShellEjection();
             if (shellEjection == null) {
@@ -80,7 +80,7 @@ public class ShellRender implements IFunctionalRenderer {
         });
     }
 
-    private static void renderSingleShell(ItemDisplayContext transformType1, int light, int overlay, Data data, Vector3f initialVelocity, Vector3f acceleration, Vector3f angularVelocity, BedrockAmmoModel model, ResourceLocation location) {
+    private void renderSingleShell(ItemDisplayContext transformType1, int light, int overlay, Data data, Vector3f initialVelocity, Vector3f acceleration, Vector3f angularVelocity, BedrockAmmoModel model, ResourceLocation location) {
         // 再检查一次
         if (data.normal == null && data.pose == null) {
             return;
@@ -113,7 +113,7 @@ public class ShellRender implements IFunctionalRenderer {
         model.render(poseStack2, transformType1, RenderType.entityCutout(location), light, overlay);
     }
 
-    private static void checkShellQueue(long lifeTime) {
+    private void checkShellQueue(long lifeTime) {
         if (!SHELL_QUEUE.isEmpty()) {
             Data data = SHELL_QUEUE.peekFirst();
             if ((System.currentTimeMillis() - data.timeStamp) > lifeTime) {
@@ -137,7 +137,7 @@ public class ShellRender implements IFunctionalRenderer {
             return;
         }
         ResourceLocation gunId = iGun.getGunId(currentGunItem);
-        ShellRender.renderShell(gunId, poseStack, bedrockGunModel);
+        this.renderShell(gunId, poseStack, bedrockGunModel);
     }
 
     public static class Data {

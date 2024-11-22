@@ -54,134 +54,132 @@ end
 
 local base_track_state = {}
 
-function base_track_state.entry(context)
+function base_track_state.entry(this, context)
     context:runAnimation("static_idle", context:getTrack(STATIC_TRACK_LINE, BASE_TRACK), false, LOOP, 0)
 end
 
 local bolt_caught_states = {
-    normal = {
-        input = "bolt_normal"
-    },
-    bolt_caught = {
-        input = "bolt_caught"
-    }
+    normal = {},
+    bolt_caught = {}
 }
 
-function bolt_caught_states.normal.update(context)
+function bolt_caught_states.normal.update(this, context)
     if (isNoAmmo(context)) then
-        context:trigger(bolt_caught_states.bolt_caught.input)
+        context:trigger(this.INPUT_BOLT_CAUGHT)
     end
 end
 
-function bolt_caught_states.normal.entry(context)
-    bolt_caught_states.normal.update(context)
+function bolt_caught_states.normal.entry(this, context)
+    this.bolt_caught_states.normal.update(this, context)
 end
 
-function bolt_caught_states.normal.transition(context, input)
-    if (input == bolt_caught_states.bolt_caught.input) then
-        return bolt_caught_states.bolt_caught
+function bolt_caught_states.normal.transition(this, context, input)
+    if (input == this.INPUT_BOLT_CAUGHT) then
+        return this.bolt_caught_states.bolt_caught
     end
 end
 
-function bolt_caught_states.bolt_caught.entry(context)
+function bolt_caught_states.bolt_caught.entry(this, context)
     context:runAnimation("static_bolt_caught", context:getTrack(STATIC_TRACK_LINE, BOLT_CAUGHT_TRACK), false, LOOP, 0)
 end
 
-function bolt_caught_states.bolt_caught.update(context)
+function bolt_caught_states.bolt_caught.update(this, context)
     if (not isNoAmmo(context)) then
-        context:trigger(bolt_caught_states.normal.input)
+        context:trigger(this.INPUT_BOLT_NORMAL)
     end
 end
 
-function bolt_caught_states.bolt_caught.transition(context, input)
-    if (input == bolt_caught_states.normal.input) then
+function bolt_caught_states.bolt_caught.transition(this, context, input)
+    if (input == this.INPUT_BOLT_NORMAL) then
         context:stopAnimation(context:getTrack(STATIC_TRACK_LINE, BOLT_CAUGHT_TRACK))
-        return bolt_caught_states.normal
+        return this.bolt_caught_states.normal
     end
 end
 
 local main_track_states = {
     start = {},
     idle = {},
-    inspect = {
-        retreat = "inspect_retreat"
-    },
+    inspect = {},
     final = {},
     bayonet_counter = 0
 }
 
-function main_track_states.start.transition(context, input)
+function main_track_states.start.transition(this, context, input)
     if (input == INPUT_DRAW) then
         context:runAnimation("draw", context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK), false, PLAY_ONCE_STOP, 0)
-        return main_track_states.idle
+        return this.main_track_states.idle
     end
 end
 
-function main_track_states.idle.transition(context, input)
+function main_track_states.idle.transition(this, context, input)
     if (input == INPUT_PUT_AWAY) then
         runPutAwayAnimation(context)
-        return main_track_states.final
+        return this.main_track_states.final
     end
     if (input == INPUT_RELOAD) then
         runReloadAnimation(context)
-        return main_track_states.idle
+        return this.main_track_states.idle
+    end
+    if (input == INPUT_SHOOT) then
+        context:popShellFrom(0) -- 默认射击抛壳
+        return this.main_track_states.idle
     end
     if (input == INPUT_BOLT) then
         context:runAnimation("bolt", context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK), false, PLAY_ONCE_STOP, 0.2)
-        return main_track_states.idle
+        return this.main_track_states.idle
     end
     if (input == INPUT_INSPECT) then
         runInspectAnimation(context)
-        return main_track_states.inspect
+        return this.main_track_states.inspect
     end
     if (input == INPUT_BAYONET_MUZZLE) then
-        local counter = main_track_states.bayonet_counter
+        local counter = this.main_track_states.bayonet_counter
         local animationName = "melee_bayonet_" .. tostring(counter + 1)
-        main_track_states.bayonet_counter = (counter + 1) % 3
+        this.main_track_states.bayonet_counter = (counter + 1) % 3
         context:runAnimation(animationName, context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK), false, PLAY_ONCE_STOP, 0.2)
-        return main_track_states.idle
+        return this.main_track_states.idle
     end
     if (input == INPUT_BAYONET_STOCK) then
         context:runAnimation("melee_stock", context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK), false, PLAY_ONCE_STOP, 0.2)
-        return main_track_states.idle
+        return this.main_track_states.idle
     end
     if (input == INPUT_BAYONET_PUSH) then
         context:runAnimation("melee_push", context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK), false, PLAY_ONCE_STOP, 0.2)
-        return main_track_states.idle
+        return this.main_track_states.idle
     end
 end
 
-function main_track_states.inspect.entry(context)
+function main_track_states.inspect.entry(this, context)
     context:setShouldHideCrossHair(true)
 end
 
-function main_track_states.inspect.exit(context)
+function main_track_states.inspect.exit(this, context)
     context:setShouldHideCrossHair(false)
 end
 
-function main_track_states.inspect.update(context)
+function main_track_states.inspect.update(this, context)
     if (context:isStopped(context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK))) then
-        context:trigger(main_track_states.inspect.retreat)
+        context:trigger(this.INPUT_INSPECT_RETREAT)
     end
 end
 
-function main_track_states.inspect.transition(context, input)
-    if (input == main_track_states.inspect.retreat) then
-        return main_track_states.idle
+function main_track_states.inspect.transition(this, context, input)
+    if (input == this.INPUT_INSPECT_RETREAT) then
+        return this.main_track_states.idle
     end
     if (input == INPUT_SHOOT) then -- 特殊地，射击也应当打断检视
         context:stopAnimation(context:getTrack(STATIC_TRACK_LINE, MAIN_TRACK))
-        return main_track_states.idle
+        return this.main_track_states.idle
     end
-    return main_track_states.idle.transition(context, input)
+    return this.main_track_states.idle.transition(this, context, input)
 end
 
 local gun_kick_state = {}
 
-function gun_kick_state.transition(context, input)
+function gun_kick_state.transition(this, context, input)
     if (input == INPUT_SHOOT) then
         local track = context:findIdleTrack(GUN_KICK_TRACK_LINE, false)
-        context:runAnimation("shoot", track, true, PLAY_ONCE_STOP, 0)
+        context:runAnimation("shoot", track, true, PLAY_ONCE_STOP, 0) -- 这里是混合动画，一般是可叠加的 gun kick
     end
     return nil
 end
@@ -196,7 +194,7 @@ local movement_track_states = {
     }
 }
 
-function movement_track_states.idle.update(context)
+function movement_track_states.idle.update(this, context)
     local track = context:getTrack(BLENDING_TRACK_LINE, MOVEMENT_TRACK)
     -- 如果轨道空闲，则播放 idle 动画
     if (context:isStopped(track) or context:isHolding(track)) then
@@ -204,26 +202,26 @@ function movement_track_states.idle.update(context)
     end
 end
 
-function movement_track_states.idle.transition(context, input)
+function movement_track_states.idle.transition(this, context, input)
     if (input == INPUT_RUN) then
-        return movement_track_states.run
+        return this.movement_track_states.run
     elseif (input == INPUT_WALK) then
-        return movement_track_states.walk
+        return this.movement_track_states.walk
     end
 end
 
-function movement_track_states.run.entry(context)
-    movement_track_states.run.mode = -1
+function movement_track_states.run.entry(this, context)
+    this.movement_track_states.run.mode = -1
     context:runAnimation("run_start", context:getTrack(BLENDING_TRACK_LINE, MOVEMENT_TRACK), true, PLAY_ONCE_HOLD, 0.2)
 end
 
-function movement_track_states.run.exit(context)
+function movement_track_states.run.exit(this, context)
     context:runAnimation("run_end", context:getTrack(BLENDING_TRACK_LINE, MOVEMENT_TRACK), true, PLAY_ONCE_HOLD, 0.3)
 end
 
-function movement_track_states.run.update(context)
+function movement_track_states.run.update(this, context)
     local track = context:getTrack(BLENDING_TRACK_LINE, MOVEMENT_TRACK)
-    local state = movement_track_states.run;
+    local state = this.movement_track_states.run;
     -- 等待 run_start 结束，然后循环播放 run
     if (context:isHolding(track)) then
         context:runAnimation("run", track, true, LOOP, 0.2)
@@ -249,26 +247,26 @@ function movement_track_states.run.update(context)
     end
 end
 
-function movement_track_states.run.transition(context, input)
+function movement_track_states.run.transition(this, context, input)
     if (input == INPUT_IDLE) then
-        return movement_track_states.idle
+        return this.movement_track_states.idle
     elseif (input == INPUT_WALK) then
-        return movement_track_states.walk
+        return this.movement_track_states.walk
     end
 end
 
-function movement_track_states.walk.entry(context)
-    movement_track_states.walk.mode = -1
+function movement_track_states.walk.entry(this, context)
+    this.movement_track_states.walk.mode = -1
 end
 
-function movement_track_states.walk.exit(context)
+function movement_track_states.walk.exit(this, context)
     -- 手动播放一次 idle 动画以打断 walk 动画的循环
     context:runAnimation("idle", context:getTrack(BLENDING_TRACK_LINE, MOVEMENT_TRACK), true, PLAY_ONCE_HOLD, 0.4)
 end
 
-function movement_track_states.walk.update(context)
+function movement_track_states.walk.update(this, context)
     local track = context:getTrack(BLENDING_TRACK_LINE, MOVEMENT_TRACK)
-    local state = movement_track_states.walk
+    local state = this.movement_track_states.walk
     if (context:getShootCoolDown() > 0) then
         -- 如果刚刚开火，则播放 idle 动画以稳定枪身
         if (state.mode ~= 0) then
@@ -315,51 +313,56 @@ function movement_track_states.walk.update(context)
     end
 end
 
-function movement_track_states.walk.transition(context, input)
+function movement_track_states.walk.transition(this, context, input)
     if (input == INPUT_IDLE) then
-        return movement_track_states.idle
+        return this.movement_track_states.idle
     elseif (input == INPUT_RUN) then
-        return movement_track_states.run
+        return this.movement_track_states.run
     end
 end
 
 local M = {
+    -- track lines
     track_line_top = track_line_top,
     STATIC_TRACK_LINE = STATIC_TRACK_LINE,
     GUN_KICK_TRACK_LINE = GUN_KICK_TRACK_LINE,
     BLENDING_TRACK_LINE = BLENDING_TRACK_LINE,
-
+    -- static tracks
     static_track_top = static_track_top,
     BASE_TRACK = BASE_TRACK,
     BOLT_CAUGHT_TRACK = BOLT_CAUGHT_TRACK,
     SAFETY_TRACK = SAFETY_TRACK,
     ADS_TRACK = ADS_TRACK,
     MAIN_TRACK = MAIN_TRACK,
-
+    -- blending tracks
     blending_track_top = blending_track_top,
     MOVEMENT_TRACK = MOVEMENT_TRACK,
     LOOP_TRACK = LOOP_TRACK,
-
+    -- states
     base_track_state = base_track_state,
     bolt_caught_states = bolt_caught_states,
     main_track_states = main_track_states,
     gun_kick_state = gun_kick_state,
-    movement_track_states = movement_track_states
+    movement_track_states = movement_track_states,
+    -- inputs
+    INPUT_BOLT_CAUGHT = "bolt_caught",
+    INPUT_BOLT_NORMAL = "bolt_normal",
+    INPUT_INSPECT_RETREAT = "inspect_retreat"
 }
 
-function M.initialize(context)
+function M:initialize(context)
     context:ensureTrackLineSize(track_line_top.value)
     context:ensureTracksAmount(STATIC_TRACK_LINE, static_track_top.value)
     context:ensureTracksAmount(BLENDING_TRACK_LINE, blending_track_top.value)
-    movement_track_states.run.mode = -1
-    movement_track_states.walk.mode = -1
+    self.movement_track_states.run.mode = -1
+    self.movement_track_states.walk.mode = -1
 end
 
-function M.exit(context)
+function M:exit(context)
     -- do some cleaning up things
 end
 
-function M:default_states()
+function M:states()
     return {
         self.base_track_state,
         self.bolt_caught_states.normal,
@@ -367,10 +370,6 @@ function M:default_states()
         self.gun_kick_state,
         self.movement_track_states.idle
     }
-end
-
-function M.states()
-    return M:default_states()
 end
 
 return M

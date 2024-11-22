@@ -8,6 +8,8 @@ import com.tacz.guns.api.item.IAmmo;
 import com.tacz.guns.api.item.IAmmoBox;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.gun.FireMode;
+import com.tacz.guns.client.model.BedrockGunModel;
+import com.tacz.guns.client.model.functional.ShellRender;
 import com.tacz.guns.client.resource.index.ClientGunIndex;
 import com.tacz.guns.resource.pojo.data.gun.Bolt;
 import com.tacz.guns.util.AttachmentDataUtils;
@@ -17,6 +19,7 @@ import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
+import org.luaj.vm2.LuaTable;
 
 import java.util.Optional;
 import java.util.function.BiFunction;
@@ -310,6 +313,30 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
             float currentWalkDist = entity.walkDist + (entity.walkDist - entity.walkDistO) * partialTicks;
             return currentWalkDist - walkDistAnchor;
         }).orElse(0f);
+    }
+
+    /**
+     * 从指定序号的抛壳窗弹出一枚弹壳
+     * @param index 抛壳窗序号
+     */
+    public void popShellFrom(int index) {
+        BedrockGunModel gunModel = clientGunIndex.getGunModel();
+        if (clientGunIndex.getShellEjection() != null && gunModel != null) {
+            ShellRender shellRender = gunModel.getShellRender(index);
+            if (shellRender != null) {
+                shellRender.addShell(clientGunIndex.getShellEjection().getRandomVelocity());
+            }
+        }
+    }
+
+    /**
+     * 获取在枪械 display 中声明的状态机参数
+     *
+     * @return 状态机参数表
+     */
+    public LuaTable getStateMachineParams() {
+        LuaTable param = clientGunIndex.getStateMachineParam();
+        return param == null ? new LuaTable() : param;
     }
 
     /**

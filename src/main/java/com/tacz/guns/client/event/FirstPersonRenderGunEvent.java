@@ -38,7 +38,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.Entity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -285,28 +284,8 @@ public class FirstPersonRenderGunEvent {
 
     @SubscribeEvent
     public static void onGunFire(GunFireEvent event) {
-        if (event.getLogicalSide().isClient()) {
-            LivingEntity shooter = event.getShooter();
-            LocalPlayer player = Minecraft.getInstance().player;
-            if (!shooter.equals(player)) {
-                return;
-            }
-            ItemStack mainhandItem = player.getMainHandItem();
-            IGun iGun = IGun.getIGunOrNull(mainhandItem);
-            if (iGun == null) {
-                return;
-            }
-            TimelessAPI.getClientGunIndex(iGun.getGunId(mainhandItem)).ifPresent(gunIndex -> {
-                // 记录开火时间戳，用于后坐力程序动画
-                shootTimeStamp = System.currentTimeMillis();
-                // 记录枪口火焰数据
-                MuzzleFlashRender.onShoot();
-                // 抛壳
-                if (gunIndex.getShellEjection() != null) {
-                    ShellRender.addShell(gunIndex.getShellEjection().getRandomVelocity());
-                }
-            });
-        }
+        // 记录开火时间戳，用于后坐力程序动画
+        shootTimeStamp = System.currentTimeMillis();
     }
 
     private static boolean bulletFromPlayer(Entity entity) {

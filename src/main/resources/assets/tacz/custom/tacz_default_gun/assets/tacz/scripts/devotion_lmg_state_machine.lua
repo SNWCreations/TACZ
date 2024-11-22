@@ -5,7 +5,7 @@ local gun_kick_state = setmetatable({
     acceleration_count = 0
 }, {__index = default.gun_kick_state})
 
-function gun_kick_state.transition(context, input)
+function gun_kick_state.transition(this, context, input)
     if (input == INPUT_SHOOT) then
         local track = context:findIdleTrack(GUN_KICK_TRACK_LINE, false)
         context:runAnimation("shoot", track, true, PLAY_ONCE_STOP, 0)
@@ -40,13 +40,9 @@ local M = setmetatable({
     gun_kick_state = gun_kick_state
 }, {__index = default})
 
-function M.initialize(context)
-    default.initialize(context)
+function M:initialize(context)
+    default.initialize(self, context)
     gun_kick_state.acceleration_count = 0
-end
-
-function M.states()
-    return M:default_states()
 end
 
 return M
