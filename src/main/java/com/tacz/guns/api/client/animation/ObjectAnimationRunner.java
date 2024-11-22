@@ -1,6 +1,7 @@
 package com.tacz.guns.api.client.animation;
 
 import com.tacz.guns.util.math.MathUtil;
+import net.minecraft.client.Minecraft;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -223,12 +224,9 @@ public class ObjectAnimationRunner {
         this.valueRecover = null;
     }
 
-    public void update(boolean blend) {
-        long currentNs = System.nanoTime();
-        long fromTimeNs = progressNs;
-
+    private void updateProgress(long alphaProgress) {
         if (running) {
-            progressNs += currentNs - lastUpdateNs;
+            progressNs += alphaProgress;
         }
         switch (animation.playType) {
             case PLAY_ONCE_HOLD -> {
@@ -251,9 +249,16 @@ public class ObjectAnimationRunner {
                 }
             }
         }
+    }
 
+    public void update(boolean blend) {
+        long fromTimeNs = progressNs;
+        long currentNs = System.nanoTime();
+        long alphaProgress = currentNs - lastUpdateNs;
+        updateProgress(alphaProgress);
+        lastUpdateNs = currentNs;
         if (isTransitioning) {
-            transitionProgressNs += currentNs - lastUpdateNs;
+            transitionProgressNs += alphaProgress;
             if (transitionProgressNs >= transitionTimeNs) {
                 stopTransition();
             } else {
@@ -261,10 +266,23 @@ public class ObjectAnimationRunner {
                 updateTransition(easeOutCubic(transitionProgress), blend);
             }
         } else {
-            animation.update(blend, fromTimeNs, progressNs);
+            animation.update(blend, progressNs);
+            ObjectAnimationSoundChannel soundChannel = animation.getSoundChannel();
+            if (soundChannel != null && Minecraft.getInstance().player != null) {
+                soundChannel.playSound(fromTimeNs / 1e9, progressNs / 1e9, Minecraft.getInstance().player, 16, 1 ,1);
+            }
         }
+    }
 
+    public void updateSoundOnly() {
+        long fromTimeNs = progressNs;
+        long currentNs = System.nanoTime();
+        updateProgress(currentNs - lastUpdateNs);
         lastUpdateNs = currentNs;
+        ObjectAnimationSoundChannel soundChannel = animation.getSoundChannel();
+        if (soundChannel != null && Minecraft.getInstance().player != null) {
+            soundChannel.playSound(fromTimeNs / 1e9, progressNs / 1e9, Minecraft.getInstance().player, 16, 1 ,1);
+        }
     }
 
     public boolean isRunning() {

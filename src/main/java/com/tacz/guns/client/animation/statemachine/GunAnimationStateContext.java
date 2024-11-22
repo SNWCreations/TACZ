@@ -141,9 +141,13 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
 
     /**
      * 检查玩家身上（或者虚拟备弹）是否有弹药可以消耗，通常用于循环换弹的打断。
+     * 创造模式的玩家会直接返回 true
      * @return 玩家身上（或者虚拟备弹）是否有弹药可以消耗
      */
     public boolean hasAmmoToConsume(){
+        if (!processRemoteGunOperator(IGunOperator::needCheckAmmo).orElse(true)) {
+            return true;
+        }
         if (iGun.useDummyAmmo(currentGunItem)) {
             return iGun.getDummyAmmoAmount(currentGunItem) > 0;
         }

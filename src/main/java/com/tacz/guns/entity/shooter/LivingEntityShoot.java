@@ -57,7 +57,7 @@ public class LivingEntityShoot {
         }
         // 根据 tick time 和 允许的网络延迟波动 计算 时间戳的接受窗口
         MinecraftServer server = Objects.requireNonNull(shooter.getServer());
-        double tickTime = Math.max(server.tickTimes[server.getTickCount() % 100] * 10E-6, 50);
+        double tickTime = Math.max(server.tickTimes[server.getTickCount() % 100] * 1.0E-6D, 50);
         long alpha = System.currentTimeMillis() - data.baseTimestamp - timestamp;
         if (alpha < -300 || alpha > 300 + tickTime) { // 允许 +- 300ms 的网络波动、窗口下限再扩大一个 tick time 时间
             return ShootResult.NETWORK_FAIL;

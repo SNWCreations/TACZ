@@ -10,6 +10,7 @@ import com.tacz.guns.client.model.SlotModel;
 import com.tacz.guns.client.model.bedrock.BedrockPart;
 import com.tacz.guns.client.resource.pojo.TransformScale;
 import com.tacz.guns.util.RenderDistance;
+import net.minecraft.client.Minecraft;
 import net.minecraft.client.model.geom.EntityModelSet;
 import net.minecraft.client.renderer.BlockEntityWithoutLevelRenderer;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -103,6 +104,13 @@ public class GunItemRenderer extends BlockEntityWithoutLevelRenderer {
             applyPositioningTransform(transformType, gunIndex.getTransform().getScale(), gunModel, poseStack);
             // 应用 display 数据中的缩放
             applyScaleTransform(transformType, gunIndex.getTransform().getScale(), poseStack);
+            // 更新状态机
+            var animationStateMachine = gunIndex.getAnimationStateMachine();
+            animationStateMachine.processContextIfExist(context -> {
+                context.setCurrentGunItem(stack);
+                context.setPartialTicks(Minecraft.getInstance().getFrameTime());
+            });
+            animationStateMachine.visualUpdate();
             // 渲染枪械模型
             RenderType renderType = RenderType.entityCutout(gunTexture);
             gunModel.render(poseStack, stack, transformType, renderType, pPackedLight, pPackedOverlay);

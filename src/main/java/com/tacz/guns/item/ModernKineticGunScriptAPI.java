@@ -273,6 +273,15 @@ public class ModernKineticGunScriptAPI {
     }
 
     /**
+     * 获取枪械当前的开火模式（全自动、半自动、连发等）。
+     *
+     * @return 开火模式 (序数)
+     */
+    public int getFireMode() {
+        return abstractGunItem.getFireMode(itemStack).ordinal();
+    }
+
+    /**
      * 获取当前玩家射击是否需要消耗弹药。经过设置，创造模式的玩家可以不消耗弹药射击。
      *
      * @return 射击是否需要消耗弹药
@@ -346,9 +355,13 @@ public class ModernKineticGunScriptAPI {
 
     /**
      * 检查玩家身上（或者虚拟备弹）是否有弹药可以消耗，通常用于循环换弹的打断。
+     * 创造模式的玩家会直接返回 true
      * @return 玩家身上（或者虚拟备弹）是否有弹药可以消耗
      */
     public boolean hasAmmoToConsume(){
+        if (!isReloadingNeedConsumeAmmo()) {
+            return true;
+        }
         if (abstractGunItem.useDummyAmmo(itemStack)) {
             return abstractGunItem.getDummyAmmoAmount(itemStack) > 0;
         }

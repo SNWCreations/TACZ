@@ -55,6 +55,20 @@ public class AnimationStateMachine<T extends AnimationStateContext> {
     }
 
     /**
+     * 非第一人称渲染时调用调用，不会讲动画数据写入模型，但是仍会更新状态
+     * 也会播放声音
+     *
+     * @see AnimationState#update(AnimationStateContext)
+     * @see AnimationController#updateSoundOnly()
+     */
+    public void visualUpdate() {
+        if (context != null && currentStates != null) {
+            currentStates.forEach(state -> state.update(context));
+        }
+        animationController.updateSoundOnly();
+    }
+
+    /**
      * 对状态机进行一次输入，可能触发状态转移。
      *
      * @param condition 输入
