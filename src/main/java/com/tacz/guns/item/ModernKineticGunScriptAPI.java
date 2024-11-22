@@ -222,7 +222,7 @@ public class ModernKineticGunScriptAPI {
      * @return 上次射击的 timestamp，在切枪时会重置为 -1。
      */
     public long getLastShootTimestamp() {
-        return dataHolder.lastShootTimestamp;
+        return dataHolder.lastShootTimestamp + dataHolder.baseTimestamp;
     }
 
     /**

@@ -155,7 +155,7 @@ public class LocalPlayerShoot {
                 data.clientLastShootTimestamp = data.clientShootTimestamp;
                 data.clientShootTimestamp = System.currentTimeMillis();
                 // 发送开火的数据包，通知服务器
-                NetworkHandler.CHANNEL.sendToServer(new ClientMessagePlayerShoot());
+                NetworkHandler.CHANNEL.sendToServer(new ClientMessagePlayerShoot(data.clientShootTimestamp - data.clientBaseTimestamp));
             }
 
             // todo 需要检查

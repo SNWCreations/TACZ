@@ -130,7 +130,13 @@ public abstract class LivingEntityMixin extends Entity implements IGunOperator, 
     @Unique
     @Override
     public ShootResult shoot(Supplier<Float> pitch, Supplier<Float> yaw) {
-        return this.tacz$shoot.shoot(pitch, yaw);
+        return this.shoot(pitch, yaw, System.currentTimeMillis() - tacz$data.baseTimestamp);
+    }
+
+    @Unique
+    @Override
+    public ShootResult shoot(Supplier<Float> pitch, Supplier<Float> yaw, long timestamp) {
+        return tacz$shoot.shoot(pitch, yaw, timestamp);
     }
 
     @Unique
@@ -171,6 +177,11 @@ public abstract class LivingEntityMixin extends Entity implements IGunOperator, 
     @Nullable
     public AttachmentCacheProperty getCacheProperty() {
         return this.tacz$data.cacheProperty;
+    }
+
+    @Override
+    public ShooterDataHolder getDataHolder() {
+        return this.tacz$data;
     }
 
     @Override

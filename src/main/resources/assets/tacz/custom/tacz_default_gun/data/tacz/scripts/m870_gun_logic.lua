@@ -1,7 +1,7 @@
 local M = {}
 
 function M.shoot(api)
-    api:shootOnce(true)
+    api:shootOnce(api:isShootingNeedConsumeAmmo())
 end
 
 function M.start_bolt(api)
