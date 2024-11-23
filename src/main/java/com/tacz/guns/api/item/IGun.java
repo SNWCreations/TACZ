@@ -1,5 +1,6 @@
 package com.tacz.guns.api.item;
 
+import com.tacz.guns.api.DefaultAssets;
 import com.tacz.guns.api.item.attachment.AttachmentType;
 import com.tacz.guns.api.item.gun.AbstractGunItem;
 import com.tacz.guns.api.item.gun.FireMode;
@@ -218,7 +219,7 @@ public interface IGun {
     /**
      * 获取枪械的配件 ID
      * <p>
-     * 如果不存在，返回 DefaultAssets.EMPTY_ATTACHMENT_ID;
+     * 如果不存在，返回 {@link DefaultAssets#EMPTY_ATTACHMENT_ID};
      */
     @Nonnull
     ResourceLocation getAttachmentId(ItemStack gun, AttachmentType type);

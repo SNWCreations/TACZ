@@ -1,12 +1,16 @@
 package com.tacz.guns.item;
 
+import com.tacz.guns.api.DefaultAssets;
 import com.tacz.guns.api.TimelessAPI;
 import com.tacz.guns.api.entity.IGunOperator;
 import com.tacz.guns.api.event.common.GunFireEvent;
 import com.tacz.guns.api.item.IAmmo;
 import com.tacz.guns.api.item.IAmmoBox;
+import com.tacz.guns.api.item.attachment.AttachmentType;
 import com.tacz.guns.api.item.gun.AbstractGunItem;
 import com.tacz.guns.api.item.gun.FireMode;
+import com.tacz.guns.api.util.LuaEntityAccessor;
+import com.tacz.guns.api.util.LuaNbtAccessor;
 import com.tacz.guns.client.animation.statemachine.GunAnimationStateContext;
 import com.tacz.guns.entity.EntityKineticBullet;
 import com.tacz.guns.entity.shooter.ShooterDataHolder;
@@ -42,6 +46,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 
+@SuppressWarnings("unused")
 public class ModernKineticGunScriptAPI {
     public static String MARKER = "ScriptAPI";
 
@@ -60,6 +65,10 @@ public class ModernKineticGunScriptAPI {
     private Supplier<Float> pitchSupplier;
 
     private Supplier<Float> yawSupplier;
+
+    private LuaNbtAccessor nbtUtil;
+
+    private LuaEntityAccessor entityAccessor;
 
     /**
      * 执行一次完整的射击逻辑，会考虑玩家的状态(是否在瞄准、是否在移动、是否在匍匐等)、配件数值影响、多弹丸散射、连发，播放开火音效、
@@ -498,6 +507,41 @@ public class ModernKineticGunScriptAPI {
         return System.currentTimeMillis();
     }
 
+    /**
+     * 获取枪械的配件 ID
+     *
+     * @return 配件 ID, 如果类型错误或者对应的配件不存在则返回空配件 ID 'tacz:empty'
+     */
+    public String getAttachment(String type) {
+        try {
+            AttachmentType t = AttachmentType.valueOf(type);
+            return abstractGunItem.getAttachmentId(itemStack, t).toString();
+        } catch (IllegalArgumentException e) {
+            return DefaultAssets.EMPTY_ATTACHMENT_ID.toString();
+        }
+    }
+
+    /**
+     * 返回一个当前枪械物品的 NBT 访问器。除非要保存持久化数据，你不应该频繁调用这个方法。<br/>
+     * 参见 {@link LuaNbtAccessor}
+     * @return NBT 访问器
+     */
+    public LuaNbtAccessor getNbt() {
+        return nbtUtil;
+    }
+
+    /**
+     * 返回一个关于当前开枪实体的工具。这个访问器提供了一些常用的方法，例如发送系统消息、发送ActionBar、创建文本组件等。<br/>
+     * 参见 {@link LuaEntityAccessor}
+     * @return 实体访问器
+     */
+    public LuaEntityAccessor getEntityUtil() {
+        if (entityAccessor == null) {
+            entityAccessor = new LuaEntityAccessor(shooter);
+        }
+        return entityAccessor;
+    }
+
     public void setShooter(LivingEntity shooter) {
         this.shooter = shooter;
     }
@@ -549,5 +593,8 @@ public class ModernKineticGunScriptAPI {
         Optional<CommonGunIndex> gunIndexOptional = TimelessAPI.getCommonGunIndex(gunId);
         gunIndex = gunIndexOptional.orElse(null);
         abstractGunItem = gunItem;
+        if (itemStack.hasTag()) {
+            nbtUtil = new LuaNbtAccessor(itemStack.getTag());
+        }
     }
 }

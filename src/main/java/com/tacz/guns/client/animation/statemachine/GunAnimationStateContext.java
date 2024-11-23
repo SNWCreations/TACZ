@@ -1,5 +1,6 @@
 package com.tacz.guns.client.animation.statemachine;
 
+import com.tacz.guns.api.DefaultAssets;
 import com.tacz.guns.api.TimelessAPI;
 import com.tacz.guns.api.client.gameplay.IClientPlayerGunOperator;
 import com.tacz.guns.api.entity.IGunOperator;
@@ -7,7 +8,9 @@ import com.tacz.guns.api.entity.ReloadState;
 import com.tacz.guns.api.item.IAmmo;
 import com.tacz.guns.api.item.IAmmoBox;
 import com.tacz.guns.api.item.IGun;
+import com.tacz.guns.api.item.attachment.AttachmentType;
 import com.tacz.guns.api.item.gun.FireMode;
+import com.tacz.guns.api.util.LuaNbtAccessor;
 import com.tacz.guns.client.model.BedrockGunModel;
 import com.tacz.guns.client.model.functional.ShellRender;
 import com.tacz.guns.client.resource.index.ClientGunIndex;
@@ -25,12 +28,14 @@ import java.util.Optional;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+@SuppressWarnings("unused")
 public class GunAnimationStateContext extends ItemAnimationStateContext {
     private ItemStack currentGunItem;
     private IGun iGun;
     private ClientGunIndex clientGunIndex;
     private float partialTicks;
     private float walkDistAnchor = 0f;
+    private LuaNbtAccessor nbtUtil;
 
     private <T> Optional<T> processGunData(BiFunction<IGun, ClientGunIndex, T> processor) {
         if (iGun != null && clientGunIndex != null) {
@@ -340,6 +345,30 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
     }
 
     /**
+     * 获取当前枪械物品的 NBT 数据访问器。<br/>
+     * 注意，你不应该在客户端侧修改 NBT 数据，这可能会导致与服务端的数据不一致。<br/>
+     * 你应该确保在状态机脚本内仅进行读操作
+     * @return NBT 数据访问器
+     */
+    public LuaNbtAccessor getNbtAccessor() {
+        return nbtUtil;
+    }
+
+    /**
+     * 获取枪械的配件 ID
+     *
+     * @return 配件 ID, 如果类型错误或者对应的配件不存在则返回空配件 ID 'tacz:empty'
+     */
+    public String getAttachment(String type) {
+        try {
+            AttachmentType t = AttachmentType.valueOf(type);
+            return iGun.getAttachmentId(currentGunItem, t).toString();
+        } catch (IllegalArgumentException e) {
+            return DefaultAssets.EMPTY_ATTACHMENT_ID.toString();
+        }
+    }
+
+    /**
      * 状态机脚本请不要调用此方法。此方法用于状态机更新时设置当前的物品对象。
      */
     public void setCurrentGunItem(ItemStack currentGunItem) {
@@ -347,6 +376,9 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
         this.iGun = IGun.getIGunOrNull(currentGunItem);
         if (iGun != null) {
             clientGunIndex = TimelessAPI.getClientGunIndex(iGun.getGunId(currentGunItem)).orElse(null);
+        }
+        if (currentGunItem.hasTag()) {
+            nbtUtil = new LuaNbtAccessor(currentGunItem.getTag());
         }
     }
 

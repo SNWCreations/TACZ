@@ -47,6 +47,11 @@ import java.util.function.Supplier;
 public class ModernKineticGunItem extends AbstractGunItem implements GunItemDataAccessor {
     public static final String TYPE_NAME = "modern_kinetic";
 
+    private static final DoubleFunction<AttributeModifier> AM_FACTORY = amount -> new AttributeModifier(
+            UUID.randomUUID(), "TACZ Melee Damage",
+            amount, AttributeModifier.Operation.ADDITION
+    );
+
     public ModernKineticGunItem() {
         super(new Properties().stacksTo(1));
     }
@@ -193,10 +198,6 @@ public class ModernKineticGunItem extends AbstractGunItem implements GunItemData
         });
     }
 
-    private static final DoubleFunction<AttributeModifier> AM_FACTORY = amount -> new AttributeModifier(
-            UUID.randomUUID(), "TACZ Melee Damage",
-            amount, AttributeModifier.Operation.ADDITION
-    );
 
     private boolean defaultTickBolt(ModernKineticGunScriptAPI api) {
         long boltActionTime = (long) (api.getGunIndex().getGunData().getBoltActionTime() * 1000);
