@@ -28,7 +28,7 @@
   },
   "muzzle_flash": {
     "texture": "tacz:flash/common_muzzle_flash",
-    "scale": 1
+    "scale": 2
   },
   "iron_zoom": 1.2,
   "shell": {
