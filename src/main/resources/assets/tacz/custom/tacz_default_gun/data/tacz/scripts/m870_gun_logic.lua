@@ -11,7 +11,7 @@ end
 
 function M.tick_bolt(api)
     -- Get total bolt time from script parameter in gun data
-    local total_bolt_time = api:getScriptParams().bolt_time
+    local total_bolt_time = api:getScriptParams().bolt_time * 1000
     if (total_bolt_time == nil) then
         return false
     end
