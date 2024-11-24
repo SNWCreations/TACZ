@@ -38,4 +38,32 @@ public class TickAnimationEvent {
             }
         });
     }
+
+    @SubscribeEvent
+    public static void tickAnimation(TickEvent.RenderTickEvent event) {
+        if (event.phase == TickEvent.Phase.END) {
+            return;
+        }
+        if (Minecraft.getInstance().options.getCameraType().isFirstPerson()) {
+            return;
+        }
+        LocalPlayer player = Minecraft.getInstance().player;
+        if (player == null) {
+            return;
+        }
+        ItemStack mainhandItem = player.getMainHandItem();
+        if (!(mainhandItem.getItem() instanceof IGun iGun)) {
+            return;
+        }
+        ResourceLocation gunId = iGun.getGunId(mainhandItem);
+        TimelessAPI.getClientGunIndex(gunId).ifPresent(gunIndex -> {
+            // 更新状态机
+            var animationStateMachine = gunIndex.getAnimationStateMachine();
+            animationStateMachine.processContextIfExist(context -> {
+                context.setCurrentGunItem(mainhandItem);
+                context.setPartialTicks(Minecraft.getInstance().getFrameTime());
+            });
+            animationStateMachine.visualUpdate();
+        });
+    }
 }
