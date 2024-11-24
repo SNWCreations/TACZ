@@ -1,23 +1,28 @@
 {
   "ammo": "tacz:12g",
-  "ammo_amount": 7,
+  "ammo_amount": 5,
+  "extended_mag_ammo_amount": [
+    6,
+    7,
+    8
+  ],
   "bolt": "manual_action",
-  "rpm": 171,
+  "rpm": 180,
   "bullet": {
     "life": 0.6,
-    "bullet_amount": 10,
-    "damage": 30,
+    "bullet_amount": 9,
+    "damage": 36,
     "tracer_count_interval": 0,
     "extra_damage": {
-      "armor_ignore": 0.0,
+      "armor_ignore": 0.25,
       "head_shot_multiplier": 1.33,
       "damage_adjust": [
-        {"distance": 15, "damage": 30},
-        {"distance": 30, "damage": 25},
-        {"distance": "infinite", "damage": 15}
+        {"distance": 18, "damage": 36},
+        {"distance": 32, "damage": 27},
+        {"distance": "infinite", "damage": 18}
       ]
     },
-    "speed": 130,
+    "speed": 150,
     "gravity": 0.15,
     "knockback": 0.15,
     "friction": 0.05,
@@ -31,6 +36,7 @@
     // feed.tactical 表示 reload_intro 的时长
     // cooldown.empty 表示 reload_loop 的时长
     // cooldown.tactical 表示 reload_end 的时长
+    // M870读取的是Script中的内容，reload弃用
     "feed": {
       "empty": 2.13,
       "tactical": 0.67
@@ -69,14 +75,14 @@
     ]
   },
   "inaccuracy": {
-    "stand": 4.5,
-    "move": 4.75,
+    "stand": 4,
+    "move": 4.25,
     "sneak": 4,
     "lie": 4,
-    "aim": 4
+    "aim": 3.75
   },
   "melee": {
-    "distance": 1,
+    "distance": 1.25,
     "cooldown": 0.7,
     "default": {
       "animation_type": "melee_stock",
