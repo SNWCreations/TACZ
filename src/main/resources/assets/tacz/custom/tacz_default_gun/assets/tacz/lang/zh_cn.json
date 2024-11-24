@@ -48,12 +48,13 @@
   "tacz.gun.mk14.name": "MK14 EBR 精确射手步枪",
   "tacz.gun.p320.name": "P320 手枪",
   "tacz.gun.aug.name": "AUG 突击步枪",
-    "tacz.gun.m107.name": "M107 狙击步枪",
+  "tacz.gun.m107.name": "M107 .50口径反器材步枪",
   "tacz.gun.m700.name": "M700 狙击步枪",
   "tacz.gun.m1911.name": "M1911 手枪",
-  "tacz.gun.type_81.name": "Type 81-1 军用步枪",
-  "tacz.gun.qbz_95.name": "QBZ-95 \"长弓\"",
+  "tacz.gun.type_81.name": "81-1式 制式步枪",
+  "tacz.gun.qbz_95.name": "95式 \"长弓\" 突击步枪",
   "tacz.gun.p90.name": "P90 冲锋枪",
+  "tacz.gun.m870.name": "M870 霰弹枪",
 
 
   "tacz.gun.ak47.desc": "从雨林到海湾，永远不会错过它的身影",
@@ -91,6 +92,7 @@
   "tacz.gun.type_81.desc": "...",
   "tacz.gun.qbz_95.desc": "...",
   "tacz.gun.p90.desc": "...",
+  "tacz.gun.m870.desc": "...",
 
 
   "tacz.ammo.9mm.name": "§a9mm 手枪弹",
@@ -150,7 +152,7 @@
   "tacz.attachment.ammo_mod_fmj.desc": "全金属外壳弹头 \n提高对护甲的穿透力，但降低子弹后效",
   "tacz.attachment.ammo_mod_he.desc": "高爆填充弹头 \n降低直击伤害和穿甲能力，但爆炸威力巨大",
   "tacz.attachment.ammo_mod_hp.desc": "中空弹头 \n提高对无护甲目标的伤害，但降低护甲穿透能力和弹道性能",
-  "tacz.attachment.ammo_mod_i.desc": "铝热填充弹头 \n能点燃目标，但降低护甲穿透能力",
+  "tacz.attachment.ammo_mod_i.desc": "铝热填充弹头 \n点燃目标，但降低护甲穿透能力",
 
 
   "tacz.attachment.grip_magpul_afg_2.name": "塔伦 AFG2 阻手",
@@ -186,5 +188,5 @@
   "tacz.attachment.oem_stock_light.name": "原厂轻型枪托",
   "tacz.attachment.oem_stock_tactical.name": "原厂战术枪托",
 
-  "tacz.block.gun_smith_table": "枪械工作台"
+  "tacz.block.gun_smith_table": "TaCZ枪械工作台"
 }

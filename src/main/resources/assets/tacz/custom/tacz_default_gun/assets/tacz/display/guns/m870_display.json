@@ -11,7 +11,7 @@
   "damage_style": "total",
   "animation": "tacz:m870",
   "state_machine": "tacz:m870_state_machine",
-  state_machine_param: {
+  "state_machine_param": {
     "bolt_shell_ejecting_time": 0.17,
     "intro_shell_ejecting_time": 0.4
   },
@@ -28,7 +28,7 @@
   },
   "muzzle_flash": {
     "texture": "tacz:flash/common_muzzle_flash",
-    "scale": 2
+    "scale": 1.25
   },
   "iron_zoom": 1.2,
   "shell": {

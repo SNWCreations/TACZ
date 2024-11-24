@@ -3510,7 +3510,7 @@
 				{
 					"name": "iron_view",
 					"parent": "views",
-					"pivot": [0, 10.10625, 7.15625]
+					"pivot": [0, 10.125, 10]
 				},
 				{
 					"name": "refit_view",
@@ -3539,8 +3539,8 @@
 				{
 					"name": "refit_extended_mag_view",
 					"parent": "views",
-					"pivot": [8.525, 1.275, -23.65],
-					"rotation": [-15, 63.76338, 0]
+					"pivot": [12, 2.275, -25],
+					"rotation": [170, 60, 180]
 				},
 				{
 					"name": "positioning",

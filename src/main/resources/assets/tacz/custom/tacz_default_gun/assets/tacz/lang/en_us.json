@@ -54,6 +54,7 @@
   "tacz.gun.type_81.name": "Type 81-1 Service Rifle",
   "tacz.gun.qbz_95.name": "QBZ-95 \"Longbow\"",
   "tacz.gun.p90.name": "P90 PDW",
+  "tacz.gun.m870.name": "M870",
 
   
   "tacz.gun.ak47.desc": "From jungles to bays, it's always present.",
@@ -91,6 +92,7 @@
   "tacz.gun.type_81.desc": "...",
   "tacz.gun.qbz_95.desc": "...",
   "tacz.gun.p90.desc": "...",
+  "tacz.gun.m870.desc": "...",
   
 
   "tacz.ammo.9mm.name": "§a9mm Bullet",
@@ -186,7 +188,7 @@
   "tacz.attachment.oem_stock_light.name": "Factory Issued light Stock",
   "tacz.attachment.oem_stock_tactical.name": "Factory Issued Tactical Stock",
 
-  "tacz.block.gun_smith_table": "Gun Smith Table",
+  "tacz.block.gun_smith_table": "TaCZ Gun Smith Table",
   "config.tacz.client.render.enable_tooltip_id": "Display Ids in Tooltip",
   "config.tacz.client.render.enable_tooltip_id.desc": "Display the gun/ammo/attachment id in item tooltip when advanced tooltip is on."
 }
