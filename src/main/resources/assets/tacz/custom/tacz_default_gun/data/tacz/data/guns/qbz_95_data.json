@@ -57,10 +57,10 @@
     "burst"
   ],
   "burst_data": {
-    "continuous_shoot": true,
+    "continuous_shoot": false,
     "count": 3,
     "bpm": 850,
-    "min_interval": 0.3
+    "min_interval": 0.45
   },
   "recoil": {
     "pitch": [
