@@ -4,10 +4,10 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.tacz.guns.client.resource.ClientAssetsManager;
+import com.tacz.guns.resource.CommonAssetsManager;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.fml.DistExecutor;
 import org.apache.commons.lang3.time.StopWatch;
@@ -26,8 +26,8 @@ public class ReloadCommand {
     private static int reloadAllPack(CommandContext<CommandSourceStack> context) {
         StopWatch watch = StopWatch.createStarted();
         {
-            DistExecutor.safeRunWhenOn(Dist.CLIENT, () -> ClientAssetsManager::reloadAllPack);
-//            DistExecutor.unsafeRunWhenOn(Dist.DEDICATED_SERVER, () -> () -> DedicatedServerReloadManager.reloadFromCommand(context));
+            DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> ReloadCommand::reloadClient);
+            DistExecutor.safeRunWhenOn(Dist.DEDICATED_SERVER, () -> CommonAssetsManager::reloadAllPack);
         }
         watch.stop();
         double time = watch.getTime(TimeUnit.MICROSECONDS) / 1000.0;
@@ -43,9 +43,11 @@ public class ReloadCommand {
 //            }
 //        }
 //        GunMod.LOGGER.info("Model loading time: {} ms", time);
-        if (context.getSource().getEntity() instanceof ServerPlayer serverPlayer) {
-            serverPlayer.sendSystemMessage(Component.translatable("commands.tacz.reload.success", time));
-        }
+        context.getSource().sendSystemMessage(Component.translatable("commands.tacz.reload.success", time));
         return Command.SINGLE_SUCCESS;
+    }
+
+    public static void reloadClient() {
+        ClientAssetsManager.reloadAllPack();
     }
 }

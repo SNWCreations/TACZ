@@ -115,6 +115,10 @@ public class ModernKineticGunScriptAPI {
             if (shooter.isDeadOrDying()) {
                 return false;
             }
+            // 如果武器变了，取消射击
+            if (!shooter.getMainHandItem().equals(itemStack)) {
+                return false;
+            }
             // 触发击发事件
             boolean fire = !MinecraftForge.EVENT_BUS.post(new GunFireEvent(shooter, itemStack, LogicalSide.SERVER));
             if (fire) {

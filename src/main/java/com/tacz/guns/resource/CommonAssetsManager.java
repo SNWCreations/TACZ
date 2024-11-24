@@ -25,6 +25,8 @@ import com.tacz.guns.resource.pojo.data.gun.Ignite;
 import com.tacz.guns.resource.serialize.*;
 import net.minecraft.resources.FileToIdConverter;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.packs.repository.PackRepository;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.AddReloadListenerEvent;
@@ -32,14 +34,12 @@ import net.minecraftforge.event.OnDatapackSyncEvent;
 import net.minecraftforge.event.server.ServerStoppedEvent;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 import net.minecraftforge.fml.common.Mod;
+import net.minecraftforge.server.ServerLifecycleHooks;
 import org.apache.commons.lang3.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 import org.luaj.vm2.LuaTable;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
 
 @Mod.EventBusSubscriber
@@ -239,6 +239,18 @@ public class CommonAssetsManager implements ICommonResourceProvider {
         } else {
             event.getPlayerList().getPlayers().forEach(player -> NetworkHandler.sendToClientPlayer(message, player));
         }
+    }
+
+    public static void reloadAllPack() {
+        MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+        if (server == null) {
+            return;
+        }
+        PackRepository packrepository = server.getPackRepository();
+        packrepository.reload();
+
+        Collection<String> collection = packrepository.getSelectedIds();
+        server.reloadResources(collection);
     }
 }
 
