@@ -28,14 +28,14 @@
   },
   "muzzle_flash": {
     "texture": "tacz:flash/common_muzzle_flash",
-    "scale": 1.25
+    "scale": 1.2
   },
   "iron_zoom": 1.2,
   "shell": {
-    "initial_velocity": [5, 2, 1],
-    "random_velocity": [1, 1, 0.25],
+    "initial_velocity": [5, 0.5, 1],
+    "random_velocity": [1, 0.5, 0.25],
     "acceleration": [0.0, -10, 0.0],
-    "angular_velocity": [360, -1200, 90],
+    "angular_velocity": [360, -960, 90],
     "living_time": 1.0
   },
   "sounds": {

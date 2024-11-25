@@ -42,9 +42,14 @@
 					"pivot": [0, 10.18125, -29.35]
 				},
 				{
+					"name": "muzzle_pos",
+					"parent": "positioning",
+					"pivot": [0, 10.15625, -25.375]
+				},
+				{
 					"name": "shell",
 					"parent": "positioning",
-					"pivot": [-0.125, 7.55625, 12.975]
+					"pivot": [-0.125, 10.55625, 6.975]
 				},
 				{
 					"name": "lod",
