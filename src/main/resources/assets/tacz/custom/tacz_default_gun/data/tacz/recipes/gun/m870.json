@@ -4,13 +4,13 @@
       "item": {
         "tag": "forge:ingots/iron"
       },
-      "count": 21
+      "count": 25
     },
     {
       "item": {
         "tag": "minecraft:logs"
       },
-      "count": 10
+      "count": 12
     }
   ],
   "result": {
