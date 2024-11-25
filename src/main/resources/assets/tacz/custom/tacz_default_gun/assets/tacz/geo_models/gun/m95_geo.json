@@ -1736,6 +1736,11 @@
 					"pivot": [0, 12.1125, 2.6]
 				},
 				{
+					"name": "muzzle_pos",
+					"parent": "positioning2",
+					"pivot": [0, 10, -34.1]
+				},
+				{
 					"name": "muzzle_flash",
 					"parent": "positioning2",
 					"pivot": [0, 10, -39.1]
@@ -3540,13 +3545,13 @@
 					]
 				},
 				{
-					"name": "brake",
+					"name": "muzzle_default",
 					"parent": "barrel9",
 					"pivot": [-0.87132, 16.43359, -21.57704]
 				},
 				{
 					"name": "octagon27",
-					"parent": "brake",
+					"parent": "muzzle_default",
 					"pivot": [0, 10.125, -33.625],
 					"cubes": [
 						{
@@ -3597,7 +3602,7 @@
 				},
 				{
 					"name": "M",
-					"parent": "brake",
+					"parent": "muzzle_default",
 					"pivot": [0, 16.125, -1.43751],
 					"cubes": [
 						{
@@ -4152,7 +4157,7 @@
 				},
 				{
 					"name": "R",
-					"parent": "brake",
+					"parent": "muzzle_default",
 					"pivot": [2.25398, 5.88136, -29.69799],
 					"cubes": [
 						{
@@ -4257,7 +4262,7 @@
 				},
 				{
 					"name": "L",
-					"parent": "brake",
+					"parent": "muzzle_default",
 					"pivot": [-2.25398, 5.88136, -29.69799],
 					"cubes": [
 						{
@@ -8223,6 +8228,12 @@
 					"parent": "view",
 					"pivot": [36.6, 9.275, -5.125],
 					"rotation": [0, 90, 0]
+				},
+				{
+					"name": "refit_muzzle_view",
+					"parent": "view",
+					"pivot": [28.6, 10.275, -64.975],
+					"rotation": [0, 120, 0]
 				},
 				{
 					"name": "refit_scope_view",
