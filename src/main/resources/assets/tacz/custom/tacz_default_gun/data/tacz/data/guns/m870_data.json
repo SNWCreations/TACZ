@@ -7,7 +7,7 @@
     8
   ],
   "bolt": "manual_action",
-  "rpm": 170,
+  "rpm": 180,
   "bullet": {
     "life": 0.6,
     "bullet_amount": 9,
@@ -48,7 +48,7 @@
   },
   "draw_time": 0.25,
   "put_away_time": 0.45,
-  "bolt_action_time": 0.9,
+  "bolt_action_time": 0.78,
   "aim_time": 0.15,
   "sprint_time": 0.13,
   "weight": 3.2,
@@ -60,7 +60,7 @@
   "fire_mode": [
     "semi"
   ],
-  "recoil": {
+ "recoil": {
     "pitch": [
       {"time": 0, "value": [5.5, 5.5]},
       {"time": 0.1, "value": [4.5, 4.5]},
@@ -71,7 +71,7 @@
       {"time": 0.7, "value": [0, 0]}
     ],
     "yaw": [
-      {"time": 0, "value": [-1.5, -1.5]},
+      {"time": 0, "value": [-1.75, -1.75]},
       {"time": 0.1, "value": [-1.5, -1.5]},
       {"time": 0.5, "value": [0.15, 0.15]},
       {"time": 0.65, "value": [0, 0]}
@@ -85,7 +85,7 @@
     "aim": 3.5
   },
   "melee": {
-    "distance": 1.1,
+    "distance": 1.25,
     "cooldown": 0.7,
     "default": {
       "animation_type": "melee_stock",
@@ -98,13 +98,15 @@
   },
   "script": "tacz:m870_gun_logic",
   "script_param": {
-    "bolt_time": 0.9,
+    "bolt_time": 0.55,
     "intro_empty": 2.13,
-    "intro": 0.37,
+    "intro": 0.23,
     "loop": 0.67,
     "ending": 0.17,
-    "intro_empty_feed": 1.45,
-    "loop_feed": 0.3
+    "intro_empty_feed": 1.35,
+    "loop_feed": 0.25
   },
-  "allow_attachment_types": []
+  "allow_attachment_types": [
+    "extended_mag"
+  ]
 }
