@@ -43,7 +43,7 @@
   },
   "draw_time": 0.35,
   "put_away_time": 0.4,
-  "aim_time": 0.25,
+  "aim_time": 0.19,
   "sprint_time": 0.2,
   "bolt_action_time": 0.9,
   "weight": 6.5,
@@ -59,19 +59,24 @@
   "fire_mode": [
     "semi"
   ],
-  "recoil": {
+ "recoil": {
     "pitch": [
-      {"time": 0, "value": [2, 2]},
-      {"time": 0.25, "value": [2, 2]},
-      {"time": 0.57, "value": [-0.5, -0.5]},
-      {"time": 0.82, "value": [0.25, 0.25]},
-      {"time": 1.17, "value": [0, 0]},
-      {"time": 1.47, "value": [0, 0]}
+      {"time": 0, "value": [5, 5]},
+      {"time": 0.07, "value": [4, 4]},
+      {"time": 0.16, "value": [4.65, 4.65]},
+      {"time": 0.24, "value": [3.25, 3.25]},
+      {"time": 0.6, "value": [-0.5, -0.5]},
+      {"time": 0.71, "value": [0.25, 0.25]},
+      {"time": 0.83, "value": [0, 0]},
+      {"time": 0.88, "value": [0, 0]}
     ],
     "yaw": [
-      {"time": 0, "value": [-0.6, -0.5]},
-      {"time": 0.32, "value": [-0.6, -0.5]},
-      {"time": 0.57, "value": [0, 0]}
+      {"time": 0, "value": [-1.25, -1.25]},
+      {"time": 0.08, "value": [1, 1]},
+      {"time": 0.17, "value": [-0.5, -0.5]},
+      {"time": 0.28, "value": [0.25, 0.25]},
+      {"time": 0.5, "value": [0, 0]},
+      {"time": 0.8, "value": [0, 0]}
     ]
   },
   "inaccuracy": {
