@@ -6,6 +6,7 @@ import com.tacz.guns.api.event.common.GunShootEvent;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.gun.AbstractGunItem;
 import com.tacz.guns.api.item.gun.FireMode;
+import com.tacz.guns.config.sync.SyncConfig;
 import com.tacz.guns.network.NetworkHandler;
 import com.tacz.guns.network.message.event.ServerMessageGunShoot;
 import com.tacz.guns.resource.index.CommonGunIndex;
@@ -68,6 +69,11 @@ public class LivingEntityShoot {
         }
         // 检查是否在奔跑
         if (data.sprintTimeS > 0) {
+            if (SyncConfig.INTERRUPT_SPRINT_WHEN_TRIED_TO_SHOOT.get()) {
+                // 如果配置要求我们在这个情况下取消疾跑，那就这么做
+                shooter.setSprinting(false);
+                return ShootResult.CANCELING_SPRINT;
+            }
             return ShootResult.IS_SPRINTING;
         }
         Bolt boltType = gunIndex.getGunData().getBolt();

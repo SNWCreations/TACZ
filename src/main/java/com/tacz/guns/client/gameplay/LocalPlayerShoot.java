@@ -11,6 +11,7 @@ import com.tacz.guns.api.item.gun.FireMode;
 import com.tacz.guns.client.animation.statemachine.GunAnimationStateMachine;
 import com.tacz.guns.client.resource.index.ClientGunIndex;
 import com.tacz.guns.client.sound.SoundPlayManager;
+import com.tacz.guns.config.sync.SyncConfig;
 import com.tacz.guns.network.NetworkHandler;
 import com.tacz.guns.network.message.ClientMessagePlayerShoot;
 import com.tacz.guns.resource.index.CommonGunIndex;
@@ -105,6 +106,11 @@ public class LocalPlayerShoot {
         }
         // 检查是否正在奔跑
         if (gunOperator.getSynSprintTime() > 0) {
+            if (SyncConfig.INTERRUPT_SPRINT_WHEN_TRIED_TO_SHOOT.get()) {
+                // 如果配置要求我们在这个情况下取消疾跑，那就这么做
+                player.setSprinting(false);
+                return ShootResult.CANCELING_SPRINT;
+            }
             return ShootResult.IS_SPRINTING;
         }
         // 触发开火事件
