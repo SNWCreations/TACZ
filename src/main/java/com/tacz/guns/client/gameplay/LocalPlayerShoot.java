@@ -105,13 +105,12 @@ public class LocalPlayerShoot {
             return ShootResult.NEED_BOLT;
         }
         // 检查是否正在奔跑
-        if (gunOperator.getSynSprintTime() > 0) {
-            if (SyncConfig.INTERRUPT_SPRINT_WHEN_TRIED_TO_SHOOT.get()) {
-                // 如果配置要求我们在这个情况下取消疾跑，那就这么做
-                player.setSprinting(false);
-                return ShootResult.CANCELING_SPRINT;
+        boolean sprinting = gunOperator.getSynSprintTime() > 0;
+        boolean interruptSprintWhenShoot = SyncConfig.INTERRUPT_SPRINT_WHEN_SHOOT.get();
+        if (sprinting) {
+            if (!interruptSprintWhenShoot) {
+                return ShootResult.IS_SPRINTING;
             }
-            return ShootResult.IS_SPRINTING;
         }
         // 触发开火事件
         if (MinecraftForge.EVENT_BUS.post(new GunShootEvent(player, mainhandItem, LogicalSide.CLIENT))) {
@@ -120,9 +119,16 @@ public class LocalPlayerShoot {
         // 切换状态锁，不允许换弹、检视等行为进行。
         data.lockState(SHOOT_LOCKED_CONDITION);
         data.isShootRecorded = false;
+        if (sprinting) {
+            player.setSprinting(false);
+        }
         // 调用开火逻辑
         this.doShoot(gunIndex, iGun, mainhandItem, gunData, coolDown);
-        return ShootResult.SUCCESS;
+        if (!sprinting) {
+            return ShootResult.SUCCESS;
+        } else {
+            return ShootResult.SUCCESS_BUT_CANCELING_SPRINT;
+        }
     }
 
     private void doShoot(ClientGunIndex gunIndex, IGun iGun, ItemStack mainhandItem, GunData gunData, long delay) {
