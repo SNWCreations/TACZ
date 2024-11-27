@@ -3142,13 +3142,13 @@
 					]
 				},
 				{
-					"name": "carry",
+					"name": "carry_handle",
 					"parent": "gun_default",
 					"pivot": [0, 0, 5]
 				},
 				{
 					"name": "group13",
-					"parent": "carry",
+					"parent": "carry_handle",
 					"pivot": [0.90625, 16, 6.75],
 					"cubes": [
 						{
@@ -3214,7 +3214,7 @@
 				},
 				{
 					"name": "group12",
-					"parent": "carry",
+					"parent": "carry_handle",
 					"pivot": [-0.00864, 12.51002, -6.4375],
 					"cubes": [
 						{
