@@ -167,12 +167,12 @@ public class CameraSetupEvent {
             if (scopeItemId.equals(DefaultAssets.EMPTY_ATTACHMENT_ID)) {
                 scopeItemId = iGun.getBuiltInAttachmentId(stack, AttachmentType.SCOPE);
             }
-            if (DefaultAssets.isEmptyAttachmentId(scopeItemId)) {
-                float fov = ITEM_MODEL_FOV_DYNAMICS.update((float) event.getFOV());
-                event.setFOV(fov);
-                return;
-            }
-            float modifiedFov = TimelessAPI.getClientAttachmentIndex(scopeItemId).map(ClientAttachmentIndex::getFov).orElse((float) event.getFOV());
+
+            // 尝试使用配件fov修改，若无则尝试使用枪械本身fov修改，否则维持不变
+            float modifiedFov = TimelessAPI.getClientAttachmentIndex(scopeItemId).map(ClientAttachmentIndex::getFov).orElse(
+                    TimelessAPI.getClientGunIndex(iGun.getGunId(stack)).map(ClientGunIndex::getZoomModelFov)
+                            .orElse((float) event.getFOV())
+            );
             if (livingEntity instanceof LocalPlayer localPlayer) {
                 IClientPlayerGunOperator gunOperator = IClientPlayerGunOperator.fromLocalPlayer(localPlayer);
                 float aimingProgress = gunOperator.getClientAimingProgress((float) event.getPartialTick());
@@ -249,7 +249,7 @@ public class CameraSetupEvent {
     }
 
     @SubscribeEvent(priority = EventPriority.LOW)
-    public static void onComputeMovementFov(ComputeFovModifierEvent event){
+    public static void onComputeMovementFov(ComputeFovModifierEvent event) {
         if (!RenderConfig.DISABLE_MOVEMENT_ATTRIBUTE_FOV.get()) return;
         LocalPlayer player = Minecraft.getInstance().player;
         if (player == null) {

@@ -68,6 +68,7 @@ public class ClientGunIndex {
     private LayerGunShow offhandShow;
     private @Nullable Int2ObjectArrayMap<LayerGunShow> hotbarShow;
     private float ironZoom;
+    private float zoomModelFov;
     private boolean showCrosshair = false;
     private @Nullable AmmoParticle particle;
     private float @Nullable [] tracerColor = null;
@@ -96,6 +97,7 @@ public class ClientGunIndex {
         checkMuzzleFlash(display, index);
         checkLayerGunShow(display, index);
         checkIronZoom(display, index);
+        checkZoomModelFov(display, index);
         checkTextShow(display, index);
         index.showCrosshair = display.isShowCrosshair();
         index.controllableData = display.getControllableData();
@@ -140,6 +142,13 @@ public class ClientGunIndex {
         index.ironZoom = display.getIronZoom();
         if (index.ironZoom < 1) {
             index.ironZoom = 1;
+        }
+    }
+
+    private static void checkZoomModelFov(GunDisplay display, ClientGunIndex index) {
+        index.zoomModelFov = display.getZoomModelFov();
+        if (index.zoomModelFov > 70) {
+            index.zoomModelFov = 70;
         }
     }
 
@@ -456,6 +465,10 @@ public class ClientGunIndex {
 
     public float getIronZoom() {
         return ironZoom;
+    }
+
+    public float getZoomModelFov() {
+        return zoomModelFov;
     }
 
     public boolean isShowCrosshair() {
