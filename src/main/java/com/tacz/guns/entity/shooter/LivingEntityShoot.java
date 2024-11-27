@@ -68,12 +68,13 @@ public class LivingEntityShoot {
             return ShootResult.IS_BOLTING;
         }
         // 检查是否在奔跑
-        boolean sprinting = data.sprintTimeS > 0;
-        boolean interruptSprintWhenShoot = SyncConfig.INTERRUPT_SPRINT_WHEN_SHOOT.get();
-        if (sprinting) {
-            if (!interruptSprintWhenShoot) {
-                return ShootResult.IS_SPRINTING;
+        if (data.sprintTimeS > 0) {
+            if (SyncConfig.INTERRUPT_SPRINT_WHEN_TRIED_TO_SHOOT.get()) {
+                // 如果配置要求我们在这个情况下取消疾跑，那就这么做
+                shooter.setSprinting(false);
+                return ShootResult.CANCELING_SPRINT;
             }
+            return ShootResult.IS_SPRINTING;
         }
         Bolt boltType = gunIndex.getGunData().getBolt();
         boolean hasAmmoInBarrel = iGun.hasBulletInBarrel(currentGunItem) && boltType != Bolt.OPEN_BOLT;
@@ -99,18 +100,11 @@ public class LivingEntityShoot {
         if (iGun instanceof AbstractGunItem logicGun) {
             BulletData bulletData = gunIndex.getBulletData();
             boolean isTracerAmmo = bulletData.hasTracerAmmo() && (data.shootCount % (bulletData.getTracerCountInterval() + 1) == 0);
-            if (sprinting) {
-                shooter.setSprinting(false);
-            }
             logicGun.shoot(currentGunItem, pitch, yaw, isTracerAmmo, shooter);
         }
         data.shootTimestamp = System.currentTimeMillis();
         data.shootCount += 1;
-        if (!sprinting) {
-            return ShootResult.SUCCESS;
-        } else {
-            return ShootResult.SUCCESS_BUT_CANCELING_SPRINT;
-        }
+        return ShootResult.SUCCESS;
     }
 
     public long getShootCoolDown() {

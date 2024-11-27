@@ -6,10 +6,6 @@ public enum ShootResult {
      */
     SUCCESS,
     /**
-     * 正处于疾跑状态，但是配置文件要求稍后取消疾跑
-     */
-    SUCCESS_BUT_CANCELING_SPRINT,
-    /**
      * 未知原因失败
      */
     UNKNOWN_FAIL,
@@ -57,6 +53,10 @@ public enum ShootResult {
      * 正处于疾跑状态
      */
     IS_SPRINTING,
+    /**
+     * 正处于疾跑状态，但是配置文件要求稍后取消疾跑
+     */
+    CANCELING_SPRINT,
     /**
      * Forge 事件原因取消
      */

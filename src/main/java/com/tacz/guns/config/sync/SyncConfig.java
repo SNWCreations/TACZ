@@ -27,7 +27,7 @@ public class SyncConfig {
     // 禁用趴下战术动作
     public static ForgeConfigSpec.BooleanValue ENABLE_CRAWL;
     // 实体在疾跑时尝试开枪一定会失败，此项决定是否在因疾跑导致的开枪失败时取消疾跑状态
-    public static ForgeConfigSpec.BooleanValue INTERRUPT_SPRINT_WHEN_SHOOT;
+    public static ForgeConfigSpec.BooleanValue INTERRUPT_SPRINT_WHEN_TRIED_TO_SHOOT;
 
     public static void init(ForgeConfigSpec.Builder builder) {
         interactKey(builder);
@@ -87,8 +87,8 @@ public class SyncConfig {
         builder.comment("Whether or not players are allowed to use the crawl feature");
         ENABLE_CRAWL = builder.define("EnableCrawl", true);
 
-        builder.comment("Should we allow shooting by cancelling sprint first instead of just do nothing? Applicable to all entities which could use guns");
-        INTERRUPT_SPRINT_WHEN_SHOOT = builder.define("InterruptSprintWhenShoot", false);
+        builder.comment("Should we interrupt the sprinting status after entity failed to shoot while sprinting, applicable to all entities which could use guns");
+        INTERRUPT_SPRINT_WHEN_TRIED_TO_SHOOT = builder.define("InterruptSprintWhenTriedToShoot", false);
 
         builder.pop();
     }
