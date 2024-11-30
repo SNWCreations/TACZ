@@ -90,7 +90,7 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
         this.selectedRecipeList = recipes.get(selectedType);
 
         this.indexPage = 0;
-        this.selectedRecipe = this.getSelectedRecipe(this.selectedRecipeList.get(0));
+        this.selectedRecipe = this.getSelectedRecipe(!this.selectedRecipeList.isEmpty() ? this.selectedRecipeList.get(0) : null);
         this.getPlayerIngredientCount(this.selectedRecipe);
     }
 
@@ -150,6 +150,7 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
 
     private void putRecipeType(RegistryObject<CreativeModeTab> tab) {
         String name = tab.getId().getPath();
+        this.recipes.put(name, Lists.newArrayList());
         this.recipeKeys.add(name);
     }
 
@@ -295,10 +296,10 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
             }
             String type = recipeKeys.get(typeIndex);
             int xOffset = leftPos + 157 + 24 * i;
-            List<ResourceLocation> recipeIdGroups = recipes.get(type);
-            if (recipeIdGroups.isEmpty()) {
-                continue;
-            }
+//            List<ResourceLocation> recipeIdGroups = recipes.get(type);
+//            if (recipeIdGroups.isEmpty()) {
+//                continue;
+//            }
             ItemStack icon = ItemStack.EMPTY;
             ResourceLocation tabId = new ResourceLocation(GunMod.MOD_ID, type);
             CreativeModeTab modTab = BuiltInRegistries.CREATIVE_MODE_TAB.get(tabId);
@@ -309,7 +310,7 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
                 this.selectedType = type;
                 this.selectedRecipeList = recipes.get(type);
                 this.indexPage = 0;
-                this.selectedRecipe = getSelectedRecipe(this.selectedRecipeList.get(0));
+                this.selectedRecipe = getSelectedRecipe(this.selectedRecipeList.isEmpty() ? null : this.selectedRecipeList.get(0));
                 this.getPlayerIngredientCount(this.selectedRecipe);
                 this.init();
             });
