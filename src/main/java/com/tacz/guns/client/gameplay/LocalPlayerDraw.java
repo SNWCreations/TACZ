@@ -60,16 +60,16 @@ public class LocalPlayerDraw {
 
         // 异步放映抬枪动画
         if (currentGun != null) {
-            doDraw(currentGun, currentItem, putAwayTime);
+            doDraw(currentItem, putAwayTime);
             // 刷新配件数据
             AttachmentPropertyManager.postChangeEvent(player, currentItem);
         }
     }
 
-    private void doDraw(IGun currentGun, ItemStack currentItem, long putAwayTime) {
-        TimelessAPI.getClientGunIndex(currentGun.getGunId(currentItem)).ifPresent(gunIndex -> {
+    private void doDraw(ItemStack currentItem, long putAwayTime) {
+        TimelessAPI.getGunDisplay(currentItem).ifPresent(display -> {
             // 初始化状态机
-            AnimationStateMachine<GunAnimationStateContext> animationStateMachine = gunIndex.getAnimationStateMachine();
+            AnimationStateMachine<GunAnimationStateContext> animationStateMachine = display.getAnimationStateMachine();
             if (animationStateMachine == null) {
                 return;
             }
@@ -89,7 +89,7 @@ public class LocalPlayerDraw {
                 Minecraft.getInstance().submitAsync(() -> {
                     animationStateMachine.trigger(GunAnimationConstant.INPUT_DRAW);
                     SoundPlayManager.stopPlayGunSound();
-                    SoundPlayManager.playDrawSound(player, gunIndex);
+                    SoundPlayManager.playDrawSound(player, display);
                 });
             }, putAwayTime, TimeUnit.MILLISECONDS);
         });
@@ -99,14 +99,14 @@ public class LocalPlayerDraw {
         if (lastGun == null) {
             return;
         }
-        TimelessAPI.getClientGunIndex(lastGun.getGunId(lastItem)).ifPresent(gunIndex -> {
+        TimelessAPI.getGunDisplay(lastItem).ifPresent(display -> {
             Minecraft.getInstance().submitAsync(() -> {
                 // 播放收枪音效
                 SoundPlayManager.stopPlayGunSound();
-                SoundPlayManager.playPutAwaySound(player, gunIndex);
+                SoundPlayManager.playPutAwaySound(player, display);
             });
             // 播放收枪动画
-            AnimationStateMachine<GunAnimationStateContext> animationStateMachine = gunIndex.getAnimationStateMachine();
+            AnimationStateMachine<GunAnimationStateContext> animationStateMachine = display.getAnimationStateMachine();
             if (animationStateMachine != null) {
                 animationStateMachine.processContextIfExist(context -> {
                     context.setPutAwayTime(putAwayTime / 1000F);

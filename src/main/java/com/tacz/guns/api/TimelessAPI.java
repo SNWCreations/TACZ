@@ -2,18 +2,21 @@ package com.tacz.guns.api;
 
 import com.tacz.guns.api.client.other.IThirdPersonAnimation;
 import com.tacz.guns.api.client.other.ThirdPersonManager;
+import com.tacz.guns.api.item.IGun;
+import com.tacz.guns.client.resource.ClientIndexManager;
+import com.tacz.guns.client.resource.GunDisplayInstance;
 import com.tacz.guns.client.resource.index.ClientAmmoIndex;
 import com.tacz.guns.client.resource.index.ClientAttachmentIndex;
 import com.tacz.guns.client.resource.index.ClientBlockIndex;
 import com.tacz.guns.client.resource.index.ClientGunIndex;
-import com.tacz.guns.client.resource.ClientIndexManager;
 import com.tacz.guns.crafting.GunSmithTableRecipe;
+import com.tacz.guns.resource.CommonAssetsManager;
 import com.tacz.guns.resource.index.CommonAmmoIndex;
 import com.tacz.guns.resource.index.CommonAttachmentIndex;
 import com.tacz.guns.resource.index.CommonBlockIndex;
 import com.tacz.guns.resource.index.CommonGunIndex;
-import com.tacz.guns.resource.CommonAssetsManager;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeType;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.api.distmarker.OnlyIn;
@@ -24,8 +27,36 @@ import java.util.Set;
 
 public final class TimelessAPI {
     @OnlyIn(Dist.CLIENT)
+    public static Optional<GunDisplayInstance> getGunDisplay(ItemStack stack) {
+        if (stack.getItem() instanceof IGun iGun) {
+            ResourceLocation gunId = iGun.getGunId(stack);
+            ResourceLocation displayId = iGun.getGunDisplayId(stack);
+            if (displayId.equals(DefaultAssets.DEFAULT_GUN_DISPLAY_ID)) {
+                ClientGunIndex index = ClientIndexManager.GUN_INDEX.get(gunId);
+                return Optional.ofNullable(index.getDefaultDisplay());
+            } else {
+                return getGunDisplay(displayId, gunId);
+            }
+        }
+        return Optional.empty();
+    }
+
+    @OnlyIn(Dist.CLIENT)
     public static Optional<ClientGunIndex> getClientGunIndex(ResourceLocation gunId) {
         return Optional.ofNullable(ClientIndexManager.GUN_INDEX.get(gunId));
+    }
+
+    @OnlyIn(Dist.CLIENT)
+    public static Optional<GunDisplayInstance> getGunDisplay(ResourceLocation displayId, ResourceLocation fallbackGunId) {
+        if (displayId == null || displayId.equals(DefaultAssets.DEFAULT_GUN_DISPLAY_ID)) {
+            return getClientGunIndex(fallbackGunId).map(ClientGunIndex::getDefaultDisplay);
+        }
+
+        GunDisplayInstance instance = ClientIndexManager.GUN_DISPLAY.get(displayId);
+        if (instance == null) {
+            return getClientGunIndex(fallbackGunId).map(ClientGunIndex::getDefaultDisplay);
+        }
+        return Optional.of(instance);
     }
 
     @OnlyIn(Dist.CLIENT)

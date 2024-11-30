@@ -4,6 +4,7 @@ import com.tacz.guns.GunMod;
 import net.minecraft.resources.ResourceLocation;
 
 public final class DefaultAssets {
+    public static ResourceLocation DEFAULT_GUN_DISPLAY_ID = new ResourceLocation(GunMod.MOD_ID, "default");
     public static ResourceLocation EMPTY_GUN_ID = new ResourceLocation(GunMod.MOD_ID, "empty");
 
     public static ResourceLocation DEFAULT_AMMO_ID = new ResourceLocation(GunMod.MOD_ID, "762x39");

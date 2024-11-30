@@ -5,7 +5,7 @@ import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.builder.AmmoItemBuilder;
 import com.tacz.guns.client.input.RefitKey;
 import com.tacz.guns.client.resource.ClientAssetsManager;
-import com.tacz.guns.client.resource.index.ClientGunIndex;
+import com.tacz.guns.client.resource.GunDisplayInstance;
 import com.tacz.guns.client.resource.pojo.PackInfo;
 import com.tacz.guns.client.resource.pojo.display.gun.AmmoCountStyle;
 import com.tacz.guns.client.resource.pojo.display.gun.DamageStyle;
@@ -46,7 +46,7 @@ public class ClientGunTooltip implements ClientTooltipComponent {
     private final ItemStack gun;
     private final IGun iGun;
     private final CommonGunIndex gunIndex;
-    private @Nullable final ClientGunIndex clientGunIndex;
+    private final @Nullable GunDisplayInstance display;
     private final ItemStack ammo;
     private @Nullable List<FormattedCharSequence> desc;
     private Component ammoName;
@@ -67,7 +67,7 @@ public class ClientGunTooltip implements ClientTooltipComponent {
         this.iGun = tooltip.getIGun();
         ResourceLocation ammoId = tooltip.getAmmoId();
         this.gunIndex = tooltip.getGunIndex();
-        this.clientGunIndex = TimelessAPI.getClientGunIndex(this.iGun.getGunId(this.gun)).orElse(null);
+        this.display = TimelessAPI.getGunDisplay(gun).orElse(null);
         this.ammo = AmmoItemBuilder.create().setId(ammoId).build();
         this.maxWidth = 0;
         this.getText();
@@ -132,14 +132,14 @@ public class ClientGunTooltip implements ClientTooltipComponent {
             int currentAmmoCount = iGun.getCurrentAmmoCount(this.gun) + barrelBulletAmount;
 
             if (!iGun.useDummyAmmo(gun)) {
-                if (clientGunIndex != null && clientGunIndex.getAmmoCountStyle()== AmmoCountStyle.PERCENT) {
+                if (display != null && display.getAmmoCountStyle()== AmmoCountStyle.PERCENT) {
                     this.ammoCountText = Component.literal(CURRENT_AMMO_FORMAT_PERCENT.format((float) currentAmmoCount / (maxAmmoCount == 0 ? 1f : maxAmmoCount)));
                 } else {
                     this.ammoCountText = Component.literal("%d/%d".formatted(currentAmmoCount, maxAmmoCount));
                 }
             } else {
                 int dummyAmmoAmount = iGun.getDummyAmmoAmount(gun);
-                if (clientGunIndex != null && clientGunIndex.getAmmoCountStyle()== AmmoCountStyle.PERCENT) {
+                if (display != null && display.getAmmoCountStyle()== AmmoCountStyle.PERCENT) {
                     String p = CURRENT_AMMO_FORMAT_PERCENT.format((float) currentAmmoCount / (maxAmmoCount == 0 ? 1f : maxAmmoCount));
                     this.ammoCountText = Component.literal("%s (%d)".formatted(p, dummyAmmoAmount));
                 } else {
@@ -171,7 +171,7 @@ public class ClientGunTooltip implements ClientTooltipComponent {
             double damage = AttachmentDataUtils.getDamageWithAttachment(gun, gunData);
             int bulletAmount = gunData.getBulletData().getBulletAmount();
             MutableComponent value;
-            if (clientGunIndex != null && clientGunIndex.getDamageStyle() == DamageStyle.PER_PROJECTILE && bulletAmount > 1) {
+            if (display != null && display.getDamageStyle() == DamageStyle.PER_PROJECTILE && bulletAmount > 1) {
                 value = Component.literal(DAMAGE_FORMAT.format(damage/bulletAmount) + "x" + bulletAmount).withStyle(ChatFormatting.AQUA);
             } else {
                 value = Component.literal(DAMAGE_FORMAT.format(damage)).withStyle(ChatFormatting.AQUA);

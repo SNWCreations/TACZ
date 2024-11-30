@@ -7,12 +7,14 @@ import com.tacz.guns.api.event.common.GunReloadEvent;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.gun.AbstractGunItem;
 import com.tacz.guns.client.animation.statemachine.GunAnimationConstant;
+import com.tacz.guns.client.resource.GunDisplayInstance;
 import com.tacz.guns.client.resource.index.ClientGunIndex;
 import com.tacz.guns.client.sound.SoundPlayManager;
 import com.tacz.guns.network.NetworkHandler;
 import com.tacz.guns.network.message.ClientMessagePlayerCancelReload;
 import com.tacz.guns.network.message.ClientMessagePlayerReloadGun;
 import com.tacz.guns.resource.pojo.data.gun.Bolt;
+import com.tacz.guns.resource.pojo.data.gun.GunData;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
@@ -30,11 +32,11 @@ public class LocalPlayerReload {
 
     public void cancelReload() {
         ItemStack mainhandItem = player.getMainHandItem();
-        if (!(mainhandItem.getItem() instanceof AbstractGunItem gunItem)) {
+        if (!(mainhandItem.getItem() instanceof AbstractGunItem)) {
             return;
         }
-        ResourceLocation gunId = gunItem.getGunId(mainhandItem);
-        TimelessAPI.getClientGunIndex(gunId).ifPresent(gunIndex -> {
+
+        TimelessAPI.getGunDisplay(mainhandItem).ifPresent(display -> {
             // 如果没在换弹，则返回
             IGunOperator gunOperator = IGunOperator.fromLivingEntity(player);
             ReloadState reloadState = gunOperator.getSynReloadState();
@@ -44,7 +46,7 @@ public class LocalPlayerReload {
             // 发包通知服务器
             NetworkHandler.CHANNEL.sendToServer(new ClientMessagePlayerCancelReload());
             // 执行本地取消换弹逻辑
-            this.cancelReload(gunIndex);
+            this.cancelReload(display);
         });
     }
 
@@ -55,7 +57,11 @@ public class LocalPlayerReload {
             return;
         }
         ResourceLocation gunId = gunItem.getGunId(mainhandItem);
-        TimelessAPI.getClientGunIndex(gunId).ifPresent(gunIndex -> {
+        GunData gunData = TimelessAPI.getClientGunIndex(gunId).map(ClientGunIndex::getGunData).orElse(null);
+        if (gunData == null) {
+            return;
+        }
+        TimelessAPI.getGunDisplay(mainhandItem).ifPresent(display -> {
             // 检查状态锁
             if (data.clientStateLock) {
                 return;
@@ -74,14 +80,14 @@ public class LocalPlayerReload {
             // 发包通知服务器
             NetworkHandler.CHANNEL.sendToServer(new ClientMessagePlayerReloadGun());
             // 执行客户端 reload 相关内容
-            this.doReload(gunItem, gunIndex, mainhandItem);
+            this.doReload(gunItem, display, gunData, mainhandItem);
         });
     }
 
-    private void doReload(IGun iGun, ClientGunIndex gunIndex, ItemStack mainhandItem) {
-        var animationStateMachine = gunIndex.getAnimationStateMachine();
+    private void doReload(IGun iGun, GunDisplayInstance display, GunData gunData, ItemStack mainhandItem) {
+        var animationStateMachine = display.getAnimationStateMachine();
         if (animationStateMachine != null) {
-            Bolt boltType = gunIndex.getGunData().getBolt();
+            Bolt boltType = gunData.getBolt();
             boolean noAmmo;
             if (boltType == Bolt.OPEN_BOLT) {
                 noAmmo = iGun.getCurrentAmmoCount(mainhandItem) <= 0;
@@ -90,13 +96,13 @@ public class LocalPlayerReload {
             }
             // 触发 reload，停止播放声音
             SoundPlayManager.stopPlayGunSound();
-            SoundPlayManager.playReloadSound(player, gunIndex, noAmmo);
+            SoundPlayManager.playReloadSound(player, display, noAmmo);
             animationStateMachine.trigger(GunAnimationConstant.INPUT_RELOAD);
         }
     }
 
-    private void cancelReload(ClientGunIndex gunIndex) {
-        var animationStateMachine = gunIndex.getAnimationStateMachine();
+    private void cancelReload(GunDisplayInstance display) {
+        var animationStateMachine = display.getAnimationStateMachine();
         if (animationStateMachine != null) {
             animationStateMachine.trigger(GunAnimationConstant.INPUT_CANCEL_RELOAD);
         }

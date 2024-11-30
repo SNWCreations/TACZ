@@ -16,6 +16,10 @@ public record LuaEntityAccessor(LivingEntity entity) {
         }
     }
 
+    public float getHealth() {
+        return entity.getHealth();
+    }
+
     public boolean hurt(float amount) {
         return entity.hurt(entity.level().damageSources().generic(), amount);
     }

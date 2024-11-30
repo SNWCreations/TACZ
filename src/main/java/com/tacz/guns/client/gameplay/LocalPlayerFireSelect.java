@@ -11,7 +11,6 @@ import com.tacz.guns.network.NetworkHandler;
 import com.tacz.guns.network.message.ClientMessagePlayerFireSelect;
 import com.tacz.guns.resource.modifier.AttachmentPropertyManager;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.LogicalSide;
@@ -38,8 +37,8 @@ public class LocalPlayerFireSelect {
         if (MinecraftForge.EVENT_BUS.post(new GunFireSelectEvent(player, player.getMainHandItem(), LogicalSide.CLIENT))) {
             return;
         }
-        ResourceLocation gunId = iGun.getGunId(mainhandItem);
-        TimelessAPI.getClientGunIndex(gunId).ifPresent(gunIndex -> {
+
+        TimelessAPI.getGunDisplay(mainhandItem).ifPresent(gunIndex -> {
             // 播放音效
             SoundPlayManager.playFireSelectSound(player, gunIndex);
             // 发送切换开火模式的数据包，通知服务器

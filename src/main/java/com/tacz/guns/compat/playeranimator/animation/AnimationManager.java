@@ -7,7 +7,7 @@ import com.tacz.guns.api.event.common.GunMeleeEvent;
 import com.tacz.guns.api.event.common.GunReloadEvent;
 import com.tacz.guns.api.event.common.GunShootEvent;
 import com.tacz.guns.api.item.IGun;
-import com.tacz.guns.client.resource.index.ClientGunIndex;
+import com.tacz.guns.client.resource.GunDisplayInstance;
 import com.tacz.guns.compat.playeranimator.AnimationName;
 import com.tacz.guns.compat.playeranimator.PlayerAnimatorCompat;
 import dev.kosmx.playerAnim.api.layered.IAnimation;
@@ -25,8 +25,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class AnimationManager {
-    public static boolean hasPlayerAnimator3rd(ClientGunIndex gunIndex) {
-        ResourceLocation location = gunIndex.getPlayerAnimator3rd();
+    public static boolean hasPlayerAnimator3rd(GunDisplayInstance display) {
+        ResourceLocation location = display.getPlayerAnimator3rd();
         if (location == null) {
             return false;
         }
@@ -37,10 +37,10 @@ public class AnimationManager {
         return !player.onGround() && player.getAbilities().flying;
     }
 
-    public static void playRotationAnimation(AbstractClientPlayer player, ClientGunIndex gunIndex) {
+    public static void playRotationAnimation(AbstractClientPlayer player, GunDisplayInstance display) {
         String animationName = AnimationName.EMPTY;
         ResourceLocation dataId = PlayerAnimatorCompat.ROTATION_ANIMATION;
-        ResourceLocation animator3rd = gunIndex.getPlayerAnimator3rd();
+        ResourceLocation animator3rd = display.getPlayerAnimator3rd();
         if (animator3rd == null) {
             return;
         }
@@ -58,56 +58,56 @@ public class AnimationManager {
         });
     }
 
-    public static void playLowerAnimation(AbstractClientPlayer player, ClientGunIndex gunIndex, float limbSwingAmount) {
+    public static void playLowerAnimation(AbstractClientPlayer player, GunDisplayInstance display, float limbSwingAmount) {
         // 如果玩家趴下，不播放下半身动画
         if (isPlayerLie(player)) {
             return;
         }
         // 如果玩家骑乘
         if (player.getVehicle() != null) {
-            playLoopAnimation(player, gunIndex, PlayerAnimatorCompat.LOWER_ANIMATION, AnimationName.RIDE_LOWER);
+            playLoopAnimation(player, display, PlayerAnimatorCompat.LOWER_ANIMATION, AnimationName.RIDE_LOWER);
             return;
         }
         // 如果玩家在天上，下半身动画就是站立动画
         if (isFlying(player)) {
-            playLoopAnimation(player, gunIndex, PlayerAnimatorCompat.LOWER_ANIMATION, AnimationName.HOLD_LOWER);
+            playLoopAnimation(player, display, PlayerAnimatorCompat.LOWER_ANIMATION, AnimationName.HOLD_LOWER);
             return;
         }
         if (player.isSprinting()) {
             if (player.getPose() == Pose.CROUCHING) {
-                playLoopAnimation(player, gunIndex, PlayerAnimatorCompat.LOWER_ANIMATION, AnimationName.CROUCH_WALK_LOWER);
+                playLoopAnimation(player, display, PlayerAnimatorCompat.LOWER_ANIMATION, AnimationName.CROUCH_WALK_LOWER);
             } else {
-                playLoopAnimation(player, gunIndex, PlayerAnimatorCompat.LOWER_ANIMATION, AnimationName.RUN_LOWER);
+                playLoopAnimation(player, display, PlayerAnimatorCompat.LOWER_ANIMATION, AnimationName.RUN_LOWER);
             }
             return;
         }
         if (limbSwingAmount > 0.05) {
             if (player.getPose() == Pose.CROUCHING) {
-                playLoopAnimation(player, gunIndex, PlayerAnimatorCompat.LOWER_ANIMATION, AnimationName.CROUCH_WALK_LOWER);
+                playLoopAnimation(player, display, PlayerAnimatorCompat.LOWER_ANIMATION, AnimationName.CROUCH_WALK_LOWER);
             } else {
-                playLoopAnimation(player, gunIndex, PlayerAnimatorCompat.LOWER_ANIMATION, AnimationName.WALK_LOWER);
+                playLoopAnimation(player, display, PlayerAnimatorCompat.LOWER_ANIMATION, AnimationName.WALK_LOWER);
             }
             return;
         }
         if (player.getPose() == Pose.CROUCHING) {
-            playLoopAnimation(player, gunIndex, PlayerAnimatorCompat.LOWER_ANIMATION, AnimationName.CROUCH_LOWER);
+            playLoopAnimation(player, display, PlayerAnimatorCompat.LOWER_ANIMATION, AnimationName.CROUCH_LOWER);
         } else {
-            playLoopAnimation(player, gunIndex, PlayerAnimatorCompat.LOWER_ANIMATION, AnimationName.HOLD_LOWER);
+            playLoopAnimation(player, display, PlayerAnimatorCompat.LOWER_ANIMATION, AnimationName.HOLD_LOWER);
         }
     }
 
-    public static void playLoopUpperAnimation(AbstractClientPlayer player, ClientGunIndex gunIndex, float limbSwingAmount) {
+    public static void playLoopUpperAnimation(AbstractClientPlayer player, GunDisplayInstance display, float limbSwingAmount) {
         IGunOperator operator = IGunOperator.fromLivingEntity(player);
         float aimingProgress = operator.getSynAimingProgress();
         if (aimingProgress <= 0) {
             // 疾跑时播放的动画
             if (!isFlying(player) && player.isSprinting()) {
                 if (isPlayerLie(player)) {
-                    playLoopAnimation(player, gunIndex, PlayerAnimatorCompat.LOOP_UPPER_ANIMATION, AnimationName.LIE_MOVE);
+                    playLoopAnimation(player, display, PlayerAnimatorCompat.LOOP_UPPER_ANIMATION, AnimationName.LIE_MOVE);
                 } else if (player.getPose() == Pose.CROUCHING) {
-                    playLoopAnimation(player, gunIndex, PlayerAnimatorCompat.LOOP_UPPER_ANIMATION, AnimationName.CROUCH_WALK_UPPER);
+                    playLoopAnimation(player, display, PlayerAnimatorCompat.LOOP_UPPER_ANIMATION, AnimationName.CROUCH_WALK_UPPER);
                 } else {
-                    playLoopAnimation(player, gunIndex, PlayerAnimatorCompat.LOOP_UPPER_ANIMATION, AnimationName.RUN_UPPER);
+                    playLoopAnimation(player, display, PlayerAnimatorCompat.LOOP_UPPER_ANIMATION, AnimationName.RUN_UPPER);
                 }
                 return;
             }
@@ -115,40 +115,40 @@ public class AnimationManager {
             // 行走时的动画
             if (!isFlying(player) && limbSwingAmount > 0.05) {
                 if (isPlayerLie(player)) {
-                    playLoopAnimation(player, gunIndex, PlayerAnimatorCompat.LOOP_UPPER_ANIMATION, AnimationName.LIE_MOVE);
+                    playLoopAnimation(player, display, PlayerAnimatorCompat.LOOP_UPPER_ANIMATION, AnimationName.LIE_MOVE);
                 } else if (player.getPose() == Pose.CROUCHING) {
-                    playLoopAnimation(player, gunIndex, PlayerAnimatorCompat.LOOP_UPPER_ANIMATION, AnimationName.CROUCH_WALK_UPPER);
+                    playLoopAnimation(player, display, PlayerAnimatorCompat.LOOP_UPPER_ANIMATION, AnimationName.CROUCH_WALK_UPPER);
                 } else {
-                    playLoopAnimation(player, gunIndex, PlayerAnimatorCompat.LOOP_UPPER_ANIMATION, AnimationName.WALK_UPPER);
+                    playLoopAnimation(player, display, PlayerAnimatorCompat.LOOP_UPPER_ANIMATION, AnimationName.WALK_UPPER);
                 }
                 return;
             }
 
             if (isPlayerLie(player)) {
                 // 趴下时的动画
-                playLoopAnimation(player, gunIndex, PlayerAnimatorCompat.LOOP_UPPER_ANIMATION, AnimationName.LIE);
+                playLoopAnimation(player, display, PlayerAnimatorCompat.LOOP_UPPER_ANIMATION, AnimationName.LIE);
             } else {
                 // 普通待命
-                playLoopAnimation(player, gunIndex, PlayerAnimatorCompat.LOOP_UPPER_ANIMATION, AnimationName.HOLD_UPPER);
+                playLoopAnimation(player, display, PlayerAnimatorCompat.LOOP_UPPER_ANIMATION, AnimationName.HOLD_UPPER);
             }
         } else {
             if (isPlayerLie(player)) {
                 // 趴下时瞄准
                 if (!isFlying(player) && limbSwingAmount > 0.05) {
-                    playLoopAnimation(player, gunIndex, PlayerAnimatorCompat.LOOP_UPPER_ANIMATION, AnimationName.LIE_MOVE);
+                    playLoopAnimation(player, display, PlayerAnimatorCompat.LOOP_UPPER_ANIMATION, AnimationName.LIE_MOVE);
                 } else {
-                    playLoopAnimation(player, gunIndex, PlayerAnimatorCompat.LOOP_UPPER_ANIMATION, AnimationName.LIE_AIM);
+                    playLoopAnimation(player, display, PlayerAnimatorCompat.LOOP_UPPER_ANIMATION, AnimationName.LIE_AIM);
                 }
             } else {
                 // 普通瞄准
-                playLoopAnimation(player, gunIndex, PlayerAnimatorCompat.LOOP_UPPER_ANIMATION, AnimationName.AIM_UPPER);
+                playLoopAnimation(player, display, PlayerAnimatorCompat.LOOP_UPPER_ANIMATION, AnimationName.AIM_UPPER);
             }
         }
     }
 
     @SuppressWarnings("unchecked")
-    public static void playLoopAnimation(AbstractClientPlayer player, ClientGunIndex gunIndex, ResourceLocation dataId, String animationName) {
-        ResourceLocation animator3rd = gunIndex.getPlayerAnimator3rd();
+    public static void playLoopAnimation(AbstractClientPlayer player, GunDisplayInstance display, ResourceLocation dataId, String animationName) {
+        ResourceLocation animator3rd = display.getPlayerAnimator3rd();
         if (animator3rd == null) {
             return;
         }
@@ -175,8 +175,8 @@ public class AnimationManager {
     }
 
     @SuppressWarnings("unchecked")
-    public static void playOnceAnimation(AbstractClientPlayer player, ClientGunIndex gunIndex, ResourceLocation dataId, String animationName) {
-        ResourceLocation animator3rd = gunIndex.getPlayerAnimator3rd();
+    public static void playOnceAnimation(AbstractClientPlayer player, GunDisplayInstance display, ResourceLocation dataId, String animationName) {
+        ResourceLocation animator3rd = display.getPlayerAnimator3rd();
         if (animator3rd == null) {
             return;
         }
@@ -241,7 +241,7 @@ public class AnimationManager {
         if (iGun == null) {
             return;
         }
-        TimelessAPI.getClientGunIndex(iGun.getGunId(gunItemStack)).ifPresent(index -> {
+        TimelessAPI.getGunDisplay(gunItemStack).ifPresent(index -> {
             IGunOperator operator = IGunOperator.fromLivingEntity(player);
             float aimingProgress = operator.getSynAimingProgress();
             if (aimingProgress <= 0) {
@@ -277,7 +277,7 @@ public class AnimationManager {
         if (iGun == null) {
             return;
         }
-        TimelessAPI.getClientGunIndex(iGun.getGunId(gunItemStack)).ifPresent(index -> {
+        TimelessAPI.getGunDisplay(gunItemStack).ifPresent(index -> {
             if (isPlayerLie(player)) {
                 playOnceAnimation(player, index, PlayerAnimatorCompat.ONCE_UPPER_ANIMATION, AnimationName.LIE_RELOAD);
             } else {
@@ -309,7 +309,9 @@ public class AnimationManager {
             case 1 -> AnimationName.MELEE_2_UPPER;
             default -> AnimationName.MELEE_3_UPPER;
         };
-        TimelessAPI.getClientGunIndex(iGun.getGunId(gunItemStack)).ifPresent(index -> playOnceAnimation(player, index, PlayerAnimatorCompat.ONCE_UPPER_ANIMATION, animationName));
+        TimelessAPI.getGunDisplay(gunItemStack).ifPresent(
+                index -> playOnceAnimation(player, index, PlayerAnimatorCompat.ONCE_UPPER_ANIMATION, animationName)
+        );
     }
 
     @SubscribeEvent

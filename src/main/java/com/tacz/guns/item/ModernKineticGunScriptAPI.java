@@ -62,6 +62,8 @@ public class ModernKineticGunScriptAPI {
 
     private ResourceLocation gunId;
 
+    private ResourceLocation gunDisplayId;
+
     private Supplier<Float> pitchSupplier;
 
     private Supplier<Float> yawSupplier;
@@ -144,7 +146,7 @@ public class ModernKineticGunScriptAPI {
                 // 播放枪声
                 if (soundDistance > 0) {
                     String soundId = useSilenceSound ? SoundManager.SILENCE_3P_SOUND : SoundManager.SHOOT_3P_SOUND;
-                    SoundManager.sendSoundToNearby(shooter, soundDistance, gunId, soundId, 0.8f, 0.9f + shooter.getRandom().nextFloat() * 0.125f);
+                    SoundManager.sendSoundToNearby(shooter, soundDistance, gunId, gunDisplayId, soundId, 0.8f, 0.9f + shooter.getRandom().nextFloat() * 0.125f);
                 }
             }
             return true;
@@ -594,6 +596,7 @@ public class ModernKineticGunScriptAPI {
             return;
         }
         gunId = gunItem.getGunId(itemStack);
+        gunDisplayId = gunItem.getGunDisplayId(itemStack);
         Optional<CommonGunIndex> gunIndexOptional = TimelessAPI.getCommonGunIndex(gunId);
         gunIndex = gunIndexOptional.orElse(null);
         abstractGunItem = gunItem;

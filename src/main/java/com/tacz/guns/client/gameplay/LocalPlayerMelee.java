@@ -7,6 +7,7 @@ import com.tacz.guns.api.event.common.GunMeleeEvent;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.attachment.AttachmentType;
 import com.tacz.guns.client.animation.statemachine.GunAnimationConstant;
+import com.tacz.guns.client.resource.GunDisplayInstance;
 import com.tacz.guns.client.sound.SoundPlayManager;
 import com.tacz.guns.network.NetworkHandler;
 import com.tacz.guns.network.message.ClientMessagePlayerMelee;
@@ -40,19 +41,23 @@ public class LocalPlayerMelee {
         if (!(mainhandItem.getItem() instanceof IGun iGun)) {
             return;
         }
+        GunDisplayInstance display = TimelessAPI.getGunDisplay(mainhandItem).orElse(null);
+        if (display == null) {
+            return;
+        }
         ResourceLocation gunId = iGun.getGunId(mainhandItem);
         // 先检查枪口有没有近战属性
         ResourceLocation muzzleId = iGun.getAttachmentId(mainhandItem, AttachmentType.MUZZLE);
         MeleeData muzzleMeleeData = getMeleeData(muzzleId);
         if (muzzleMeleeData != null) {
-            this.doMuzzleMelee(gunId);
+            this.doMuzzleMelee(display);
             return;
         }
 
         ResourceLocation stockId = iGun.getAttachmentId(mainhandItem, AttachmentType.STOCK);
         MeleeData stockMeleeData = getMeleeData(stockId);
         if (stockMeleeData != null) {
-            this.doStockMelee(gunId);
+            this.doStockMelee(display);
             return;
         }
 
@@ -63,10 +68,10 @@ public class LocalPlayerMelee {
             }
             String animationType = defaultMeleeData.getAnimationType();
             if (MELEE_STOCK_ANIMATION.equals(animationType)) {
-                this.doStockMelee(gunId);
+                this.doStockMelee(display);
                 return;
             }
-            this.doPushMelee(gunId);
+            this.doPushMelee(display);
         });
     }
 
@@ -78,51 +83,43 @@ public class LocalPlayerMelee {
         return !MinecraftForge.EVENT_BUS.post(gunMeleeEvent);
     }
 
-    private void doMuzzleMelee(ResourceLocation gunId) {
+    private void doMuzzleMelee(GunDisplayInstance display) {
         if (prepareMelee()) {
-            TimelessAPI.getClientGunIndex(gunId).ifPresent(gunIndex -> {
-                // 播放音效
-                SoundPlayManager.playMeleeBayonetSound(player, gunIndex);
-                // 发送切换开火模式的数据包，通知服务器
-                NetworkHandler.CHANNEL.sendToServer(new ClientMessagePlayerMelee());
-                // 动画状态机转移状态
-                AnimationStateMachine<?> animationStateMachine = gunIndex.getAnimationStateMachine();
-                if (animationStateMachine != null) {
-                    animationStateMachine.trigger(GunAnimationConstant.INPUT_BAYONET_MUZZLE);
-                }
-            });
+            SoundPlayManager.playMeleeBayonetSound(player, display);
+            // 发送执行近战的数据包，通知服务器
+            NetworkHandler.CHANNEL.sendToServer(new ClientMessagePlayerMelee());
+            // 动画状态机转移状态
+            AnimationStateMachine<?> animationStateMachine = display.getAnimationStateMachine();
+            if (animationStateMachine != null) {
+                animationStateMachine.trigger(GunAnimationConstant.INPUT_BAYONET_MUZZLE);
+            }
         }
     }
 
-    private void doStockMelee(ResourceLocation gunId) {
+    private void doStockMelee(GunDisplayInstance display) {
         if (prepareMelee()) {
-            TimelessAPI.getClientGunIndex(gunId).ifPresent(gunIndex -> {
-                // 播放音效
-                SoundPlayManager.playMeleeStockSound(player, gunIndex);
-                // 发送切换开火模式的数据包，通知服务器
-                NetworkHandler.CHANNEL.sendToServer(new ClientMessagePlayerMelee());
-                // 动画状态机转移状态
-                AnimationStateMachine<?> animationStateMachine = gunIndex.getAnimationStateMachine();
-                if (animationStateMachine != null) {
-                    animationStateMachine.trigger(GunAnimationConstant.INPUT_BAYONET_STOCK);
-                }
-            });
+            SoundPlayManager.playMeleeStockSound(player, display);
+            // 发送执行近战的数据包，通知服务器
+            NetworkHandler.CHANNEL.sendToServer(new ClientMessagePlayerMelee());
+            // 动画状态机转移状态
+            AnimationStateMachine<?> animationStateMachine = display.getAnimationStateMachine();
+            if (animationStateMachine != null) {
+                animationStateMachine.trigger(GunAnimationConstant.INPUT_BAYONET_STOCK);
+            }
         }
     }
 
-    private void doPushMelee(ResourceLocation gunId) {
+    private void doPushMelee(GunDisplayInstance display) {
         if (prepareMelee()) {
-            TimelessAPI.getClientGunIndex(gunId).ifPresent(gunIndex -> {
-                // 播放音效
-                SoundPlayManager.playMeleePushSound(player, gunIndex);
-                // 发送切换开火模式的数据包，通知服务器
-                NetworkHandler.CHANNEL.sendToServer(new ClientMessagePlayerMelee());
-                // 动画状态机转移状态
-                AnimationStateMachine<?> animationStateMachine = gunIndex.getAnimationStateMachine();
-                if (animationStateMachine != null) {
-                    animationStateMachine.trigger(GunAnimationConstant.INPUT_BAYONET_PUSH);
-                }
-            });
+            // 播放音效
+            SoundPlayManager.playMeleePushSound(player, display);
+            // 发送执行近战的数据包，通知服务器
+            NetworkHandler.CHANNEL.sendToServer(new ClientMessagePlayerMelee());
+            // 动画状态机转移状态
+            AnimationStateMachine<?> animationStateMachine = display.getAnimationStateMachine();
+            if (animationStateMachine != null) {
+                animationStateMachine.trigger(GunAnimationConstant.INPUT_BAYONET_PUSH);
+            }
         }
     }
 

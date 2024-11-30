@@ -2,11 +2,9 @@ package com.tacz.guns.client.event;
 
 import com.tacz.guns.GunMod;
 import com.tacz.guns.api.TimelessAPI;
-import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.client.animation.statemachine.GunAnimationConstant;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.event.TickEvent;
@@ -22,11 +20,7 @@ public class TickAnimationEvent {
             return;
         }
         ItemStack mainhandItem = player.getMainHandItem();
-        if (!(mainhandItem.getItem() instanceof IGun iGun)) {
-            return;
-        }
-        ResourceLocation gunId = iGun.getGunId(mainhandItem);
-        TimelessAPI.getClientGunIndex(gunId).ifPresent(gunIndex -> {
+        TimelessAPI.getGunDisplay(mainhandItem).ifPresent(gunIndex -> {
             var animationStateMachine = gunIndex.getAnimationStateMachine();
             if (!player.isMovingSlowly() && player.isSprinting()) {
                 // 如果玩家正在移动，播放移动动画，否则播放 idle 动画
@@ -52,11 +46,7 @@ public class TickAnimationEvent {
             return;
         }
         ItemStack mainhandItem = player.getMainHandItem();
-        if (!(mainhandItem.getItem() instanceof IGun iGun)) {
-            return;
-        }
-        ResourceLocation gunId = iGun.getGunId(mainhandItem);
-        TimelessAPI.getClientGunIndex(gunId).ifPresent(gunIndex -> {
+        TimelessAPI.getGunDisplay(mainhandItem).ifPresent(gunIndex -> {
             // 更新状态机
             var animationStateMachine = gunIndex.getAnimationStateMachine();
             animationStateMachine.processContextIfExist(context -> {

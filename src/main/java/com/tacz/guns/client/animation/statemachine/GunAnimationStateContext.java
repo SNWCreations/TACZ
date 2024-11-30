@@ -13,8 +13,10 @@ import com.tacz.guns.api.item.gun.FireMode;
 import com.tacz.guns.api.util.LuaNbtAccessor;
 import com.tacz.guns.client.model.BedrockGunModel;
 import com.tacz.guns.client.model.functional.ShellRender;
+import com.tacz.guns.client.resource.GunDisplayInstance;
 import com.tacz.guns.client.resource.index.ClientGunIndex;
 import com.tacz.guns.resource.pojo.data.gun.Bolt;
+import com.tacz.guns.resource.pojo.data.gun.GunData;
 import com.tacz.guns.util.AttachmentDataUtils;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -32,14 +34,15 @@ import java.util.function.Function;
 public class GunAnimationStateContext extends ItemAnimationStateContext {
     private ItemStack currentGunItem;
     private IGun iGun;
-    private ClientGunIndex clientGunIndex;
+    private GunDisplayInstance display;
+    private GunData gunData;
     private float partialTicks;
     private float walkDistAnchor = 0f;
     private LuaNbtAccessor nbtUtil;
 
-    private <T> Optional<T> processGunData(BiFunction<IGun, ClientGunIndex, T> processor) {
-        if (iGun != null && clientGunIndex != null) {
-            return Optional.ofNullable(processor.apply(iGun, clientGunIndex));
+    private <T> Optional<T> processGunData(BiFunction<IGun, GunDisplayInstance, T> processor) {
+        if (iGun != null && display != null) {
+            return Optional.ofNullable(processor.apply(iGun, display));
         }
         return Optional.empty();
     }
@@ -76,7 +79,7 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
      */
     public boolean hasBulletInBarrel() {
         return processGunData((iGun, gunIndex) -> {
-            Bolt boltType = gunIndex.getGunData().getBolt();
+            Bolt boltType = gunData.getBolt();
             return boltType != Bolt.OPEN_BOLT && iGun.hasBulletInBarrel(currentGunItem);
         }).orElse(false);
     }
@@ -90,10 +93,10 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
             if (entity instanceof LivingEntity livingEntity) {
                 FireMode fireMode = iGun.getFireMode(currentGunItem);
                 if (fireMode == FireMode.BURST) {
-                    long coolDown = (long) (clientGunIndex.getGunData().getBurstData().getMinInterval() * 1000f);
+                    long coolDown = (long) (gunData.getBurstData().getMinInterval() * 1000f);
                     return Math.max(coolDown, 0L);
                 }
-                long coolDown = clientGunIndex.getGunData().getShootInterval(livingEntity, fireMode);
+                long coolDown = gunData.getShootInterval(livingEntity, fireMode);
                 return Math.max(coolDown, 0L);
             }
             return 0L;
@@ -143,7 +146,7 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
     public int getMaxAmmoCount() {
         return processGunData(
                 (iGun, gunIndex) ->
-                        AttachmentDataUtils.getAmmoCountWithAttachment(currentGunItem, gunIndex.getGunData())
+                        AttachmentDataUtils.getAmmoCountWithAttachment(currentGunItem, gunData)
         ).orElse(0);
     }
 
@@ -185,7 +188,7 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
     public int getMagExtentLevel() {
         return processGunData(
                 (iGun, gunIndex) ->
-                        AttachmentDataUtils.getMagExtendLevel(currentGunItem, gunIndex.getGunData())
+                        AttachmentDataUtils.getMagExtendLevel(currentGunItem, gunData)
         ).orElse(0);
     }
 
@@ -325,11 +328,11 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
      * @param index 抛壳窗序号
      */
     public void popShellFrom(int index) {
-        BedrockGunModel gunModel = clientGunIndex.getGunModel();
-        if (clientGunIndex.getShellEjection() != null && gunModel != null) {
+        BedrockGunModel gunModel = display.getGunModel();
+        if (display.getShellEjection() != null && gunModel != null) {
             ShellRender shellRender = gunModel.getShellRender(index);
             if (shellRender != null) {
-                shellRender.addShell(clientGunIndex.getShellEjection().getRandomVelocity());
+                shellRender.addShell(display.getShellEjection().getRandomVelocity());
             }
         }
     }
@@ -340,7 +343,7 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
      * @return 状态机参数表
      */
     public LuaTable getStateMachineParams() {
-        LuaTable param = clientGunIndex.getStateMachineParam();
+        LuaTable param = display.getStateMachineParam();
         return param == null ? new LuaTable() : param;
     }
 
@@ -375,7 +378,9 @@ public class GunAnimationStateContext extends ItemAnimationStateContext {
         this.currentGunItem = currentGunItem;
         this.iGun = IGun.getIGunOrNull(currentGunItem);
         if (iGun != null) {
-            clientGunIndex = TimelessAPI.getClientGunIndex(iGun.getGunId(currentGunItem)).orElse(null);
+            display = TimelessAPI.getGunDisplay(currentGunItem).orElse(null);
+            gunData = TimelessAPI.getClientGunIndex(iGun.getGunId(currentGunItem))
+                    .map(ClientGunIndex::getGunData).orElse(null);
         }
         if (currentGunItem.hasTag()) {
             nbtUtil = new LuaNbtAccessor(currentGunItem.getTag());

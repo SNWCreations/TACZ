@@ -21,7 +21,6 @@ import com.tacz.guns.client.model.functional.ShellRender;
 import com.tacz.guns.client.renderer.item.GunItemRenderer;
 import com.tacz.guns.client.resource.InternalAssetLoader;
 import com.tacz.guns.client.resource.index.ClientAttachmentIndex;
-import com.tacz.guns.client.resource.index.ClientGunIndex;
 import com.tacz.guns.config.client.RenderConfig;
 import com.tacz.guns.entity.EntityKineticBullet;
 import com.tacz.guns.util.math.Easing;
@@ -110,10 +109,9 @@ public class FirstPersonRenderGunEvent {
             transformType = FIRST_PERSON_LEFT_HAND;
         }
 
-        ResourceLocation gunId = iGun.getGunId(stack);
-        TimelessAPI.getClientGunIndex(gunId).ifPresentOrElse(gunIndex -> {
-            BedrockGunModel gunModel = gunIndex.getGunModel();
-            var animationStateMachine = gunIndex.getAnimationStateMachine();
+        TimelessAPI.getGunDisplay(stack).ifPresentOrElse(display -> {
+            BedrockGunModel gunModel = display.getGunModel();
+            var animationStateMachine = display.getAnimationStateMachine();
             if (gunModel == null) {
                 return;
             }
@@ -147,7 +145,7 @@ public class FirstPersonRenderGunEvent {
             // 基岩版模型是上下颠倒的，需要翻转过来。
             poseStack.mulPose(Axis.ZP.rotationDegrees(180f));
             // 应用持枪姿态变换，如第一人称摄像机定位
-            applyFirstPersonGunTransform(player, stack, gunIndex, poseStack, gunModel, event.getPartialTick());
+            applyFirstPersonGunTransform(player, stack, poseStack, gunModel, event.getPartialTick());
 
             // 开启第一人称弹壳和火焰渲染
             MuzzleFlashRender.isSelf = true;
@@ -160,7 +158,7 @@ public class FirstPersonRenderGunEvent {
                 }
                 // 调用枪械模型渲染
                 //RenderType renderType = RenderType.itemEntityTranslucentCull(gunIndex.getModelTexture());
-                RenderType renderType = RenderType.entityCutout(gunIndex.getModelTexture());
+                RenderType renderType = RenderType.entityCutout(display.getModelTexture());
                 gunModel.render(poseStack, stack, transformType, renderType, event.getPackedLight(), OverlayTexture.NO_OVERLAY);
                 // 调用曳光弹渲染
                 renderBulletTracer(player, poseStack, gunModel, event.getPartialTick());
@@ -247,8 +245,9 @@ public class FirstPersonRenderGunEvent {
             poseStack1.scale(trailWidth, trailWidth, trailLength);
 
             ResourceLocation gunId = entityBullet.getGunId();
-            TimelessAPI.getClientGunIndex(gunId).ifPresent(gunIndex -> {
-                float[] entityTracerColor = entityBullet.getTracerColorOverride().orElseGet(gunIndex::getTracerColor);
+            ResourceLocation displayId = entityBullet.getGunDisplayId();
+            TimelessAPI.getGunDisplay(displayId, gunId).ifPresent(display -> {
+                float[] entityTracerColor = entityBullet.getTracerColorOverride().orElseGet(display::getTracerColor);
                 if (entityTracerColor == null) {
                     // 如果枪械没有添加弋光弹参数，那么调用子弹的
                     ResourceLocation ammoId = entityBullet.getAmmoId();
@@ -312,7 +311,7 @@ public class FirstPersonRenderGunEvent {
         return false;
     }
 
-    private static void applyFirstPersonGunTransform(LocalPlayer player, ItemStack gunItemStack, ClientGunIndex gunIndex, PoseStack poseStack, BedrockGunModel model, float partialTicks) {
+    private static void applyFirstPersonGunTransform(LocalPlayer player, ItemStack gunItemStack, PoseStack poseStack, BedrockGunModel model, float partialTicks) {
         // 配合运动曲线，计算改装枪口的打开进度
         float refitScreenOpeningProgress = REFIT_OPENING_DYNAMICS.update(RefitTransform.getOpeningProgress());
         // 配合运动曲线，计算瞄准进度

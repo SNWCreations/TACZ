@@ -19,6 +19,7 @@ public class EntityKillByGunEvent extends Event {
     private final @Nullable LivingEntity killedEntity;
     private final @Nullable LivingEntity attacker;
     private final ResourceLocation gunId;
+    private final ResourceLocation gunDisplayId;
     private final float baseDamage;
     private final DamageSource nonApPartDamageSource;
     private final DamageSource apPartDamageSource;
@@ -26,11 +27,14 @@ public class EntityKillByGunEvent extends Event {
     private final float headshotMultiplier;
     private final LogicalSide logicalSide;
 
-    public EntityKillByGunEvent(Entity bullet, @Nullable LivingEntity hurtEntity, @Nullable LivingEntity attacker, ResourceLocation gunId, float baseDamage, @Nullable Pair<DamageSource, DamageSource> sources, boolean isHeadShot, float headshotMultiplier, LogicalSide logicalSide) {
+    public EntityKillByGunEvent(Entity bullet, @Nullable LivingEntity hurtEntity, @Nullable LivingEntity attacker,
+                                ResourceLocation gunId, ResourceLocation gunDisplayId, float baseDamage, @Nullable Pair<DamageSource, DamageSource> sources,
+                                boolean isHeadShot, float headshotMultiplier, LogicalSide logicalSide) {
         this.bullet = bullet;
         this.killedEntity = hurtEntity;
         this.attacker = attacker;
         this.gunId = gunId;
+        this.gunDisplayId = gunDisplayId;
         this.baseDamage = baseDamage;
         this.nonApPartDamageSource = Optional.ofNullable(sources).map(Pair::getLeft).orElse(null);
         this.apPartDamageSource = Optional.ofNullable(sources).map(Pair::getRight).orElse(null);
@@ -81,5 +85,9 @@ public class EntityKillByGunEvent extends Event {
 
     public LogicalSide getLogicalSide() {
         return logicalSide;
+    }
+
+    public ResourceLocation getGunDisplayId() {
+        return gunDisplayId;
     }
 }

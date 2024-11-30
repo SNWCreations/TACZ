@@ -26,16 +26,20 @@ import java.util.Set;
 
 @OnlyIn(Dist.CLIENT)
 public class ClientIndexManager {
+    public static final Map<ResourceLocation, GunDisplayInstance> GUN_DISPLAY = Maps.newHashMap();
     public static final Map<ResourceLocation, ClientGunIndex> GUN_INDEX = Maps.newHashMap();
     public static final Map<ResourceLocation, ClientAmmoIndex> AMMO_INDEX = Maps.newHashMap();
     public static final Map<ResourceLocation, ClientAttachmentIndex> ATTACHMENT_INDEX = Maps.newHashMap();
     public static final Map<ResourceLocation, ClientBlockIndex> BLOCK_INDEX = Maps.newHashMap();
 
     public static void reload() {
+        GUN_DISPLAY.clear();
         GUN_INDEX.clear();
         AMMO_INDEX.clear();
         ATTACHMENT_INDEX.clear();
         BLOCK_INDEX.clear();
+
+        loadGunDisplay();
         loadGunIndex();
         loadAmmoIndex();
         loadAttachmentIndex();
@@ -48,6 +52,16 @@ public class ClientIndexManager {
             // 自动切一次枪，以便刷新状态机
             IClientPlayerGunOperator.fromLocalPlayer(player).draw(ItemStack.EMPTY);
         }
+    }
+
+    public static void loadGunDisplay() {
+        ClientAssetsManager.INSTANCE.getGunDisplays().forEach(entry -> {
+            try {
+                GUN_DISPLAY.put(entry.getKey(), GunDisplayInstance.create(entry.getValue()));
+            } catch (IllegalArgumentException exception) {
+                GunMod.LOGGER.warn("{} display init read fail!", entry.getKey(), exception);
+            }
+        });
     }
 
     public static void loadGunIndex() {

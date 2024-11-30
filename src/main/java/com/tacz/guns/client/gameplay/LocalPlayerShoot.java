@@ -10,6 +10,7 @@ import com.tacz.guns.api.event.common.GunShootEvent;
 import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.gun.FireMode;
 import com.tacz.guns.client.animation.statemachine.GunAnimationConstant;
+import com.tacz.guns.client.resource.GunDisplayInstance;
 import com.tacz.guns.client.resource.index.ClientGunIndex;
 import com.tacz.guns.client.sound.SoundPlayManager;
 import com.tacz.guns.network.NetworkHandler;
@@ -72,6 +73,7 @@ public class LocalPlayerShoot {
         }
         ClientGunIndex gunIndex = gunIndexOptional.get();
         GunData gunData = gunIndex.getGunData();
+        GunDisplayInstance display = gunIndex.getDefaultDisplay();
         long coolDown = this.getCoolDown(iGun, mainhandItem, gunData);
         // 如果射击冷却大于等于 1 tick (即 50 ms)，则不允许开火
         if (coolDown >= 50) {
@@ -97,7 +99,7 @@ public class LocalPlayerShoot {
         boolean hasAmmoInBarrel = iGun.hasBulletInBarrel(mainhandItem) && boltType != Bolt.OPEN_BOLT;
         int ammoCount = iGun.getCurrentAmmoCount(mainhandItem) + (hasAmmoInBarrel ? 1 : 0);
         if (ammoCount < 1) {
-            SoundPlayManager.playDryFireSound(player, gunIndex);
+            SoundPlayManager.playDryFireSound(player, display);
             return ShootResult.NO_AMMO;
         }
         // 判断膛内子弹
@@ -117,13 +119,13 @@ public class LocalPlayerShoot {
         data.lockState(SHOOT_LOCKED_CONDITION);
         data.isShootRecorded = false;
         // 调用开火逻辑
-        this.doShoot(gunIndex, iGun, mainhandItem, gunData, coolDown);
+        this.doShoot(display, iGun, mainhandItem, gunData, coolDown);
         return ShootResult.SUCCESS;
     }
 
-    private void doShoot(ClientGunIndex gunIndex, IGun iGun, ItemStack mainhandItem, GunData gunData, long delay) {
+    private void doShoot(GunDisplayInstance display, IGun iGun, ItemStack mainhandItem, GunData gunData, long delay) {
         FireMode fireMode = iGun.getFireMode(mainhandItem);
-        Bolt boltType = gunIndex.getGunData().getBolt();
+        Bolt boltType = gunData.getBolt();
         // 获取余弹数
         boolean consumeAmmo = IGunOperator.fromLivingEntity(player).consumesAmmoOrNot();
         boolean hasAmmoInBarrel = iGun.hasBulletInBarrel(mainhandItem) && boltType != Bolt.OPEN_BOLT;
@@ -165,18 +167,18 @@ public class LocalPlayerShoot {
                 boolean fire = !MinecraftForge.EVENT_BUS.post(new GunFireEvent(player, mainhandItem, LogicalSide.CLIENT));
                 if (fire) {
                     // 动画和声音循环播放
-                    AnimationStateMachine<?> animationStateMachine = gunIndex.getAnimationStateMachine();
+                    AnimationStateMachine<?> animationStateMachine = display.getAnimationStateMachine();
                     if (animationStateMachine != null) {
                         animationStateMachine.trigger(GunAnimationConstant.INPUT_SHOOT);
                     }
                     // 获取消音
                     final boolean useSilenceSound = this.useSilenceSound();
                     // 开火需要打断检视
-                    SoundPlayManager.stopPlayGunSound(gunIndex, SoundManager.INSPECT_SOUND);
+                    SoundPlayManager.stopPlayGunSound(display, SoundManager.INSPECT_SOUND);
                     if (useSilenceSound) {
-                        SoundPlayManager.playSilenceSound(player, gunIndex);
+                        SoundPlayManager.playSilenceSound(player, display);
                     } else {
-                        SoundPlayManager.playShootSound(player, gunIndex);
+                        SoundPlayManager.playShootSound(player, display);
                     }
                 }
             });

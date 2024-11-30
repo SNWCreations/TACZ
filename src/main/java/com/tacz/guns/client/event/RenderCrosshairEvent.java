@@ -68,12 +68,12 @@ public class RenderCrosshairEvent {
             }
             // 播放的动画需要隐藏准心时，取消准心渲染
             ItemStack stack = player.getMainHandItem();
-            if (!(stack.getItem() instanceof IGun iGun)) {
+            if (!(stack.getItem() instanceof IGun)) {
                 return;
             }
-            ResourceLocation gunId = iGun.getGunId(stack);
+
             IClientPlayerGunOperator playerGunOperator = IClientPlayerGunOperator.fromLocalPlayer(player);
-            TimelessAPI.getClientGunIndex(gunId).ifPresent(gunIndex -> {
+            TimelessAPI.getGunDisplay(stack).ifPresent(gunIndex -> {
                 // 瞄准快要完成时，取消准心渲染
                 if (playerGunOperator.getClientAimingProgress(event.getPartialTick()) > 0.9) {
                     // 枪包可以强制显示准星

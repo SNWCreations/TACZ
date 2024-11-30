@@ -16,7 +16,6 @@ import com.tacz.guns.client.input.*;
 import com.tacz.guns.client.resource.pojo.display.gun.ControllableData;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.client.settings.KeyConflictContext;
 
@@ -104,9 +103,9 @@ public class ControllableInner {
         if (iGun == null) {
             return;
         }
-        ResourceLocation gunId = iGun.getGunId(mainHandItem);
+
         FireMode fireMode = iGun.getFireMode(mainHandItem);
-        TimelessAPI.getClientGunIndex(gunId).ifPresent(index -> {
+        TimelessAPI.getGunDisplay(mainHandItem).ifPresent(index -> {
             EnumMap<FireMode, ControllableData> data = index.getControllableData();
             if (data.containsKey(fireMode)) {
                 ControllableData controllableData = data.get(fireMode);

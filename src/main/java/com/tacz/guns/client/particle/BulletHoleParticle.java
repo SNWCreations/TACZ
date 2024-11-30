@@ -40,7 +40,7 @@ public class BulletHoleParticle extends TextureSheetParticle {
     private int vOffset;
     private float textureDensity;
 
-    public BulletHoleParticle(ClientLevel world, double x, double y, double z, Direction direction, BlockPos pos, String ammoId, String gunId) {
+    public BulletHoleParticle(ClientLevel world, double x, double y, double z, Direction direction, BlockPos pos, String ammoId, String gunId, String gunDisplayId) {
         super(world, x, y, z);
         this.setSprite(this.getSprite(pos));
         this.direction = direction;
@@ -54,7 +54,7 @@ public class BulletHoleParticle extends TextureSheetParticle {
         if (state.is(ModBlocks.TARGET.get()) || shouldRemove()) {
             this.remove();
         }
-        TimelessAPI.getClientGunIndex(new ResourceLocation(gunId)).ifPresent(gunIndex -> {
+        TimelessAPI.getGunDisplay(new ResourceLocation(gunDisplayId), new ResourceLocation(gunId)).ifPresent(gunIndex -> {
             float[] gunTracerColor = gunIndex.getTracerColor();
             if (gunTracerColor != null) {
                 this.rCol = gunTracerColor[0];
@@ -208,7 +208,7 @@ public class BulletHoleParticle extends TextureSheetParticle {
 
         @Override
         public BulletHoleParticle createParticle(@NotNull BulletHoleOption option, @NotNull ClientLevel world, double x, double y, double z, double pXSpeed, double pYSpeed, double pZSpeed) {
-            BulletHoleParticle particle = new BulletHoleParticle(world, x, y, z, option.getDirection(), option.getPos(), option.getAmmoId(), option.getGunId());
+            BulletHoleParticle particle = new BulletHoleParticle(world, x, y, z, option.getDirection(), option.getPos(), option.getAmmoId(), option.getGunId(), option.getGunDisplayId());
             return particle;
         }
     }

@@ -44,6 +44,8 @@ import org.luaj.vm2.LuaTable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Consumer;
 
 /**
@@ -113,6 +115,10 @@ public enum ClientAssetsManager {
     @Nullable
     public GunDisplay getGunDisplay(ResourceLocation id) {
         return gunDisplay.getData(id);
+    }
+
+    public Set<Map.Entry<ResourceLocation, GunDisplay>> getGunDisplays() {
+        return gunDisplay.getAllData().entrySet();
     }
 
     @Nullable
