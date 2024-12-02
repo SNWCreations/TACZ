@@ -32,8 +32,7 @@ public final class TimelessAPI {
             ResourceLocation gunId = iGun.getGunId(stack);
             ResourceLocation displayId = iGun.getGunDisplayId(stack);
             if (displayId.equals(DefaultAssets.DEFAULT_GUN_DISPLAY_ID)) {
-                ClientGunIndex index = ClientIndexManager.GUN_INDEX.get(gunId);
-                return Optional.ofNullable(index.getDefaultDisplay());
+                return getClientGunIndex(gunId).map(ClientGunIndex::getDefaultDisplay);
             } else {
                 return getGunDisplay(displayId, gunId);
             }
