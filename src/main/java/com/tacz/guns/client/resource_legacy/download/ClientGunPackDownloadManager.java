@@ -1,4 +1,4 @@
-package com.tacz.guns.client.download;
+package com.tacz.guns.client.resource_legacy.download;
 
 import com.tacz.guns.GunMod;
 import com.tacz.guns.config.sync.SyncConfig;
@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.regex.Pattern;
 
+@Deprecated
 public final class ClientGunPackDownloadManager {
     private static final Path DOWNLOAD_DIR_PATH = Paths.get("config", GunMod.MOD_ID, "server", "download");
     private static final Pattern SHA1 = Pattern.compile("^[a-fA-F0-9]{40}$");

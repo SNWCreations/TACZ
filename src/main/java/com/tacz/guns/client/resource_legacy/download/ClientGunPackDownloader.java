@@ -1,4 +1,4 @@
-package com.tacz.guns.client.download;
+package com.tacz.guns.client.resource_legacy.download;
 
 import com.google.common.collect.Maps;
 import com.tacz.guns.GunMod;
@@ -30,6 +30,7 @@ import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.locks.ReentrantLock;
 
+@Deprecated
 public class ClientGunPackDownloader {
     /**
      * 最大允许文件大小 250 M

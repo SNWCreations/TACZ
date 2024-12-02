@@ -98,6 +98,7 @@ public class BulletHoleOption implements ParticleOptions {
         buffer.writeBlockPos(this.pos);
         buffer.writeUtf(this.ammoId);
         buffer.writeUtf(this.gunId);
+        buffer.writeUtf(this.gunDisplayId);
     }
 
     @Override
