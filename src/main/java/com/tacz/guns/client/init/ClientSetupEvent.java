@@ -2,7 +2,6 @@ package com.tacz.guns.client.init;
 
 import com.tacz.guns.GunMod;
 import com.tacz.guns.api.client.other.ThirdPersonManager;
-import com.tacz.guns.client.download.ClientGunPackDownloadManager;
 import com.tacz.guns.client.gui.overlay.GunHudOverlay;
 import com.tacz.guns.client.gui.overlay.InteractKeyTextOverlay;
 import com.tacz.guns.client.gui.overlay.KillAmountOverlay;
@@ -83,10 +82,10 @@ public class ClientSetupEvent {
         event.enqueueWork(() -> ItemProperties.register(ModItems.AMMO_BOX.get(), AmmoBoxItem.PROPERTY_NAME, AmmoBoxItem::getStatue));
 
         // 初始化自己的枪包下载器
-        event.enqueueWork(ClientGunPackDownloadManager::init);
+//        event.enqueueWork(ClientGunPackDownloadManager::init);
 
         // 与 player animator 的兼容
-//        event.enqueueWork(PlayerAnimatorCompat::init);
+        event.enqueueWork(PlayerAnimatorCompat::init);
 
         // 与 Shoulder Surfing Reloaded 的兼容
         event.enqueueWork(ShoulderSurfingCompat::init);
@@ -97,7 +96,7 @@ public class ClientSetupEvent {
 
     @SubscribeEvent
     public static void onClientResourceReload(RegisterClientReloadListenersEvent event) {
-        PlayerAnimatorCompat.init();
+//        PlayerAnimatorCompat.init();
         ClientAssetsManager.INSTANCE.reloadAndRegister(event::registerReloadListener);
         if (PlayerAnimatorCompat.isInstalled()) {
             PlayerAnimatorCompat.registerReloadListener(event::registerReloadListener);

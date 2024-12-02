@@ -1,12 +1,12 @@
 package com.tacz.guns.client.resource_legacy;
 
-import com.tacz.guns.client.download.ClientGunPackDownloadManager;
+import com.tacz.guns.client.resource_legacy.download.ClientGunPackDownloadManager;
 import com.tacz.guns.config.sync.SyncConfig;
 import com.tacz.guns.network.message.ServerMessageSyncGunPack;
-import com.tacz.guns.resource_legacy.CommonGunPackLoader;
 import com.tacz.guns.resource.VersionChecker;
-import com.tacz.guns.resource_legacy.network.CommonGunPackNetwork;
 import com.tacz.guns.resource.network.DataType;
+import com.tacz.guns.resource_legacy.CommonGunPackLoader;
+import com.tacz.guns.resource_legacy.network.CommonGunPackNetwork;
 import net.minecraft.client.Minecraft;
 import net.minecraft.resources.ResourceLocation;
 
