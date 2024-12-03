@@ -1,5 +1,6 @@
 package com.tacz.guns.resource;
 
+import com.tacz.guns.resource.filter.RecipeFilter;
 import com.tacz.guns.resource.index.CommonAmmoIndex;
 import com.tacz.guns.resource.index.CommonAttachmentIndex;
 import com.tacz.guns.resource.index.CommonBlockIndex;
@@ -20,6 +21,8 @@ public interface ICommonResourceProvider {
     @Nullable AttachmentData getAttachmentData(ResourceLocation attachmentId);
 
     @Nullable BlockData getBlockData(ResourceLocation id);
+
+    @Nullable RecipeFilter getRecipeFilter(ResourceLocation id);
 
     @Nullable CommonGunIndex getGunIndex(ResourceLocation gunId);
 

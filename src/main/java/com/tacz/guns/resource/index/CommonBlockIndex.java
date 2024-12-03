@@ -2,6 +2,7 @@ package com.tacz.guns.resource.index;
 
 import com.google.common.base.Preconditions;
 import com.tacz.guns.resource.CommonAssetsManager;
+import com.tacz.guns.resource.filter.RecipeFilter;
 import com.tacz.guns.resource.pojo.BlockIndexPOJO;
 import com.tacz.guns.resource.pojo.data.block.BlockData;
 import net.minecraft.resources.ResourceLocation;
@@ -13,6 +14,7 @@ public class CommonBlockIndex {
     private BlockIndexPOJO pojo;
     private BlockItem block;
     private BlockData data;
+    private RecipeFilter filter;
 
     public static CommonBlockIndex getInstance(BlockIndexPOJO gunIndexPOJO) throws IllegalArgumentException {
         CommonBlockIndex index = new CommonBlockIndex();
@@ -36,7 +38,10 @@ public class CommonBlockIndex {
         Preconditions.checkArgument(pojoData != null, "index object missing pojoData field");
         BlockData data = CommonAssetsManager.get().getBlockData(pojoData);
         Preconditions.checkArgument(data != null, "there is no corresponding data file");
+        RecipeFilter recipeFilter = CommonAssetsManager.get().getRecipeFilter(data.getFilter());
+        Preconditions.checkArgument(recipeFilter != null, "there is no corresponding data file");
         index.data = data;
+        index.filter = recipeFilter;
     }
 
     public BlockIndexPOJO getPojo() {
@@ -49,5 +54,9 @@ public class CommonBlockIndex {
 
     public BlockData getData() {
         return data;
+    }
+
+    public RecipeFilter getFilter() {
+        return filter;
     }
 }
