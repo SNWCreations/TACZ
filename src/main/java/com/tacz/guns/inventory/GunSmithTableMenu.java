@@ -6,7 +6,7 @@ import com.tacz.guns.crafting.GunSmithTableRecipe;
 import com.tacz.guns.network.NetworkHandler;
 import com.tacz.guns.network.message.ServerMessageCraft;
 import com.tacz.guns.resource.filter.RecipeFilter;
-import com.tacz.guns.resource.pojo.data.block.BlockData;
+import com.tacz.guns.resource.index.CommonBlockIndex;
 import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.item.ItemEntity;
@@ -36,10 +36,7 @@ public class GunSmithTableMenu extends AbstractContainerMenu {
     public GunSmithTableMenu(int id, Inventory inventory, @Nullable ResourceLocation resourceLocation) {
         super(TYPE, id);
         this.blockId = resourceLocation;
-        this.filter = TimelessAPI.getCommonBlockIndex(getBlockId()).map(blockIndex -> {
-            BlockData data = blockIndex.getData();
-            return data.getFilter();
-        }).orElse(null);
+        this.filter = TimelessAPI.getCommonBlockIndex(getBlockId()).map(CommonBlockIndex::getFilter).orElse(null);
     }
 
     @Nullable

@@ -26,7 +26,6 @@ import com.tacz.guns.inventory.GunSmithTableMenu;
 import com.tacz.guns.network.NetworkHandler;
 import com.tacz.guns.network.message.ClientMessageCraft;
 import com.tacz.guns.resource.filter.RecipeFilter;
-import com.tacz.guns.resource.pojo.data.block.BlockData;
 import com.tacz.guns.util.RenderDistance;
 import it.unimi.dsi.fastutil.Pair;
 import it.unimi.dsi.fastutil.ints.Int2IntArrayMap;
@@ -133,8 +132,7 @@ public class GunSmithTableScreen extends AbstractContainerScreen<GunSmithTableMe
         }
 
         TimelessAPI.getCommonBlockIndex(menu.getBlockId()).map(blockIndex -> {
-            BlockData data = blockIndex.getData();
-            RecipeFilter filter = data.getFilter();
+            RecipeFilter filter = blockIndex.getFilter();
             if (filter != null) {
                 return filter.filter(recipeIds, Pair::value);
             }

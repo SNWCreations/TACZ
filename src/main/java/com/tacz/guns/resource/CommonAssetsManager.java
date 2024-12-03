@@ -68,6 +68,8 @@ public class CommonAssetsManager implements ICommonResourceProvider {
     private CommonDataManager<CommonGunIndex> gunIndex;
     private CommonDataManager<CommonAttachmentIndex> attachmentIndex;
     private CommonDataManager<CommonBlockIndex> blockIndex;
+    private RecipeFilterManager recipeFilterManager;
+
     private AttachmentsTagManager attachmentsTagManager;
     List<LuaLibrary> libList = List.of(new LuaGunLogicConstant());
     private final ScriptManager scriptManager = new ScriptManager(new FileToIdConverter("scripts", ".lua"), libList);
@@ -77,6 +79,7 @@ public class CommonAssetsManager implements ICommonResourceProvider {
         gunData = register(new CommonDataManager<>(DataType.GUN_DATA, GunData.class, GSON, "data/guns", "GunDataLoader"));
         attachmentData = register(new AttachmentDataManager());
         attachmentsTagManager = register(new AttachmentsTagManager());
+        recipeFilterManager = register(new RecipeFilterManager());
         blockData = register(new CommonDataManager<>(DataType.BLOCK_DATA, BlockData.class, GSON, "data/blocks", "BlockDataLoader"));
         register.accept(scriptManager);
 
@@ -117,6 +120,12 @@ public class CommonAssetsManager implements ICommonResourceProvider {
     @Override
     public BlockData getBlockData(ResourceLocation id) {
         return blockData.getData(id);
+    }
+
+    @Override
+    @Nullable
+    public RecipeFilter getRecipeFilter(ResourceLocation id) {
+        return recipeFilterManager.getFilter(id);
     }
 
     @Nullable

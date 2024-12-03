@@ -5,6 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import com.tacz.guns.GunMod;
 import com.tacz.guns.resource.CommonAssetsManager;
 import com.tacz.guns.resource.ICommonResourceProvider;
+import com.tacz.guns.resource.filter.RecipeFilter;
 import com.tacz.guns.resource.index.CommonAmmoIndex;
 import com.tacz.guns.resource.index.CommonAttachmentIndex;
 import com.tacz.guns.resource.index.CommonBlockIndex;
@@ -27,6 +28,7 @@ public enum CommonNetworkCache implements ICommonResourceProvider {
 
     public Map<ResourceLocation, GunData> gunData = new HashMap<>();
     public Map<ResourceLocation, AttachmentData> attachmentData = new HashMap<>();
+    public Map<ResourceLocation, RecipeFilter> recipeFilter = new HashMap<>();
     public Map<ResourceLocation, BlockData> blockData = new HashMap<>();
     public Map<ResourceLocation, CommonGunIndex> gunIndex = new HashMap<>();
     public Map<ResourceLocation, CommonAmmoIndex> ammoIndex = new HashMap<>();
@@ -51,6 +53,12 @@ public enum CommonNetworkCache implements ICommonResourceProvider {
     @Override
     public BlockData getBlockData(ResourceLocation id) {
         return blockData.get(id);
+    }
+
+    @Nullable
+    @Override
+    public RecipeFilter getRecipeFilter(ResourceLocation id) {
+        return recipeFilter.get(id);
     }
 
     @Nullable
@@ -116,6 +124,7 @@ public enum CommonNetworkCache implements ICommonResourceProvider {
         ammoIndex.clear();
         attachmentIndex.clear();
         blockIndex.clear();
+        recipeFilter.clear();
         blockData.clear();
 
         attachmentTags.clear();
@@ -166,6 +175,7 @@ public enum CommonNetworkCache implements ICommonResourceProvider {
                     case ATTACHMENT_INDEX -> attachmentIndex.put(entry.getKey(), parse(entry.getValue(), CommonAttachmentIndex.class));
                     case ATTACHMENT_TAGS -> resolveAttachmentTags(data);
                     case BLOCK_INDEX -> blockIndex.put(entry.getKey(), parse(entry.getValue(), CommonBlockIndex.class));
+                    case RECIPE_FILTER -> recipeFilter.put(entry.getKey(), parse(entry.getValue(), RecipeFilter.class));
                     case BLOCK_DATA -> blockData.put(entry.getKey(), parse(entry.getValue(), BlockData.class));
                 }
             } catch (IllegalArgumentException | JsonParseException exception) {
