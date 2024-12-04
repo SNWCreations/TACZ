@@ -3,7 +3,7 @@
   "name": "tacz.block.gun_smith_table",
   // 方块效果文件
   "display": "tacz:gun_smith_table",
-  // 枪械参数文件
+  // 方块参数文件
   "data": "tacz:gun_smith_table",
   // 方块文本提示
   "tooltip": "tacz.gun.ak47.desc",

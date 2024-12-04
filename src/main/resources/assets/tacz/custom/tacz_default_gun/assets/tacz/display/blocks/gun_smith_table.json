@@ -1,5 +1,5 @@
 {
-  // 默认的模型，在包目录下的 models 文件夹中寻找，不可为空
+  // 方块的模型，在包目录下的 models 文件夹中寻找，不可为空
   "model": "tacz:block/gun_smith_table",
   // 默认材质，不可为空
   "texture": "tacz:block/uv/gun_smith_table",

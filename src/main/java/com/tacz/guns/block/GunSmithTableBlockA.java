@@ -11,7 +11,7 @@ import net.minecraft.world.level.block.state.BlockState;
 public class GunSmithTableBlockA extends AbstractGunSmithTableBlock {
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        Direction direction = context.getHorizontalDirection().getClockWise();
+        Direction direction = context.getHorizontalDirection().getOpposite();
         return this.defaultBlockState().setValue(FACING, direction);
     }
 
