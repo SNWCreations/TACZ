@@ -51,6 +51,8 @@ public class PackConvertor {
 
         File[] files = FOLDER.toFile().listFiles();
         int cnt = 0;
+        int skip = 0;
+        int error = 0;
         if (files != null && files.length > 0) {
             StopWatch watch = StopWatch.createStarted();
             {
@@ -67,23 +69,30 @@ public class PackConvertor {
                             } catch (FileAlreadyExistsException e) {
                                 msg(source, Component.translatable("message.tacz.converter.pack.exist"));
                                 GunMod.LOGGER.warn("Target file already exists: {}", file.getName());
+                                skip++;
                                 continue;
                             } catch (Exception e){
                                 msg(source, Component.translatable("message.tacz.converter.pack.failed", file.getName()));
                                 GunMod.LOGGER.error("Failed to convert legacy pack: {}", file.getName(), e);
+                                error++;
                                 continue;
                             }
                             cnt++;
                             msg(source, Component.translatable("message.tacz.converter.pack.finish", file.getName()));
                             GunMod.LOGGER.info("Legacy pack converted: {}", file.getName());
                         }
+                    } else {
+                        msg(source, Component.translatable("message.tacz.converter.pack.folder", file.getName()));
+                        GunMod.LOGGER.warn("Skip folder: {}", file.getName());
+                        skip++;
                     }
                 }
             }
             watch.stop();
             double time = watch.getTime(TimeUnit.MICROSECONDS) / 1000.0;
-            msg(source, Component.translatable("message.tacz.converter.finish", time, cnt));
-            GunMod.LOGGER.info("Convert finished! Total time: {} ms. Total packs: {}. Restart the game to load new packs!", time, cnt);
+            msg(source, Component.translatable("message.tacz.converter.finish", time, cnt, skip, error));
+            GunMod.LOGGER.info("Convert finished! Total time: {} ms. Success : {}. Skipped {}. Failed: {}. Restart the game to load new packs!",
+                    time, cnt, skip, error);
         }
     }
 
