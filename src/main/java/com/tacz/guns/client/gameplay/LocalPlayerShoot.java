@@ -90,6 +90,10 @@ public class LocalPlayerShoot {
         if (gunOperator.getSynDrawCoolDown() != 0) {
             return ShootResult.IS_DRAWING;
         }
+        // 检查是否正在拉栓
+        if (gunOperator.getSynIsBolting()) {
+            return ShootResult.IS_BOLTING;
+        }
         // 判断是否处于近战冷却时间
         if (gunOperator.getSynMeleeCoolDown() != 0) {
             return ShootResult.IS_MELEE;

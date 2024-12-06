@@ -64,7 +64,7 @@ public abstract class LivingEntityMixin extends Entity implements IGunOperator, 
     @Override
     @Unique
     public boolean getSynIsBolting() {
-        return ModSyncedEntityData.BOLT_COOL_DOWN_KEY.getValue(tacz$shooter);
+        return ModSyncedEntityData.IS_BOLTING_KEY.getValue(tacz$shooter);
     }
 
     @Override
@@ -222,7 +222,7 @@ public abstract class LivingEntityMixin extends Entity implements IGunOperator, 
             ModSyncedEntityData.SHOOT_COOL_DOWN_KEY.setValue(tacz$shooter, this.tacz$shoot.getShootCoolDown());
             ModSyncedEntityData.MELEE_COOL_DOWN_KEY.setValue(tacz$shooter, this.tacz$melee.getMeleeCoolDown());
             ModSyncedEntityData.DRAW_COOL_DOWN_KEY.setValue(tacz$shooter, this.tacz$draw.getDrawCoolDown());
-            ModSyncedEntityData.BOLT_COOL_DOWN_KEY.setValue(tacz$shooter, this.tacz$data.isBolting);
+            ModSyncedEntityData.IS_BOLTING_KEY.setValue(tacz$shooter, this.tacz$data.isBolting);
             ModSyncedEntityData.RELOAD_STATE_KEY.setValue(tacz$shooter, reloadState);
             ModSyncedEntityData.AIMING_PROGRESS_KEY.setValue(tacz$shooter, this.tacz$data.aimingProgress);
             ModSyncedEntityData.IS_AIMING_KEY.setValue(tacz$shooter, this.tacz$data.isAiming);
