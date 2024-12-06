@@ -200,14 +200,19 @@ public class ModernKineticGunItem extends AbstractGunItem implements GunItemData
 
 
     private boolean defaultTickBolt(ModernKineticGunScriptAPI api) {
-        long boltActionTime = (long) (api.getGunIndex().getGunData().getBoltActionTime() * 1000);
-        if (api.getBoltTime() < boltActionTime) {
+        GunData gunData = api.getGunIndex().getGunData();
+        long boltActionTime = (long) (gunData.getBoltActionTime() * 1000);
+        float rawBoltFeedTime = gunData.getBoltFeedTime();
+        long boltFeedTime = rawBoltFeedTime == -1 ? boltActionTime : (long) (gunData.getBoltFeedTime() * 1000);
+        if (api.getBoltTime() < boltFeedTime) {
             return true;
         } else {
-            if (api.removeAmmoFromMagazine(1) != 0) {
-                api.setAmmoInBarrel(true);
+            if (!api.hasAmmoInBarrel()) {
+                if (api.removeAmmoFromMagazine(1) != 0) {
+                    api.setAmmoInBarrel(true);
+                }
             }
-            return false;
+            return api.getBoltTime() < boltActionTime;
         }
     }
 

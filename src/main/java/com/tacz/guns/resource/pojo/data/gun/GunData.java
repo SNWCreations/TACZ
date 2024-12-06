@@ -54,6 +54,9 @@ public class GunData {
     @SerializedName("bolt_action_time")
     private float boltActionTime = 0;
 
+    @SerializedName("bolt_feed_time")
+    private float boltFeedTime = -1;
+
     @SerializedName("reload")
     private GunReloadData reloadData = new GunReloadData();
 
@@ -158,6 +161,10 @@ public class GunData {
 
     public float getBoltActionTime() {
         return boltActionTime;
+    }
+
+    public float getBoltFeedTime() {
+        return boltFeedTime;
     }
 
     public GunReloadData getReloadData() {
