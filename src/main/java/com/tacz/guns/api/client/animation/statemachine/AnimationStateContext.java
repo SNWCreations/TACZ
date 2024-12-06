@@ -308,6 +308,17 @@ public class AnimationStateContext {
     }
 
     /**
+     * 获取动画文件中是否存在某个动画
+     * @param name 动画名称
+     * @return 动画是否存在
+     */
+    public boolean hasAnimationPrototype(String name) {
+        var stateMachine = checkStateMachine();
+        AnimationController animationController = stateMachine.getAnimationController();
+        return animationController.containPrototype(name);
+    }
+
+    /**
      * 手动触发一次状态转移
      * @param input 状态转移的输入
      */
