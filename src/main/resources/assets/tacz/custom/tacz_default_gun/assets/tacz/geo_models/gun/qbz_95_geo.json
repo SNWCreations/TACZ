@@ -6618,7 +6618,7 @@
 				{
 					"name": "constraint",
 					"parent": "qbz_95",
-					"pivot": [0, 12.525, -18.625]
+					"pivot": [0, 14.025, 5.375]
 				},
 				{
 					"name": "additional_magazine",
