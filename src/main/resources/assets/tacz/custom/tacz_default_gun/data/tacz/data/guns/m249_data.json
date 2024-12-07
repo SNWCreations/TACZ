@@ -7,7 +7,7 @@
     200
   ],
   "bolt": "open_bolt",
-  "rpm": 250,  // 原值 750
+  "rpm": 750,  // 原值 750
   "bullet": {
     "life": 1.0,
     "bullet_amount": 1,
@@ -101,9 +101,7 @@
     "scope",
     "grip",
     "muzzle",
-    "extended_mag"
-  ],
-  "script": "tacz:devotion_lmg_logic",
+    "extended_mag"  ],
   "exclusive_attachments": {
   }
 }

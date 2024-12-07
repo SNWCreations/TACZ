@@ -8,6 +8,12 @@
     },
     {
       "item": {
+        "tag": "forge:gems/lapis"
+      },
+      "count": 5
+    },
+    {
+      "item": {
         "tag": "forge:gunpowder"
       },
       "count": 2
