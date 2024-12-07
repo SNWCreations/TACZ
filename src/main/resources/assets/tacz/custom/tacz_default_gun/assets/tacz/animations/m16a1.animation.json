@@ -3274,7 +3274,7 @@
 			}
 		},
 		"shoot": {
-			"animation_length": 0.63333,
+			"animation_length": 0.6333,
 			"bones": {
 				"root": {
 					"rotation": {
@@ -3334,6 +3334,17 @@
 							"post": [0, 0, 0],
 							"lerp_mode": "catmullrom"
 						}
+					}
+				},
+				"constraint": {
+					"rotation": {
+						"0.0": [0.2, 0.2, 0.2],
+						"0.4333": [0, 0, 0]
+					},
+					"position": {
+						"0.0": [0.1, 0.1, 0.7],
+						"0.2667": [0.1, 0.1, 0.25],
+						"0.4333": [0, 0, 0]
 					}
 				}
 			}

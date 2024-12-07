@@ -6,9 +6,9 @@
 				"identifier": "geometry.ai_awp_json - Converted",
 				"texture_width": 128,
 				"texture_height": 128,
-				"visible_bounds_width": 4,
-				"visible_bounds_height": 2.5,
-				"visible_bounds_offset": [0, 0.75, 0]
+				"visible_bounds_width": 5,
+				"visible_bounds_height": 3,
+				"visible_bounds_offset": [0, 0.5, 0]
 			},
 			"bones": [
 				{
@@ -6456,7 +6456,7 @@
 				{
 					"name": "iron_view",
 					"parent": "views",
-					"pivot": [0, 9.3, 15.25]
+					"pivot": [0, 9.3, 11.5]
 				},
 				{
 					"name": "idle_view",
