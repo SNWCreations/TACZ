@@ -4,7 +4,6 @@ import com.tacz.guns.api.client.animation.AnimationListener;
 import com.tacz.guns.api.client.animation.ObjectAnimationChannel;
 import com.tacz.guns.client.model.bedrock.ModelRendererWrapper;
 import com.tacz.guns.util.math.MathUtil;
-import org.joml.Quaternionf;
 
 public class ModelRotateListener implements AnimationListener {
     private final ModelRendererWrapper rendererWrapper;
@@ -19,12 +18,12 @@ public class ModelRotateListener implements AnimationListener {
             values = MathUtil.toEulerAngles(values);
         }
         if (blend) {
-            float[] q = MathUtil.toQuaternion(values[0], values[1], values[2]);
-            Quaternionf quaternion = MathUtil.toQuaternion(q);
-            MathUtil.blendQuaternion(rendererWrapper.getAdditionalQuaternion(), quaternion);
-        } else {
-            MathUtil.toQuaternion(values[0], values[1], values[2], rendererWrapper.getAdditionalQuaternion());
+            float[] angles = MathUtil.toEulerAngles(rendererWrapper.getAdditionalQuaternion());
+            values[0] += angles[0];
+            values[1] += angles[1];
+            values[2] += angles[2];
         }
+        MathUtil.toQuaternion(values[0], values[1], values[2], rendererWrapper.getAdditionalQuaternion());
     }
 
     @Override
