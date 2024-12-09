@@ -1,6 +1,21 @@
 {
   "ammo": "tacz:45acp",
   "rpm": 1100,
+  "script": "tacz:vector45_gun_logic",
+  "script_param": {
+    "reload_feed": 1.67,
+    "reload_cooldown": 2.53,
+    "empty_feed": 2.03,
+    "empty_cooldown": 2.76,
+    "reload_xmag2_feed": 1.9,
+    "reload_xmag2_cooldown": 2.7,
+    "empty_xmag2_feed": 2.47,
+    "empty_xmag2_cooldown": 3.2,
+    "reload_xmag3_feed": 2.07,
+    "reload_xmag3_cooldown": 3,
+    "empty_xmag3_feed": 2.63,
+    "empty_xmag3_cooldown": 3.6
+  },
   "bullet": {
     "life": 0.8,
     "bullet_amount": 1,
@@ -90,29 +105,16 @@
     "lie": 2,
     "aim": 0.175
   },
-  // 近战相关
   "melee": {
-    // 枪械距离参数，用来延升近战攻击范围
-    // 会与刺刀等配件的距离做加和
     "distance": 1,
-    // 使用时的冷却时间
-    // 会与刺刀等配件的冷却时间做加和
     "cooldown": 0.6,
-    // 默认近战数据，会被配件的数据替换掉
     "default": {
-      // 动画类型：没有枪托的为 melee_push，有枪托的为 melee_stock
       "animation_type": "melee_push",
-      // 刺刀距离参数，枪械里还有个刺刀攻击距离参数，两者做加和
       "distance": 1,
-      // 刺刀范围角度
       "range_angle": 40,
-      // 刺刀冷却时间，枪械里还有个刺刀冷却时间参数，两者做加和
       "cooldown": 0.2,
-      // 伤害值
       "damage": 1,
-      // 击退效果
       "knockback": 0.4,
-      // 前摇时长，单位：秒
       "prep": 0.1
     }
   }

@@ -1050,7 +1050,7 @@
 			}
 		},
 		"reload_norm_xmag2": {
-			"animation_length": 2.73333,
+			"animation_length": 2.7333,
 			"bones": {
 				"root": {
 					"rotation": {
@@ -1451,19 +1451,19 @@
 			},
 			"sound_effects": {
 				"0.1667": {
-					"effect": "fennec_reload_fast_up"
+					"effect": "tacz:victor45/victor_reload_raise"
 				},
 				"0.4667": {
-					"effect": "p10_sm_victor_raise"
+					"effect": "tacz:victor45/victor_reload_magout"
 				},
 				"1.5": {
-					"effect": "p10_sm_victor_reload_maghit"
+					"effect": "tacz:victor45/victor_reload_maghit"
 				},
 				"1.7667": {
-					"effect": "p10_sm_victor_reload_magin"
+					"effect": "tacz:victor45/victor_reload_magin"
 				},
 				"1.8667": {
-					"effect": "p10_sm_victor_reload_end"
+					"effect": "tacz:victor45/victor_reload_end"
 				}
 			}
 		},
@@ -1872,19 +1872,19 @@
 			},
 			"sound_effects": {
 				"0.1667": {
-					"effect": "fennec_reload_fast_up"
+					"effect": "tacz:victor45/victor_reload_raise"
 				},
 				"0.4667": {
-					"effect": "p10_sm_victor_raise"
+					"effect": "tacz:victor45/victor_reload_magout"
 				},
 				"1.5333": {
-					"effect": "p10_sm_victor_reload_maghit"
+					"effect": "tacz:victor45/victor_reload_maghit"
 				},
 				"1.9": {
-					"effect": "p10_sm_victor_reload_magin"
+					"effect": "tacz:victor45/victor_reload_magin"
 				},
 				"2.1": {
-					"effect": "p10_sm_victor_reload_end"
+					"effect": "tacz:victor45/victor_reload_end"
 				}
 			}
 		},
@@ -2359,7 +2359,7 @@
 			}
 		},
 		"reload_empty_xmag2": {
-			"animation_length": 3.26667,
+			"animation_length": 3.2667,
 			"bones": {
 				"root": {
 					"rotation": {
@@ -2839,36 +2839,36 @@
 			},
 			"sound_effects": {
 				"0.0": {
-					"effect": "p10_sm_victor_reload_empty_lift"
+					"effect": "tacz:victor45/victor_reload_empty_raise"
 				},
 				"0.3": {
-					"effect": "p10_sm_victor_reload_empty_magin"
+					"effect": "tacz:victor45/victor_reload_empty_shake"
 				},
 				"0.4667": {
-					"effect": "p10_sm_victor_reload_empty_magout"
+					"effect": "tacz:victor45/victor_reload_empty_magout"
 				},
 				"1.0667": {
-					"effect": "iw8_phys_mag_drop_smg_metal_dirt_02"
+					"effect": "tacz:mag_drop_sound/mag_drop_smg_metal_dirt"
 				},
 				"1.2667": {
-					"effect": "p10_sm_victor_reload_empty_maghit"
+					"effect": "tacz:victor45/victor_reload_empty_maghit"
 				},
 				"1.6667": {
-					"effect": "p10_sm_victor_reload_empty_fast_magin"
+					"effect": "tacz:victor45/victor_reload_empty_magin"
 				},
 				"1.9667": {
-					"effect": "p10_sm_victor_reload_empty_charge"
+					"effect": "tacz:victor45/victor_reload_empty_rattle"
 				},
 				"2.1": {
-					"effect": "p10_sm_victor_reload_empty_charge"
+					"effect": "tacz:victor45/victor_reload_empty_charge"
 				},
 				"2.4": {
-					"effect": "p10_sm_victor_reload_empty_end"
+					"effect": "tacz:victor45/victor_reload_empty_end"
 				}
 			}
 		},
 		"reload_empty_xmag3": {
-			"animation_length": 3.63333,
+			"animation_length": 3.6333,
 			"bones": {
 				"root": {
 					"rotation": {
@@ -3308,28 +3308,28 @@
 			},
 			"sound_effects": {
 				"0.0": {
-					"effect": "p10_sm_victor_reload_empty_lift"
+					"effect": "tacz:victor45/victor_reload_empty_lift"
 				},
 				"0.3667": {
-					"effect": "p10_sm_victor_reload_empty_magin"
+					"effect": "tacz:victor45/victor_reload_empty_magout"
 				},
 				"1.2667": {
-					"effect": "iw8_phys_mag_drop_smg_metal_dirt_02"
+					"effect": "tacz:mag_drop_sound/mag_drop_smg_metal_dirt"
 				},
 				"1.6667": {
-					"effect": "p10_sm_victor_reload_empty_maghit"
+					"effect": "tacz:victor45/victor_reload_empty_maghit"
 				},
 				"2.1667": {
-					"effect": "p10_sm_victor_reload_empty_fast_magin"
+					"effect": "tacz:victor45/victor_reload_empty_magin"
 				},
 				"2.4333": {
-					"effect": "p10_sm_victor_reload_empty_fast_drum_hit"
+					"effect": "tacz:victor45/victor_reload_empty_fast_drum_hit"
 				},
 				"2.6": {
-					"effect": "p10_sm_victor_reload_empty_fast_drum_boltrelease"
+					"effect": "tacz:victor45/victor_reload_empty_fast_drum_boltrelease"
 				},
 				"2.9": {
-					"effect": "p10_sm_victor_reload_empty_end"
+					"effect": "tacz:victor45/victor_reload_empty_end"
 				}
 			}
 		},
@@ -4129,7 +4129,7 @@
 			}
 		},
 		"inspect_xmag2": {
-			"animation_length": 8.06667,
+			"animation_length": 8.0667,
 			"bones": {
 				"root": {
 					"rotation": {
@@ -4912,42 +4912,42 @@
 			},
 			"sound_effects": {
 				"0.1667": {
-					"effect": "p10_sm_victor_inspect_lift"
+					"effect": "tacz:victor45/victor_inspect_raise"
 				},
 				"1.4": {
-					"effect": "p10_sm_victor_inspect_moveclose"
+					"effect": "tacz:victor45/victor_inspect_moveclose"
 				},
 				"2.1667": {
-					"effect": "p10_sm_victor_inspect_shake"
+					"effect": "tacz:victor45/victor_inspect_lower"
 				},
 				"2.8667": {
-					"effect": "p10_sm_victor_inspect_empty_magout"
+					"effect": "tacz:victor45/victor_inspect_magout"
 				},
 				"4.1667": {
-					"effect": "p10_sm_victor_reload_drum_rattle"
+					"effect": "tacz:victor45/victor_reload_drum_rattle"
 				},
 				"4.7": {
-					"effect": "p10_sm_victor_reload_empty_maghit"
+					"effect": "tacz:victor45/victor_reload_empty_maghit"
 				},
 				"5.1": {
-					"effect": "p10_sm_victor_inspect_empty_magin"
+					"effect": "tacz:victor45/victor_inspect_magin"
 				},
 				"5.4667": {
-					"effect": "p10_sm_victor_inspect_rotate"
+					"effect": "tacz:victor45/victor_inspect_rotate"
 				},
 				"6.0": {
-					"effect": "p10_sm_victor_inspect_empty_drum_boltpull"
+					"effect": "tacz:victor45/victor_inspect_boltpull"
 				},
 				"7.0": {
-					"effect": "p10_sm_victor_inspect_empty_overbolt"
+					"effect": "tacz:victor45/victor_inspect_boltrelease"
 				},
 				"7.1": {
-					"effect": "p10_sm_victor_inspect_end"
+					"effect": "tacz:victor45/victor_inspect_end"
 				}
 			}
 		},
 		"inspect_xmag3": {
-			"animation_length": 8.16667,
+			"animation_length": 8.1667,
 			"bones": {
 				"root": {
 					"rotation": {
@@ -5711,37 +5711,37 @@
 			},
 			"sound_effects": {
 				"0.1667": {
-					"effect": "p10_sm_victor_inspect_lift"
+					"effect": "tacz:victor45/victor_inspect_raise"
 				},
 				"1.4": {
-					"effect": "p10_sm_victor_inspect_moveclose"
+					"effect": "tacz:victor45/victor_inspect_moveclose"
 				},
 				"2.1667": {
-					"effect": "p10_sm_victor_inspect_shake"
+					"effect": "tacz:victor45/victor_inspect_lower"
 				},
 				"2.8667": {
-					"effect": "p10_sm_victor_inspect_empty_magout"
+					"effect": "tacz:victor45/victor_inspect_magout"
 				},
 				"4.1667": {
-					"effect": "p10_sm_victor_reload_drum_rattle"
+					"effect": "tacz:victor45/victor_reload_drum_rattle"
 				},
 				"4.7": {
-					"effect": "p10_sm_victor_reload_empty_maghit"
+					"effect": "tacz:victor45/victor_reload_empty_maghit"
 				},
 				"5.1": {
-					"effect": "p10_sm_victor_inspect_empty_magin"
+					"effect": "tacz:victor45/victor_inspect_magin"
 				},
 				"5.4667": {
-					"effect": "p10_sm_victor_inspect_rotate"
+					"effect": "tacz:victor45/victor_inspect_rotate"
 				},
 				"6.0": {
-					"effect": "p10_sm_victor_inspect_empty_drum_boltpull"
+					"effect": "tacz:victor45/victor_inspect_boltpull"
 				},
 				"7.0": {
-					"effect": "p10_sm_victor_inspect_empty_overbolt"
+					"effect": "tacz:victor45/victor_inspect_boltrelease"
 				},
 				"7.1": {
-					"effect": "p10_sm_victor_inspect_end"
+					"effect": "tacz:victor45/victor_inspect_end"
 				}
 			}
 		},
@@ -6475,7 +6475,7 @@
 			}
 		},
 		"inspect_empty_xmag2": {
-			"animation_length": 8.06667,
+			"animation_length": 8.0667,
 			"bones": {
 				"root": {
 					"rotation": {
@@ -7175,36 +7175,36 @@
 			},
 			"sound_effects": {
 				"0.1667": {
-					"effect": "p10_sm_victor_inspect_lift"
+					"effect": "tacz:victor45/victor_inspect_raise"
 				},
 				"1.4": {
-					"effect": "p10_sm_victor_inspect_moveclose"
+					"effect": "tacz:victor45/victor_inspect_moveclose"
 				},
 				"2.1667": {
-					"effect": "p10_sm_victor_inspect_shake"
+					"effect": "tacz:victor45/victor_inspect_lower"
 				},
 				"2.8667": {
-					"effect": "p10_sm_victor_inspect_empty_magout"
+					"effect": "tacz:victor45/victor_inspect_magout"
 				},
 				"4.1667": {
-					"effect": "p10_sm_victor_reload_drum_rattle"
+					"effect": "tacz:victor45/victor_reload_drum_rattle"
 				},
 				"4.7": {
-					"effect": "p10_sm_victor_reload_empty_maghit"
+					"effect": "tacz:victor45/victor_inspect_maghit"
 				},
 				"5.1": {
-					"effect": "p10_sm_victor_inspect_empty_magin"
+					"effect": "tacz:victor45/victor_inspect_magin"
 				},
 				"5.4667": {
-					"effect": "p10_sm_victor_inspect_rotate"
+					"effect": "tacz:victor45/victor_inspect_rotate"
 				},
 				"7.1": {
-					"effect": "p10_sm_victor_inspect_end"
+					"effect": "tacz:victor45/victor_inspect_end"
 				}
 			}
 		},
 		"inspect_empty_xmag3": {
-			"animation_length": 8.06667,
+			"animation_length": 8.0667,
 			"bones": {
 				"root": {
 					"rotation": {
@@ -7905,31 +7905,31 @@
 			},
 			"sound_effects": {
 				"0.1667": {
-					"effect": "p10_sm_victor_inspect_lift"
+					"effect": "tacz:victor45/victor_inspect_raise"
 				},
 				"1.4": {
-					"effect": "p10_sm_victor_inspect_moveclose"
+					"effect": "tacz:victor45/victor_inspect_moveclose"
 				},
 				"2.1667": {
-					"effect": "p10_sm_victor_inspect_shake"
+					"effect": "tacz:victor45/victor_inspect_lower"
 				},
 				"2.8667": {
-					"effect": "p10_sm_victor_inspect_empty_magout"
+					"effect": "tacz:victor45/victor_inspect_magout"
 				},
 				"4.1667": {
-					"effect": "p10_sm_victor_reload_drum_rattle"
+					"effect": "tacz:victor45/victor_reload_drum_rattle"
 				},
 				"4.7": {
-					"effect": "p10_sm_victor_reload_empty_maghit"
+					"effect": "tacz:victor45/victor_inspect_maghit"
 				},
 				"5.1": {
-					"effect": "p10_sm_victor_inspect_empty_magin"
+					"effect": "tacz:victor45/victor_inspect_magin"
 				},
 				"5.4667": {
-					"effect": "p10_sm_victor_inspect_rotate"
+					"effect": "tacz:victor45/victor_inspect_rotate"
 				},
 				"7.1": {
-					"effect": "p10_sm_victor_inspect_end"
+					"effect": "tacz:victor45/victor_inspect_end"
 				}
 			}
 		},

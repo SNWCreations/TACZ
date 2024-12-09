@@ -7,7 +7,7 @@
     200
   ],
   "bolt": "open_bolt",
-  "rpm": 750,  // 原值 750
+  "rpm": 750,
   "bullet": {
     "life": 1.0,
     "bullet_amount": 1,
@@ -101,7 +101,8 @@
     "scope",
     "grip",
     "muzzle",
-    "extended_mag"  ],
+    "extended_mag"
+  ],
   "exclusive_attachments": {
   }
 }
