@@ -89,6 +89,7 @@ public class ScriptManager extends SimplePreparableReloadListener< List<Map.Entr
 
     private void initGlobals() {
         globals = JsePlatform.standardGlobals();
+        //LuaJC.install(globals);
         if (libraries != null) {
             libraries.forEach(library -> library.install(globals));
         }

@@ -82,6 +82,7 @@ public class AttachmentQueryCategory implements IRecipeCategory<AttachmentQueryE
     }
 
     @Override
+    @SuppressWarnings("removal")
     public IDrawable getBackground() {
         return bgDraw;
     }
