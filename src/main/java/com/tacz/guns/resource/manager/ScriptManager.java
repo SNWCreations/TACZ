@@ -13,10 +13,7 @@ import net.minecraft.util.profiling.ProfilerFiller;
 import org.apache.logging.log4j.Marker;
 import org.apache.logging.log4j.MarkerManager;
 import org.jetbrains.annotations.NotNull;
-import org.luaj.vm2.Globals;
-import org.luaj.vm2.LuaFunction;
-import org.luaj.vm2.LuaTable;
-import org.luaj.vm2.LuaValue;
+import org.luaj.vm2.*;
 import org.luaj.vm2.lib.jse.JsePlatform;
 
 import java.io.IOException;
@@ -79,7 +76,7 @@ public class ScriptManager extends SimplePreparableReloadListener< List<Map.Entr
                     LuaValue chunk = globals.load(reader, moduleName);
                     loaded = chunk.call().checktable(1);
                     return loaded;
-                } catch (IllegalArgumentException | IOException | JsonParseException jsonparseexception) {
+                } catch (IllegalArgumentException | IOException | JsonParseException | LuaError jsonparseexception) {
                     GunMod.LOGGER.warn(MARKER, "Failed to read script file: {}", resourceLocation);
                 }
                 return null;
