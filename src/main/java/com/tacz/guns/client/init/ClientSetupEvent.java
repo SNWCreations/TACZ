@@ -84,8 +84,8 @@ public class ClientSetupEvent {
         // 初始化自己的枪包下载器
 //        event.enqueueWork(ClientGunPackDownloadManager::init);
 
-        // 与 player animator 的兼容
-        event.enqueueWork(PlayerAnimatorCompat::init);
+//        // 与 player animator 的兼容
+//        event.enqueueWork(PlayerAnimatorCompat::init);
 
         // 与 Shoulder Surfing Reloaded 的兼容
         event.enqueueWork(ShoulderSurfingCompat::init);
@@ -96,7 +96,7 @@ public class ClientSetupEvent {
 
     @SubscribeEvent
     public static void onClientResourceReload(RegisterClientReloadListenersEvent event) {
-//        PlayerAnimatorCompat.init();
+        PlayerAnimatorCompat.init();
         ClientAssetsManager.INSTANCE.reloadAndRegister(event::registerReloadListener);
         if (PlayerAnimatorCompat.isInstalled()) {
             PlayerAnimatorCompat.registerReloadListener(event::registerReloadListener);
