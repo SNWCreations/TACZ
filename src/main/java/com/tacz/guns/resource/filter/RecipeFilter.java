@@ -58,7 +58,7 @@ public class RecipeFilter {
     }
 
 
-    public static class Deserializer implements JsonDeserializer<RecipeFilter> {
+    public static class Deserializer implements JsonDeserializer<RecipeFilter>, JsonSerializer<RecipeFilter> {
         @Override
         public RecipeFilter deserialize(JsonElement json, Type typeOfT, JsonDeserializationContext context) throws JsonParseException {
             RecipeFilter filter = new RecipeFilter();
@@ -95,6 +95,27 @@ public class RecipeFilter {
                 }
             }
             list.add(builder.build());
+        }
+
+        @Override
+        public JsonElement serialize(RecipeFilter filter, Type typeOfSrc, JsonSerializationContext context) {
+            JsonObject json = new JsonObject();
+
+            json.add("whitelist", context.serialize(toList(filter.whitelist)));
+            json.add("blacklist", context.serialize(toList(filter.blacklist)));
+            return json;
+        }
+
+        private List<String> toList(List<IFilter<ResourceLocation>> filter) {
+            List<String> list = new ArrayList<>();
+            for (var f : filter) {
+                if (f instanceof LiteralFilter<ResourceLocation> literalFilter) {
+                    list.addAll(literalFilter.getSet().stream().map(ResourceLocation::toString).toList());
+                } else if (f instanceof RegexFilter<ResourceLocation> regexFilter) {
+                    list.add(regexFilter.getPattern().pattern());
+                }
+            }
+            return list;
         }
     }
 }
