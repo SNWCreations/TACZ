@@ -1,10 +1,10 @@
 {
   "model": "tacz:gun/m870_geo",
   "texture": "tacz:gun/uv/m870",
-  /*"lod": {
+  "lod": {
     "model": "tacz:gun/lod/m870",
     "texture": "tacz:gun/lod/m870"
-  },*/
+  },
   "hud": "tacz:gun/hud/m870",
   "slot": "tacz:gun/slot/m870",
   "ammo_count_style": "normal",
