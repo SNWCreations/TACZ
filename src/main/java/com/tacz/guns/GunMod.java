@@ -5,12 +5,16 @@ import com.tacz.guns.config.ClientConfig;
 import com.tacz.guns.config.CommonConfig;
 import com.tacz.guns.config.ServerConfig;
 import com.tacz.guns.init.*;
+import com.tacz.guns.resource.GunPackLoader;
 import com.tacz.guns.resource.modifier.AttachmentPropertyManager;
+import net.minecraft.server.packs.PackType;
+import net.minecraftforge.api.distmarker.Dist;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraftforge.fml.loading.FMLLoader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -28,6 +32,9 @@ public class GunMod {
         ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, ServerConfig.init());
         ModLoadingContext.get().registerConfig(ModConfig.Type.CLIENT, ClientConfig.init());
 
+        Dist side = FMLLoader.getDist();
+        GunPackLoader.INSTANCE.packType = side.isClient() ? PackType.CLIENT_RESOURCES : PackType.SERVER_DATA;
+
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         ModBlocks.BLOCKS.register(bus);
         ModBlocks.TILE_ENTITIES.register(bus);
@@ -35,6 +42,7 @@ public class GunMod {
         ModItems.ITEMS.register(bus);
         ModEntities.ENTITY_TYPES.register(bus);
         ModRecipe.RECIPE_SERIALIZERS.register(bus);
+        ModRecipe.RECIPE_TYPES.register(bus);
         ModContainer.CONTAINER_TYPE.register(bus);
         ModSounds.SOUNDS.register(bus);
         ModParticles.PARTICLE_TYPES.register(bus);
@@ -46,6 +54,6 @@ public class GunMod {
 
     private static void registerDefaultExtraGunPack() {
         String jarDefaultPackPath = String.format("/assets/%s/custom/%s", GunMod.MOD_ID, DEFAULT_GUN_PACK_NAME);
-        ResourceManager.registerExtraGunPack(GunMod.class, jarDefaultPackPath);
+        ResourceManager.registerExportResource(GunMod.class, jarDefaultPackPath);
     }
 }

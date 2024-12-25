@@ -22,6 +22,7 @@ public class EntityHurtByGunEvent extends Event {
     protected @Nullable Entity hurtEntity;
     protected @Nullable LivingEntity attacker;
     protected ResourceLocation gunId;
+    protected ResourceLocation gunDisplayId;
     protected float baseAmount;
     protected DamageSource nonApPartDamageSource;
     protected DamageSource apPartDamageSource;
@@ -30,7 +31,10 @@ public class EntityHurtByGunEvent extends Event {
     protected final LogicalSide logicalSide;
 
     @ApiStatus.Internal
-    protected EntityHurtByGunEvent(Entity bullet, @Nullable Entity hurtEntity, @Nullable LivingEntity attacker, ResourceLocation gunId, float baseAmount, @Nullable Pair<DamageSource, DamageSource> sources, boolean isHeadShot, float headshotMultiplier, LogicalSide logicalSide) {
+    protected EntityHurtByGunEvent(Entity bullet, @Nullable Entity hurtEntity, @Nullable LivingEntity attacker,
+                                   ResourceLocation gunId, ResourceLocation gunDisplayId,
+                                   float baseAmount, @Nullable Pair<DamageSource, DamageSource> sources, boolean isHeadShot,
+                                   float headshotMultiplier, LogicalSide logicalSide) {
         this.bullet = bullet;
         this.hurtEntity = hurtEntity;
         this.attacker = attacker;
@@ -49,8 +53,11 @@ public class EntityHurtByGunEvent extends Event {
     @Cancelable
     public static class Pre extends EntityHurtByGunEvent {
         @ApiStatus.Internal
-        public Pre(Entity bullet, @Nullable Entity hurtEntity, @Nullable LivingEntity attacker, ResourceLocation gunId, float amount, @Nullable Pair<DamageSource, DamageSource> sources, boolean isHeadShot, float headshotMultiplier, LogicalSide logicalSide) {
-            super(bullet, hurtEntity, attacker, gunId, amount, sources, isHeadShot, headshotMultiplier, logicalSide);
+        public Pre(Entity bullet, @Nullable Entity hurtEntity, @Nullable LivingEntity attacker,
+                   ResourceLocation gunId, ResourceLocation gunDisplayId,
+                   float amount, @Nullable Pair<DamageSource, DamageSource> sources,
+                   boolean isHeadShot, float headshotMultiplier, LogicalSide logicalSide) {
+            super(bullet, hurtEntity, attacker, gunId, gunDisplayId, amount, sources, isHeadShot, headshotMultiplier, logicalSide);
             this.headshotMultiplier = headshotMultiplier;
         }
 
@@ -96,8 +103,11 @@ public class EntityHurtByGunEvent extends Event {
      */
     public static class Post extends EntityHurtByGunEvent {
         @ApiStatus.Internal
-        public Post(Entity bullet, @Nullable Entity hurtEntity, @Nullable LivingEntity attacker, ResourceLocation gunId, float amount, @Nullable Pair<DamageSource, DamageSource> sources, boolean isHeadShot, float headshotMultiplier, LogicalSide logicalSide) {
-            super(bullet, hurtEntity, attacker, gunId, amount, sources, isHeadShot, headshotMultiplier, logicalSide);
+        public Post(Entity bullet, @Nullable Entity hurtEntity, @Nullable LivingEntity attacker,
+                    ResourceLocation gunId, ResourceLocation gunDisplayId,
+                    float amount, @Nullable Pair<DamageSource, DamageSource> sources,
+                    boolean isHeadShot, float headshotMultiplier, LogicalSide logicalSide) {
+            super(bullet, hurtEntity, attacker, gunId, gunDisplayId, amount, sources, isHeadShot, headshotMultiplier, logicalSide);
         }
     }
 
@@ -117,6 +127,10 @@ public class EntityHurtByGunEvent extends Event {
 
     public ResourceLocation getGunId() {
         return gunId;
+    }
+
+    public ResourceLocation getGunDisplayId() {
+        return gunDisplayId;
     }
 
     @Obsolete

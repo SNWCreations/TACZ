@@ -1,5 +1,6 @@
 package com.tacz.guns.crafting;
 
+import com.tacz.guns.crafting.result.GunSmithTableResult;
 import com.tacz.guns.init.ModRecipe;
 import com.tacz.guns.resource.pojo.data.recipe.TableRecipe;
 import net.minecraft.core.RegistryAccess;
@@ -62,7 +63,7 @@ public class GunSmithTableRecipe implements Recipe<Inventory> {
 
     @Override
     public RecipeType<?> getType() {
-        return ModRecipe.GUN_SMITH_TABLE_CRAFTING;
+        return ModRecipe.GUN_SMITH_TABLE_CRAFTING.get();
     }
 
     public ItemStack getOutput() {
@@ -75,5 +76,9 @@ public class GunSmithTableRecipe implements Recipe<Inventory> {
 
     public GunSmithTableResult getResult() {
         return result;
+    }
+
+    public void init() {
+        result.init();
     }
 }

@@ -8,7 +8,7 @@ import com.tacz.guns.api.item.IGun;
 import com.tacz.guns.api.item.attachment.AttachmentType;
 import com.tacz.guns.api.item.builder.AttachmentItemBuilder;
 import com.tacz.guns.api.item.builder.GunItemBuilder;
-import com.tacz.guns.client.resource.ClientAssetManager;
+import com.tacz.guns.client.resource.ClientAssetsManager;
 import com.tacz.guns.client.resource.pojo.PackInfo;
 import com.tacz.guns.inventory.tooltip.AttachmentItemTooltip;
 import com.tacz.guns.resource.pojo.data.attachment.AttachmentData;
@@ -49,7 +49,7 @@ public class ClientAttachmentItemTooltip implements ClientTooltipComponent {
     }
 
     private void addPackInfo() {
-        PackInfo packInfoObject = ClientAssetManager.INSTANCE.getPackInfo(attachmentId);
+        PackInfo packInfoObject = ClientAssetsManager.INSTANCE.getPackInfo(attachmentId);
         if (packInfoObject != null) {
             packInfo = Component.translatable(packInfoObject.getName()).withStyle(ChatFormatting.BLUE).withStyle(ChatFormatting.ITALIC);
         }
