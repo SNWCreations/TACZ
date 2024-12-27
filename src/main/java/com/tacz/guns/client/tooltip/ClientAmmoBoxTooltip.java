@@ -29,7 +29,7 @@ public class ClientAmmoBoxTooltip implements ClientTooltipComponent {
 
     @Override
     public int getHeight() {
-        if (GunTooltipPart.hideFlagsPresent(ammo)) {
+        if (shouldNotRender()) {
             return 0;
         }
         return 28;
@@ -37,7 +37,7 @@ public class ClientAmmoBoxTooltip implements ClientTooltipComponent {
 
     @Override
     public int getWidth(Font font) {
-        if (GunTooltipPart.hideFlagsPresent(ammo)) {
+        if (shouldNotRender()) {
             return 0;
         }
         return Math.max(font.width(ammoName), font.width(count)) + 22;
@@ -45,7 +45,7 @@ public class ClientAmmoBoxTooltip implements ClientTooltipComponent {
 
     @Override
     public void renderText(Font font, int pX, int pY, Matrix4f matrix4f, MultiBufferSource.BufferSource bufferSource) {
-        if (GunTooltipPart.hideFlagsPresent(ammo)) {
+        if (shouldNotRender()) {
             return;
         }
         font.drawInBatch(ammoName, pX + 20, pY + 4, 0xffaa00, false, matrix4f, bufferSource, Font.DisplayMode.NORMAL, 0, 0xF000F0);
@@ -54,9 +54,13 @@ public class ClientAmmoBoxTooltip implements ClientTooltipComponent {
 
     @Override
     public void renderImage(Font pFont, int pX, int pY, GuiGraphics pGuiGraphics) {
-        if (GunTooltipPart.hideFlagsPresent(ammo)) {
+        if (shouldNotRender()) {
             return;
         }
         pGuiGraphics.renderItem(ammo, pX, pY + 5);
+    }
+    
+    private boolean shouldNotRender() {
+        return GunTooltipPart.hideFlagsPresent(ammo);
     }
 }
