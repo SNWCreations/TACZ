@@ -9,6 +9,8 @@ import com.tacz.guns.resource.PackMeta;
 import com.tacz.guns.resource.convert.PackConverter;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
+import net.minecraftforge.fml.loading.FMLPaths;
+import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.BufferedReader;
@@ -86,15 +88,18 @@ public enum FolderPackConverter implements PackConverter<File> {
         if (namespace == null) {
             return false;
         }
-        Path baseDirAsPath = baseDir.toPath();
+        Path resourcePacksPath = FMLPaths.GAMEDIR.get().resolve("tacz");
+        Path newPath = resourcePacksPath.resolve(baseDir.getName());
+        File newPathAsFile = newPath.toFile();
+        FileUtils.copyDirectory(baseDir, newPathAsFile);
         AtomicBoolean failed = new AtomicBoolean();
-        Files.walkFileTree(baseDirAsPath, new SimpleFileVisitor<>() {
+        Files.walkFileTree(newPath, new SimpleFileVisitor<>() {
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                 GunMod.LOGGER.debug("Visiting old pack file {}", file);
                 for (FolderEntryVisitor visitor : processors) {
                     GunMod.LOGGER.debug("Trying to run visitFile from {}", visitor);
-                    if (visitor.visitFile(baseDir, file.toFile())) {
+                    if (visitor.visitFile(newPathAsFile, file.toFile())) {
                         GunMod.LOGGER.debug("File handled, skipping remaining visitors");
                         break; // a visitor handled this file, go next
                     }
@@ -105,10 +110,10 @@ public enum FolderPackConverter implements PackConverter<File> {
             @Override
             public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
                 GunMod.LOGGER.debug("Visiting old pack directory {}", dir);
-                if (!baseDirAsPath.equals(dir)) { // always visit the root directory!
+                if (!newPath.equals(dir)) { // always visit the root directory!
                     for (FolderEntryVisitor visitor : processors) {
                         GunMod.LOGGER.debug("Trying to run visitDirectory from {}", visitor);
-                        FileVisitResult result = visitor.visitDirectory(baseDir, dir.toFile());
+                        FileVisitResult result = visitor.visitDirectory(newPathAsFile, dir.toFile());
                         if (result != null) {
                             GunMod.LOGGER.debug("Folder handled with result {}", result);
                             return result;
@@ -126,10 +131,10 @@ public enum FolderPackConverter implements PackConverter<File> {
             }
         });
         if (!failed.get()) {
-            Files.walkFileTree(baseDirAsPath, new EmptyFolderRemover(baseDirAsPath));
+            Files.walkFileTree(newPath, new EmptyFolderRemover(newPath));
             PackMeta newPackMeta = new PackMeta(namespace, null);
             String newPackMetaAsJson = GSON.toJson(newPackMeta);
-            Path newPackMetaPath = baseDirAsPath.resolve("gunpack.meta.json");
+            Path newPackMetaPath = newPath.resolve("gunpack.meta.json");
             Files.writeString(newPackMetaPath, newPackMetaAsJson, StandardCharsets.UTF_8);
         }
         return true;
