@@ -91,8 +91,11 @@ public enum FolderPackConverter implements PackConverter<File> {
         Files.walkFileTree(baseDirAsPath, new SimpleFileVisitor<>() {
             @Override
             public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                GunMod.LOGGER.debug("Visiting old pack file {}", file);
                 for (FolderEntryVisitor visitor : processors) {
+                    GunMod.LOGGER.debug("Trying to run visitFile from {}", visitor);
                     if (visitor.visitFile(baseDir, file.toFile())) {
+                        GunMod.LOGGER.debug("File handled, skipping remaining visitors");
                         break; // a visitor handled this file, go next
                     }
                 }
@@ -101,10 +104,13 @@ public enum FolderPackConverter implements PackConverter<File> {
 
             @Override
             public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                GunMod.LOGGER.debug("Visiting old pack directory {}", dir);
                 if (!baseDirAsPath.equals(dir)) { // always visit the root directory!
                     for (FolderEntryVisitor visitor : processors) {
+                        GunMod.LOGGER.debug("Trying to run visitDirectory from {}", visitor);
                         FileVisitResult result = visitor.visitDirectory(baseDir, dir.toFile());
                         if (result != null) {
+                            GunMod.LOGGER.debug("Folder handled with result {}", result);
                             return result;
                         }
                     }
@@ -146,6 +152,11 @@ public enum FolderPackConverter implements PackConverter<File> {
                 }
                 return false;
             }
+
+            @Override
+            public String toString() {
+                return "file renamer " + oldPath + " -> " + newPath + " (in " + newFolderType.getDirectory() + ")";
+            }
         };
     }
 
@@ -166,6 +177,11 @@ public enum FolderPackConverter implements PackConverter<File> {
                     }
                 }
                 return null;
+            }
+
+            @Override
+            public String toString() {
+                return "folder renamer " + oldPath + " -> " + newPath + " (in " + folderType.getDirectory() + ")";
             }
         };
     }
@@ -188,23 +204,36 @@ public enum FolderPackConverter implements PackConverter<File> {
                 }
                 return false;
             }
+
+            @Override
+            public String toString() {
+                return "category file visitor (category " + category + ", file operator " + fileOperator + ")";
+            }
         };
     }
 
     private static FileOp createJsonFileOperator(Function<JsonElement, @Nullable JsonElement> jsonOperator) {
-        return (baseDir, file, fileResourceLocation) -> {
-            if (file.getName().endsWith(".json")) {
-                Path asPath = file.toPath();
-                BufferedReader reader = Files.newBufferedReader(asPath, StandardCharsets.UTF_8);
-                JsonElement oldJson = JsonParser.parseReader(reader);
-                JsonElement newJson = jsonOperator.apply(oldJson);
-                if (newJson != null) {
-                    BufferedWriter writer = Files.newBufferedWriter(asPath, StandardCharsets.UTF_8);
-                    GSON.toJson(newJson, writer);
-                    return true;
+        return new FileOp() {
+            @Override
+            public boolean run(File baseDir, File file, ResourceLocation fileResourceLocation) throws IOException {
+                if (file.getName().endsWith(".json")) {
+                    Path asPath = file.toPath();
+                    BufferedReader reader = Files.newBufferedReader(asPath, StandardCharsets.UTF_8);
+                    JsonElement oldJson = JsonParser.parseReader(reader);
+                    JsonElement newJson = jsonOperator.apply(oldJson);
+                    if (newJson != null) {
+                        BufferedWriter writer = Files.newBufferedWriter(asPath, StandardCharsets.UTF_8);
+                        GSON.toJson(newJson, writer);
+                        return true;
+                    }
                 }
+                return false;
             }
-            return false;
+
+            @Override
+            public String toString() {
+                return "json file modifier";
+            }
         };
     }
 
