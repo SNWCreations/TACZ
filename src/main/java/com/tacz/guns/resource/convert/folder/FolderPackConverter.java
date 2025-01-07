@@ -18,10 +18,7 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.FileVisitResult;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.SimpleFileVisitor;
+import java.nio.file.*;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.List;
@@ -92,6 +89,9 @@ public enum FolderPackConverter implements PackConverter<File> {
         Path resourcePacksPath = FMLPaths.GAMEDIR.get().resolve("tacz");
         Path newPath = resourcePacksPath.resolve(baseDir.getName());
         File newPathAsFile = newPath.toFile();
+        if (newPathAsFile.isDirectory()) {
+            throw new FileAlreadyExistsException("New path already exists");
+        }
         FileUtils.copyDirectory(baseDir, newPathAsFile);
         AtomicBoolean failed = new AtomicBoolean();
         Files.walkFileTree(newPath, new SimpleFileVisitor<>() {
