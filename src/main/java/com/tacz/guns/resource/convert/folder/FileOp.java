@@ -9,10 +9,18 @@ public interface FileOp {
     boolean run(File baseDir, File file, ResourceLocation fileResourceLocation) throws IOException;
 
     default FileOp andThen(FileOp op) {
-        return (baseDir, file, fileResourceLocation) -> {
-            boolean self = FileOp.this.run(baseDir, file, fileResourceLocation);
-            boolean after = op.run(baseDir, file, fileResourceLocation);
-            return self && after;
+        return new FileOp() {
+            @Override
+            public boolean run(File baseDir, File file, ResourceLocation fileResourceLocation) throws IOException {
+                boolean self = FileOp.this.run(baseDir, file, fileResourceLocation);
+                boolean after = op.run(baseDir, file, fileResourceLocation);
+                return self && after;
+            }
+
+            @Override
+            public String toString() {
+                return FileOp.this + ", and then " + op.toString();
+            }
         };
     }
 }
