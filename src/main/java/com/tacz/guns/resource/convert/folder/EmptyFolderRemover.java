@@ -24,4 +24,15 @@ public final class EmptyFolderRemover extends SimpleFileVisitor<Path> {
         }
         return FileVisitResult.CONTINUE;
     }
+
+    @Override
+    public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+        if (exc != null) {
+            throw exc;
+        }
+        if (!baseDir.equals(dir) && isEmptyDirectory(dir)) {
+            Files.delete(dir);
+        }
+        return FileVisitResult.CONTINUE;
+    }
 }
