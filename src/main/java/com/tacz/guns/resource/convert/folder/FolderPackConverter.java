@@ -192,12 +192,12 @@ public enum FolderPackConverter implements PackConverter<File> {
             public @Nullable FileVisitResult visitDirectory(File baseDir, File subFolder) {
                 ResourceLocation entry = parseEntryName(baseDir, subFolder);
                 if (entry != null) {
-                    String path = entry.getPath();
-                    int i = path.indexOf('/');
+                    String entryPath = entry.getPath();
+                    int i = entryPath.indexOf('/');
                     if (i != -1) {
-                        String subPath = path.substring(i + 1);
+                        String subPath = entryPath.substring(i + 1);
                         if (subPath.equals(path)) {
-                            String parentPath = path.substring(0, i);
+                            String parentPath = entryPath.substring(0, i);
                             String namespace = entry.getNamespace();
                             String newRelativePath = toFilePath(namespace, path + "/" + parentPath, folderType);
                             File newFile = new File(baseDir, newRelativePath);
