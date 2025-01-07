@@ -54,7 +54,17 @@ public enum FolderPackConverter implements PackConverter<File> {
                         return object;
                     }
                     return null;
-                }).andThen((baseDir, file, fileResourceLocation) -> move(baseDir, file, fileResourceLocation, PackType.SERVER_DATA))));
+                }).andThen(new FileOp() {
+                    @Override
+                    public boolean run(File baseDir, File file, ResourceLocation fileResourceLocation) throws IOException {
+                        return move(baseDir, file, fileResourceLocation, PackType.SERVER_DATA);
+                    }
+
+                    @Override
+                    public String toString() {
+                        return "move file to " + PackType.SERVER_DATA.getDirectory();
+                    }
+                })));
     }
 
     // return false if the given file does not represent a legacy pack
