@@ -3,6 +3,8 @@ package com.tacz.guns.resource;
 import com.google.gson.*;
 import com.tacz.guns.GunMod;
 import com.tacz.guns.client.resource.pojo.PackInfo;
+import com.tacz.guns.resource.convert.folder.FolderPackConverter;
+import com.tacz.guns.util.ThrowingRunnable;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.network.chat.Component;
 import net.minecraftforge.fml.loading.FMLPaths;
@@ -59,33 +61,41 @@ public class PackConvertor {
                 msg(source, Component.translatable("message.tacz.converter.start"));
                 GunMod.LOGGER.info("Start converting legacy packs...");
                 for (File file : files) {
+                    ThrowingRunnable<Exception> conversionOp;
                     if (file.isFile() && file.getName().endsWith(".zip")) {
                         PackConvertor.LegacyPack pack = fromZipFile(file);
-                        if (pack != null) {
-                            msg(source, Component.translatable("message.tacz.converter.pack.start", file.getName()));
-                            GunMod.LOGGER.info("Attempt to converting legacy pack: {}", file.getName());
-                            try {
-                                pack.convert();
-                            } catch (FileAlreadyExistsException e) {
-                                msg(source, Component.translatable("message.tacz.converter.pack.exist"));
-                                GunMod.LOGGER.warn("Target file already exists: {}", file.getName());
-                                skip++;
-                                continue;
-                            } catch (Exception e){
-                                msg(source, Component.translatable("message.tacz.converter.pack.failed", file.getName()));
-                                GunMod.LOGGER.error("Failed to convert legacy pack: {}", file.getName(), e);
-                                error++;
-                                continue;
-                            }
-                            cnt++;
-                            msg(source, Component.translatable("message.tacz.converter.pack.finish", file.getName()));
-                            GunMod.LOGGER.info("Legacy pack converted: {}", file.getName());
+                        if (pack == null) {
+                            GunMod.LOGGER.warn("Skip ZIP archive which is not a gun pack: {}", file.getName());
+                            skip++;
+                            continue;
+                        } else {
+                            conversionOp = pack::convert;
                         }
+                    } else if (file.isDirectory()) {
+                        conversionOp = () -> FolderPackConverter.INSTANCE.convert(file);
                     } else {
-                        msg(source, Component.translatable("message.tacz.converter.pack.folder", file.getName()));
-                        GunMod.LOGGER.warn("Skip folder: {}", file.getName());
+                        GunMod.LOGGER.warn("Skip non-pack: {}", file.getName());
                         skip++;
+                        continue;
                     }
+                    msg(source, Component.translatable("message.tacz.converter.pack.start", file.getName()));
+                    GunMod.LOGGER.info("Attempt to converting legacy pack: {}", file.getName());
+                    try {
+                        conversionOp.run();
+                    } catch (FileAlreadyExistsException e) {
+                        msg(source, Component.translatable("message.tacz.converter.pack.exist"));
+                        GunMod.LOGGER.warn("Target file already exists: {}", file.getName());
+                        skip++;
+                        continue;
+                    } catch (Exception e) {
+                        msg(source, Component.translatable("message.tacz.converter.pack.failed", file.getName()));
+                        GunMod.LOGGER.error("Failed to convert legacy pack: {}", file.getName(), e);
+                        error++;
+                        continue;
+                    }
+                    cnt++;
+                    msg(source, Component.translatable("message.tacz.converter.pack.finish", file.getName()));
+                    GunMod.LOGGER.info("Legacy pack converted: {} (Is folder: {})", file.getName(), file.isDirectory());
                 }
             }
             watch.stop();

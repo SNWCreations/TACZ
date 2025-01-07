@@ -1,0 +1,217 @@
+package com.tacz.guns.resource.convert.folder;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.tacz.guns.GunMod;
+import com.tacz.guns.client.resource.pojo.PackInfo;
+import com.tacz.guns.resource.PackMeta;
+import com.tacz.guns.resource.convert.PackConverter;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.server.packs.PackType;
+import org.jetbrains.annotations.Nullable;
+
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Function;
+
+import static com.tacz.guns.resource.PackConvertor.GSON;
+import static com.tacz.guns.resource.convert.ConverterUtils.*;
+
+public enum FolderPackConverter implements PackConverter<File> {
+    INSTANCE
+    ;
+    private final List<FolderEntryVisitor> processors = new ArrayList<>();
+
+    {
+        processors.add(createFileRenamer("info.json", "pack_info.json", PackType.CLIENT_RESOURCES));
+        processors.add(createFolderRenamer("tags", "tacz_tags", PackType.SERVER_DATA));
+        processors.add(createFolderMover("player_animator", PackType.CLIENT_RESOURCES));
+        processors.add(createFolderRenamer("sounds", "tacz_sounds", PackType.SERVER_DATA));
+        processors.add(createFolderMover("textures", PackType.CLIENT_RESOURCES));
+        processors.add(createFolderMover("animations", PackType.CLIENT_RESOURCES));
+        processors.add(createFolderMover("lang", PackType.CLIENT_RESOURCES));
+        processors.add(createFolderRenamer("models", "geo_models", PackType.CLIENT_RESOURCES));
+        processors.add(createFolderMover("display", PackType.CLIENT_RESOURCES));
+        processors.add(createFolderMover("index", PackType.SERVER_DATA));
+        processors.add(createFolderMover("data", PackType.SERVER_DATA));
+        processors.add(createCategoryFileVisitor("recipes",
+                createJsonFileOperator(json -> {
+                    JsonObject object = json.getAsJsonObject();
+                    if (!object.has("type")) {
+                        object.addProperty("type", "tacz:gun_smith_table_crafting");
+                        return object;
+                    }
+                    return null;
+                }).andThen((baseDir, file, fileResourceLocation) -> move(baseDir, file, fileResourceLocation, PackType.SERVER_DATA))));
+    }
+
+    // return false if the given file does not represent a legacy pack
+    // return true even if conversion failed
+    @Override
+    public boolean convert(File baseDir) throws IOException {
+        if (!baseDir.isDirectory()) {
+            return false;
+        }
+        File[] subFiles = Objects.requireNonNullElseGet(baseDir.listFiles(), () -> new File[0]);
+        if (subFiles.length == 0) {
+            return false;
+        }
+        String namespace = null;
+        for (File subFile : subFiles) {
+            if (subFile.isDirectory()) {
+                File legacyPackFile = new File(subFile, "pack.json");
+                if (legacyPackFile.isFile()) {
+                    BufferedReader reader = Files.newBufferedReader(legacyPackFile.toPath(), StandardCharsets.UTF_8);
+                    PackInfo legacyPackInfo = GSON.fromJson(reader, PackInfo.class);
+                    if (legacyPackInfo != null) {
+                        namespace = relativePath(baseDir, subFile);
+                        break;
+                    }
+                }
+            }
+        }
+        if (namespace == null) {
+            return false;
+        }
+        Path baseDirAsPath = baseDir.toPath();
+        AtomicBoolean failed = new AtomicBoolean();
+        Files.walkFileTree(baseDirAsPath, new SimpleFileVisitor<>() {
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                for (FolderEntryVisitor visitor : processors) {
+                    if (visitor.visitFile(baseDir, file.toFile())) {
+                        break; // a visitor handled this file, go next
+                    }
+                }
+                return FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+                if (!baseDirAsPath.equals(dir)) { // always visit the root directory!
+                    for (FolderEntryVisitor visitor : processors) {
+                        FileVisitResult result = visitor.visitDirectory(baseDir, dir.toFile());
+                        if (result != null) {
+                            return result;
+                        }
+                    }
+                }
+                return FileVisitResult.CONTINUE;
+            }
+
+            @Override
+            public FileVisitResult visitFileFailed(Path file, IOException exc) {
+                GunMod.LOGGER.error("Error visiting old pack file", exc);
+                failed.set(true);
+                return FileVisitResult.TERMINATE;
+            }
+        });
+        if (!failed.get()) {
+            Files.walkFileTree(baseDirAsPath, new EmptyFolderRemover(baseDirAsPath));
+            PackMeta newPackMeta = new PackMeta(namespace, null);
+            String newPackMetaAsJson = GSON.toJson(newPackMeta);
+            Path newPackMetaPath = baseDirAsPath.resolve("gunpack.meta.json");
+            Files.writeString(newPackMetaPath, newPackMetaAsJson, StandardCharsets.UTF_8);
+        }
+        return true;
+    }
+
+    private static FolderEntryVisitor createFileRenamer(String oldPath, String newPath, PackType newFolderType) {
+        return new FolderEntryVisitor() {
+            @Override
+            public boolean visitFile(File baseDir, File subFile) {
+                ResourceLocation entry = parseEntryName(baseDir, subFile);
+                if (entry != null) {
+                    String path = entry.getPath();
+                    if (path.equals(oldPath)) {
+                        String namespace = entry.getNamespace();
+                        String newRelativePath = toFilePath(namespace, newPath, newFolderType);
+                        File newFile = new File(baseDir, newRelativePath);
+                        newFile.getParentFile().mkdirs();
+                        return subFile.renameTo(newFile);
+                    }
+                }
+                return false;
+            }
+        };
+    }
+
+    private static FolderEntryVisitor createFolderRenamer(String oldPath, String newPath, PackType folderType) {
+        return new FolderEntryVisitor() {
+            @Override
+            public @Nullable FileVisitResult visitDirectory(File baseDir, File subFolder) {
+                ResourceLocation entry = parseEntryName(baseDir, subFolder);
+                if (entry != null) {
+                    String path = entry.getPath();
+                    if (path.equals(oldPath)) {
+                        String namespace = entry.getNamespace();
+                        String newRelativePath = toFilePath(namespace, newPath, folderType);
+                        File newFile = new File(baseDir, newRelativePath);
+                        newFile.getParentFile().mkdirs();
+                        subFolder.renameTo(newFile);
+                        return FileVisitResult.SKIP_SUBTREE;
+                    }
+                }
+                return null;
+            }
+        };
+    }
+
+    private static FolderEntryVisitor createFolderMover(String path, PackType folderType) {
+        return createFolderRenamer(path, path, folderType);
+    }
+
+    private static FolderEntryVisitor createCategoryFileVisitor(String category, FileOp fileOperator) {
+        String categoryPlusSlash = category + "/";
+        return new FolderEntryVisitor() {
+            @Override
+            public boolean visitFile(File baseDir, File subFile) throws IOException {
+                ResourceLocation entry = parseEntryName(baseDir, subFile);
+                if (entry != null) {
+                    String path = entry.getPath();
+                    if (path.startsWith(categoryPlusSlash)) {
+                        return fileOperator.run(baseDir, subFile, entry);
+                    }
+                }
+                return false;
+            }
+        };
+    }
+
+    private static FileOp createJsonFileOperator(Function<JsonElement, @Nullable JsonElement> jsonOperator) {
+        return (baseDir, file, fileResourceLocation) -> {
+            if (file.getName().endsWith(".json")) {
+                Path asPath = file.toPath();
+                BufferedReader reader = Files.newBufferedReader(asPath, StandardCharsets.UTF_8);
+                JsonElement oldJson = JsonParser.parseReader(reader);
+                JsonElement newJson = jsonOperator.apply(oldJson);
+                if (newJson != null) {
+                    BufferedWriter writer = Files.newBufferedWriter(asPath, StandardCharsets.UTF_8);
+                    GSON.toJson(newJson, writer);
+                    return true;
+                }
+            }
+            return false;
+        };
+    }
+
+    private static boolean move(File baseDir, File file, ResourceLocation location, PackType folderType) {
+        String newPath = toFilePath(location, folderType);
+        File newFile = new File(baseDir, newPath);
+        newFile.getParentFile().mkdirs();
+        return file.renameTo(newFile);
+    }
+}
