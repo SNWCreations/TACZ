@@ -15,10 +15,10 @@ public final class ConverterUtils {
     @Nullable
     public static ResourceLocation parseEntryName(File baseDir, File file) {
         String relativePath = relativePath(baseDir, file);
-        int i = relativePath.indexOf('/');
+        int i = relativePath.indexOf(File.separatorChar);
         if (i != -1) {
             String namespace = relativePath.substring(0, i);
-            String entryName = relativePath.substring(i + 1);
+            String entryName = relativePath.substring(i + 1).replace(File.separatorChar, '/');
             return new ResourceLocation(namespace, entryName);
         }
         return null;
