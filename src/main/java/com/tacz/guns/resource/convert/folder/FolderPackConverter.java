@@ -197,7 +197,9 @@ public enum FolderPackConverter implements PackConverter<File> {
                     if (i != -1) {
                         String subPath = path.substring(i + 1);
                         if (subPath.equals(path)) {
-                            String newRelativePath = toFilePath(entry, folderType);
+                            String parentPath = path.substring(0, i);
+                            String namespace = entry.getNamespace();
+                            String newRelativePath = toFilePath(namespace, path + "/" + parentPath, folderType);
                             File newFile = new File(baseDir, newRelativePath);
                             newFile.getParentFile().mkdirs();
                             subFolder.renameTo(newFile);
