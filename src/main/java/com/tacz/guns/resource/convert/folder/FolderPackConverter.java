@@ -36,7 +36,7 @@ public enum FolderPackConverter implements PackConverter<File> {
     private final List<FolderEntryVisitor> processors = new ArrayList<>();
 
     {
-        processors.add(createFileRenamer("info.json", "pack_info.json", PackType.CLIENT_RESOURCES));
+        processors.add(createFileRenamer("pack.json", "pack_info.json", PackType.CLIENT_RESOURCES));
         processors.add(createFolderRenamer("tags", "tacz_tags", PackType.SERVER_DATA));
         processors.add(createFolderMover("player_animator", PackType.CLIENT_RESOURCES));
         processors.add(createFolderRenamer("sounds", "tacz_sounds", PackType.SERVER_DATA));
