@@ -78,6 +78,7 @@ public enum FolderPackConverter implements PackConverter<File> {
                 if (legacyPackFile.isFile()) {
                     BufferedReader reader = Files.newBufferedReader(legacyPackFile.toPath(), StandardCharsets.UTF_8);
                     PackInfo legacyPackInfo = GSON.fromJson(reader, PackInfo.class);
+                    reader.close();
                     if (legacyPackInfo != null) {
                         namespace = relativePath(baseDir, subFile);
                         break;
@@ -260,6 +261,7 @@ public enum FolderPackConverter implements PackConverter<File> {
                     if (newJson != null) {
                         BufferedWriter writer = Files.newBufferedWriter(asPath, StandardCharsets.UTF_8);
                         GSON.toJson(newJson, writer);
+                        writer.close();
                         return true;
                     }
                 }
