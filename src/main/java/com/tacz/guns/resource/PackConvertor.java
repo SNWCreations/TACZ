@@ -159,7 +159,7 @@ public class PackConvertor {
                     if (object != null) {
                         object.addProperty("type", "tacz:gun_smith_table_crafting");
                         newZip.putNextEntry(new ZipEntry(newPath));
-                        newZip.write(GSON.toJson(object).getBytes());
+                        newZip.write(GSON.toJson(object).getBytes(StandardCharsets.UTF_8));
                         newZip.closeEntry();
                     }
                 } catch (JsonParseException e) {
@@ -311,7 +311,7 @@ public class PackConvertor {
 
             newZip.putNextEntry(entry);
             PackMeta meta = new PackMeta(namespace, null);
-            newZip.write(GSON.toJson(meta).getBytes());
+            newZip.write(GSON.toJson(meta).getBytes(StandardCharsets.UTF_8));
             newZip.closeEntry();
         }
 
