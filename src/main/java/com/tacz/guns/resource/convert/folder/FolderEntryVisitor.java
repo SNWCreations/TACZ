@@ -8,7 +8,7 @@ import java.nio.file.FileVisitResult;
 
 public interface FolderEntryVisitor {
     default boolean visitFile(File baseDir, File subFile) throws IOException {
-        return true;
+        return false;
     }
 
     // return null if you can't handle the given directory
