@@ -56,7 +56,7 @@ public enum FolderPackConverter implements PackConverter<File> {
                     return null;
                 }).andThen(new FileOp() {
                     @Override
-                    public boolean run(File baseDir, File file, ResourceLocation fileResourceLocation) throws IOException {
+                    public boolean run(File baseDir, File file, ResourceLocation fileResourceLocation) {
                         return move(baseDir, file, fileResourceLocation, PackType.SERVER_DATA);
                     }
 
