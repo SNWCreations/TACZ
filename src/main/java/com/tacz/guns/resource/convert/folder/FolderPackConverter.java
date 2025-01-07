@@ -44,9 +44,9 @@ public enum FolderPackConverter implements PackConverter<File> {
         processors.add(createFolderMover("animations", PackType.CLIENT_RESOURCES));
         processors.add(createFolderMover("lang", PackType.CLIENT_RESOURCES));
         processors.add(createFolderRenamer("models", "geo_models", PackType.CLIENT_RESOURCES));
-        processors.add(createFolderMover("display", PackType.CLIENT_RESOURCES));
-        processors.add(createFolderMover("index", PackType.SERVER_DATA));
-        processors.add(createFolderMover("data", PackType.SERVER_DATA));
+        processors.add(createSubFolderMover("display", PackType.CLIENT_RESOURCES));
+        processors.add(createSubFolderMover("index", PackType.SERVER_DATA));
+        processors.add(createSubFolderMover("data", PackType.SERVER_DATA));
         processors.add(createCategoryFileVisitor("recipes",
                 createJsonFileOperator(json -> {
                     JsonObject object = json.getAsJsonObject();
@@ -182,6 +182,35 @@ public enum FolderPackConverter implements PackConverter<File> {
             @Override
             public String toString() {
                 return "folder renamer " + oldPath + " -> " + newPath + " (in " + folderType.getDirectory() + ")";
+            }
+        };
+    }
+
+    private static FolderEntryVisitor createSubFolderMover(String path, PackType folderType) {
+        return new FolderEntryVisitor() {
+            @Override
+            public @Nullable FileVisitResult visitDirectory(File baseDir, File subFolder) {
+                ResourceLocation entry = parseEntryName(baseDir, subFolder);
+                if (entry != null) {
+                    String path = entry.getPath();
+                    int i = path.indexOf('/');
+                    if (i != -1) {
+                        String subPath = path.substring(i + 1);
+                        if (subPath.equals(path)) {
+                            String newRelativePath = toFilePath(entry, folderType);
+                            File newFile = new File(baseDir, newRelativePath);
+                            newFile.getParentFile().mkdirs();
+                            subFolder.renameTo(newFile);
+                            return FileVisitResult.SKIP_SUBTREE;
+                        }
+                    }
+                }
+                return null;
+            }
+
+            @Override
+            public String toString() {
+                return "sub folder mover " + path + " to " + folderType.getDirectory();
             }
         };
     }
