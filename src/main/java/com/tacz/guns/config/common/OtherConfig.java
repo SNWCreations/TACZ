@@ -25,11 +25,9 @@ public class OtherConfig {
         TARGET_SOUND_DISTANCE = builder.defineInRange("TargetSoundDistance", 128, 0, Integer.MAX_VALUE);
 
         builder.comment("The pack names in the list will be ignored during legacy pack upgrade");
-        PACK_UPGRADE_BLACKLIST = builder.defineList("PackUpgradeBlackList", Util.make(() -> {
-            ArrayList<String> list = new ArrayList<>();
-            list.add("tacz_default_gun");
-            return list;
-        }), String.class::isInstance);
+        PACK_UPGRADE_BLACKLIST = builder.defineList("PackUpgradeBlackList",
+                Util.make(new ArrayList<>(), list -> list.add("tacz_default_gun")),
+                String.class::isInstance);
 
         serverConfig(builder);
 
