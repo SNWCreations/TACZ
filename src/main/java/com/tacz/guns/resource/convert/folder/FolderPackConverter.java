@@ -7,7 +7,7 @@ import com.tacz.guns.GunMod;
 import com.tacz.guns.client.resource.pojo.PackInfo;
 import com.tacz.guns.resource.PackMeta;
 import com.tacz.guns.resource.convert.PackConverter;
-import net.minecraft.resources.ResourceLocation;
+import com.tacz.guns.resource.convert.UnsafeResourceLocation;
 import net.minecraft.server.packs.PackType;
 import net.minecraftforge.fml.loading.FMLPaths;
 import org.apache.commons.io.FileUtils;
@@ -56,7 +56,7 @@ public enum FolderPackConverter implements PackConverter<File> {
                     return null;
                 }).andThen(new FileOp() {
                     @Override
-                    public boolean run(File baseDir, File file, ResourceLocation fileResourceLocation) {
+                    public boolean run(File baseDir, File file, UnsafeResourceLocation fileResourceLocation) {
                         return move(baseDir, file, fileResourceLocation, PackType.SERVER_DATA);
                     }
 
@@ -155,7 +155,7 @@ public enum FolderPackConverter implements PackConverter<File> {
         return new FolderEntryVisitor() {
             @Override
             public boolean visitFile(File baseDir, File subFile) {
-                ResourceLocation entry = parseEntryName(baseDir, subFile);
+                UnsafeResourceLocation entry = parseEntryName(baseDir, subFile);
                 if (entry != null) {
                     String path = entry.getPath();
                     if (path.equals(oldPath)) {
@@ -180,7 +180,7 @@ public enum FolderPackConverter implements PackConverter<File> {
         return new FolderEntryVisitor() {
             @Override
             public @Nullable FileVisitResult visitDirectory(File baseDir, File subFolder) {
-                ResourceLocation entry = parseEntryName(baseDir, subFolder);
+                UnsafeResourceLocation entry = parseEntryName(baseDir, subFolder);
                 if (entry != null) {
                     String path = entry.getPath();
                     if (path.equals(oldPath)) {
@@ -206,7 +206,7 @@ public enum FolderPackConverter implements PackConverter<File> {
         return new FolderEntryVisitor() {
             @Override
             public @Nullable FileVisitResult visitDirectory(File baseDir, File subFolder) {
-                ResourceLocation entry = parseEntryName(baseDir, subFolder);
+                UnsafeResourceLocation entry = parseEntryName(baseDir, subFolder);
                 if (entry != null) {
                     String entryPath = entry.getPath();
                     int i = entryPath.indexOf('/');
@@ -242,7 +242,7 @@ public enum FolderPackConverter implements PackConverter<File> {
         return new FolderEntryVisitor() {
             @Override
             public boolean visitFile(File baseDir, File subFile) throws IOException {
-                ResourceLocation entry = parseEntryName(baseDir, subFile);
+                UnsafeResourceLocation entry = parseEntryName(baseDir, subFile);
                 if (entry != null) {
                     String path = entry.getPath();
                     if (path.startsWith(categoryPlusSlash)) {
@@ -262,7 +262,7 @@ public enum FolderPackConverter implements PackConverter<File> {
     private static FileOp createJsonFileOperator(Function<JsonElement, @Nullable JsonElement> jsonOperator) {
         return new FileOp() {
             @Override
-            public boolean run(File baseDir, File file, ResourceLocation fileResourceLocation) throws IOException {
+            public boolean run(File baseDir, File file, UnsafeResourceLocation fileResourceLocation) throws IOException {
                 if (file.getName().endsWith(".json")) {
                     Path asPath = file.toPath();
                     BufferedReader reader = Files.newBufferedReader(asPath, StandardCharsets.UTF_8);
@@ -285,7 +285,7 @@ public enum FolderPackConverter implements PackConverter<File> {
         };
     }
 
-    private static boolean move(File baseDir, File file, ResourceLocation location, PackType folderType) {
+    private static boolean move(File baseDir, File file, UnsafeResourceLocation location, PackType folderType) {
         String newPath = toFilePath(location, folderType);
         File newFile = new File(baseDir, newPath);
         newFile.getParentFile().mkdirs();

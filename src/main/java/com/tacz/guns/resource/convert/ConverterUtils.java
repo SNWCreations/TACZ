@@ -1,6 +1,5 @@
 package com.tacz.guns.resource.convert;
 
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
 import org.jetbrains.annotations.Nullable;
 
@@ -13,13 +12,13 @@ public final class ConverterUtils {
     }
 
     @Nullable
-    public static ResourceLocation parseEntryName(File baseDir, File file) {
+    public static UnsafeResourceLocation parseEntryName(File baseDir, File file) {
         String relativePath = relativePath(baseDir, file);
         int i = relativePath.indexOf(File.separatorChar);
         if (i != -1) {
             String namespace = relativePath.substring(0, i);
             String entryName = relativePath.substring(i + 1).replace(File.separatorChar, '/');
-            return new ResourceLocation(namespace, entryName);
+            return new UnsafeResourceLocation(namespace, entryName);
         }
         return null;
     }
@@ -28,7 +27,7 @@ public final class ConverterUtils {
         return folderType.getDirectory() + File.separator + namespace + File.separator + path;
     }
 
-    public static String toFilePath(ResourceLocation resourceLocation, PackType folderType) {
+    public static String toFilePath(UnsafeResourceLocation resourceLocation, PackType folderType) {
         return toFilePath(resourceLocation.getNamespace(), resourceLocation.getPath(), folderType);
     }
 
