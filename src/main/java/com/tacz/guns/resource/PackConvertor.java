@@ -23,6 +23,8 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
+import static com.tacz.guns.resource.convert.ConverterUtils.relativePath;
+
 public class PackConvertor {
     public static final Path FOLDER = Paths.get("config", GunMod.MOD_ID, "custom");
     public static final Pattern PACK_INFO_PATTERN = Pattern.compile("^(\\w+)/pack\\.json$");
@@ -61,6 +63,9 @@ public class PackConvertor {
                 msg(source, Component.translatable("message.tacz.converter.start"));
                 GunMod.LOGGER.info("Start converting legacy packs...");
                 for (File file : files) {
+                    if (relativePath(folder, file).equals("tacz_default_gun")) {
+                        continue;
+                    }
                     ThrowingRunnable<Exception> conversionOp;
                     if (file.isFile() && file.getName().endsWith(".zip")) {
                         PackConvertor.LegacyPack pack = fromZipFile(file);
