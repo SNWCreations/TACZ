@@ -355,6 +355,9 @@ public class PackConvertor {
                     if (parseTags(newZip, entry, oldPack)) continue;
                     if (parseRecipe(newZip, entry, oldPack)) continue;
                     if (parsePackInfo(newZip, entry, oldPack)) continue;
+                    // 如果不是任何 TACZ 枪包元素，按原样复制
+                    // 这个情况为诸如 LICENSE 文件等文档考虑
+                    writeEntry(newZip, entry, oldPack, entry.getName());
                 }
             } catch (IOException e) {
                 GunMod.LOGGER.warn("Failed to convert pack: {}", file.getName());
