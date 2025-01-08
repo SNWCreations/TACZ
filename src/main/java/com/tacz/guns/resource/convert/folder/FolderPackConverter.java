@@ -267,6 +267,7 @@ public enum FolderPackConverter implements PackConverter<File> {
                     Path asPath = file.toPath();
                     BufferedReader reader = Files.newBufferedReader(asPath, StandardCharsets.UTF_8);
                     JsonElement oldJson = JsonParser.parseReader(reader);
+                    reader.close();
                     JsonElement newJson = jsonOperator.apply(oldJson);
                     if (newJson != null) {
                         BufferedWriter writer = Files.newBufferedWriter(asPath, StandardCharsets.UTF_8);
