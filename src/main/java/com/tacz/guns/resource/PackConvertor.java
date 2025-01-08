@@ -3,6 +3,7 @@ package com.tacz.guns.resource;
 import com.google.gson.*;
 import com.tacz.guns.GunMod;
 import com.tacz.guns.client.resource.pojo.PackInfo;
+import com.tacz.guns.config.common.OtherConfig;
 import com.tacz.guns.resource.convert.folder.FolderPackConverter;
 import com.tacz.guns.util.ThrowingRunnable;
 import net.minecraft.commands.CommandSourceStack;
@@ -63,7 +64,7 @@ public class PackConvertor {
                 msg(source, Component.translatable("message.tacz.converter.start"));
                 GunMod.LOGGER.info("Start converting legacy packs...");
                 for (File file : files) {
-                    if (relativePath(folder, file).equals("tacz_default_gun")) {
+                    if (OtherConfig.PACK_UPGRADE_BLACKLIST.get().contains(relativePath(folder, file))) {
                         continue;
                     }
                     ThrowingRunnable<Exception> conversionOp;
