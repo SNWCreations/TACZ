@@ -54,7 +54,8 @@ public class PackConvertor {
             }
         }
 
-        File[] files = FOLDER.toFile().listFiles();
+        File legacyPackFolderAsFile = FOLDER.toFile();
+        File[] files = legacyPackFolderAsFile.listFiles();
         int cnt = 0;
         int skip = 0;
         int error = 0;
@@ -64,7 +65,7 @@ public class PackConvertor {
                 msg(source, Component.translatable("message.tacz.converter.start"));
                 GunMod.LOGGER.info("Start converting legacy packs...");
                 for (File file : files) {
-                    if (OtherConfig.PACK_UPGRADE_BLACKLIST.get().contains(relativePath(folder, file))) {
+                    if (OtherConfig.PACK_UPGRADE_BLACKLIST.get().contains(relativePath(legacyPackFolderAsFile, file))) {
                         continue;
                     }
                     ThrowingRunnable<Exception> conversionOp;
