@@ -38,7 +38,7 @@ public enum FolderPackConverter implements PackConverter<File> {
         processors.add(createFileRenamer("pack.json", "pack_info.json", PackType.CLIENT_RESOURCES));
         processors.add(createFolderRenamer("tags", "tacz_tags", PackType.SERVER_DATA));
         processors.add(createFolderMover("player_animator", PackType.CLIENT_RESOURCES));
-        processors.add(createFolderRenamer("sounds", "tacz_sounds", PackType.SERVER_DATA));
+        processors.add(createFolderRenamer("sounds", "tacz_sounds", PackType.CLIENT_RESOURCES));
         processors.add(createFolderMover("textures", PackType.CLIENT_RESOURCES));
         processors.add(createFolderMover("animations", PackType.CLIENT_RESOURCES));
         processors.add(createFolderMover("lang", PackType.CLIENT_RESOURCES));
